@@ -142,7 +142,12 @@ DataTablePlus provides some extensions in order to transform object lists into d
 
 			Startup.AddDbContext(context);
 
-			var entities = new List<User>();
+			var entities = new List<User>
+			{
+				new User { Name = "John Doe", Email = "johndoe@gmail.com", Password = "rH&n&}eEB7!v5d&}" },
+				new User { Name = "Jane Doe", Email = "janedoe@gmail.com", Password = "Jv7K,6zsv-4Bz7w}" },
+				new User { Name = "Baby Doe", Email = "babydoe@gmail.com", Password = "f7{7LEVeTrJ-M~>." }
+			};
 
 			var dataTable = entities.AsStronglyTypedDataTable();
 
