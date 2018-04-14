@@ -54,7 +54,7 @@ DataTablePlus provides some extensions in order to transform list of objects in 
 
 ```C#
 
-  public partial class User
+    public partial class User
     {
         public User()
         { }
@@ -65,7 +65,7 @@ DataTablePlus provides some extensions in order to transform list of objects in 
         public string Password { get; set; }
     }
   
-  public class UserMap : EntityTypeConfiguration<User>
+    public class UserMap : EntityTypeConfiguration<User>
     {
         public UserMap()
         {
