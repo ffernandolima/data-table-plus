@@ -1,5 +1,5 @@
 # Data Table Plus for .NET
-DataTablePlus provides some extensions in order to transform list of objects in data tables based on the object mappings (Mappings which come from EntityFramework configurations) and also some sql helpers which perform some batch operations using the data tables previously built.
+DataTablePlus provides some extensions in order to transform object lists into data tables based on the object mappings (EntityFramework mappings) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some EF performance issues while ingesting or updating a lot of data (represented as objects).
 
 # Dependencies
 
