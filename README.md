@@ -3,12 +3,14 @@ DataTablePlus provides some extensions in order to transform list of objects in 
 
 # Dependencies
 
-* EntityFramework >= 6.2.0 
-* ServiceStack.Text >= 5.0.2
+- EntityFramework >= 6.2.0 
+- ServiceStack.Text >= 5.0.2
 
 # Getting Started
 
-* Configure the EF and the ConnectionString in the App.config:
+- Configure the EF and the ConnectionString in the App.config:
+
+```XML
 
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
@@ -27,65 +29,78 @@ DataTablePlus provides some extensions in order to transform list of objects in 
 	</entityFramework>
 </configuration>
 
+```
 
-* Create a new database table:
+- Create a new database table:
 
-  CREATE TABLE [dbo].[User](
+```PLSQL
+
+	CREATE TABLE [dbo].[User](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [varchar](250) NOT NULL,
 	[Email] [varchar](150) NOT NULL,
 	[Password] [varchar](255) NOT NULL,
-  CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
-  (
-	  [Id] ASC
-  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-  ) ON [PRIMARY]
+ 	CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
 
-  GO
-
-* Create a new data model and a new mapping configuration that represent the database table:
-
-  public class User
-	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public string Email { get; set; }
-		public string Password { get; set; }	
-	}
+	GO
   
-  public class UserMap : EntityTypeConfiguration<User>
-  {
-      public UserMap()
-      {
-          // Primary Key
-          this.HasKey(t => t.UserId);
+ ```
 
-          // Properties
-          this.Property(t => t.Name)
-              .HasMaxLength(250)
-              .IsRequired();
+- Create a new data model and a new mapping configuration that represent the database table:
 
-          this.Property(t => t.Email)
-              .HasMaxLength(150)
-              .IsRequired();
+```C#
 
-          this.Property(t => t.Password)
-              .HasMaxLength(255)
-              .IsRequired();
+  	public partial class User
+    {
+        public User()
+        { }
 
-          // Table & Column Mappings
-          this.ToTable("User");
-          this.Property(t => t.UserId).HasColumnName("UserId");
-          this.Property(t => t.Name).HasColumnName("Name");
-          this.Property(t => t.Email).HasColumnName("Email");
-          this.Property(t => t.Password).HasColumnName("Password");
-
-          // Relationships
-      }
-  }
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
   
-    
-* Add this configuration to the DbContext configurations:
+  	public class UserMap : EntityTypeConfiguration<User>
+    {
+        public UserMap()
+        {
+            // Primary Key
+            this.HasKey(t => t.UserId);
+
+            // Properties
+            this.Property(t => t.Name)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            this.Property(t => t.Email)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            this.Property(t => t.Password)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            // Table & Column Mappings
+            this.ToTable("User");
+            this.Property(t => t.UserId).HasColumnName("UserId");
+            this.Property(t => t.Name).HasColumnName("Name");
+            this.Property(t => t.Email).HasColumnName("Email");
+            this.Property(t => t.Password).HasColumnName("Password");
+
+            // Relationships
+        }
+    }
+  
+```   
+      
+- Add this configuration to the DbContext configurations:
+
+```C#
 
   internal class Context : DbContext
 	{
@@ -107,22 +122,26 @@ DataTablePlus provides some extensions in order to transform list of objects in 
 			this.Configuration.AutoDetectChangesEnabled = false;
 			this.Configuration.ValidateOnSaveEnabled = false;
 		}
-    
-    protected override void OnModelCreating(DbModelBuilder modelBuilder)
-	  {
-      modelBuilder.Configurations.Add(new UserMap());
-	  }
-  }	
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{			
+			// modelBuilder.Configurations.Add(new UserMap());
+		}
+	}
   
-* Code Examples:
+```
   
-  [TestMethod]
+- Code Examples:
+
+```C#
+	
+		[TestMethod]
 		public void GeneralTestMethod()
-		{		
-      var context = new Context();
+		{
+			var context = new Context();
 
 			Startup.AddDbContext(context);
-      
+
 			var entities = new List<User>();
 
 			var dataTable = entities.AsStronglyTypedDataTable();
@@ -134,4 +153,5 @@ DataTablePlus provides some extensions in order to transform list of objects in 
 				sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example'");
 			}
 		}
-    
+  
+```
