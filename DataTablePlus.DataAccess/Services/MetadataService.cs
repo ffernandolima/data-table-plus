@@ -1,0 +1,185 @@
+﻿/*******************************************************************************
+ * You may amend and distribute as you like, but don't remove this header!
+ *
+ * DataTablePlus provides some extensions in order to transform list of objects in data tables
+ * based on the object mappings (Mappings which come from EntityFramework configurations) and also some sql helpers which perform
+ * some batch operations using the data tables previously built.
+ * 
+ * See https://github.com/ffernandolima/data-table-plus for details.
+ *
+ * Copyright (C) 2018 Fernando Luiz de Lima
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ * See the GNU Lesser General Public License for more details.
+ *
+ * The GNU Lesser General Public License can be viewed at http://www.opensource.org/licenses/lgpl-license.php
+ * If you unfamiliar with this license or have questions about it, here is a FAQ: http://www.gnu.org/licenses/gpl-faq.html
+ *
+ * All code and executables are provided "as is" with no warranty either express or implied. 
+ * The author accepts no liability for any damage or loss of business that this product may cause.
+ * 
+ *******************************************************************************/
+
+using DataTablePlus.Configuration;
+using DataTablePlus.DataAccess.Extensions;
+using DataTablePlus.DataAccess.Resources;
+using DataTablePlus.DataAccessContracts.Services;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Reflection;
+
+namespace DataTablePlus.DataAccess.Services
+{
+	/// <summary>
+	/// Service that should be used to get some metadata
+	/// </summary>
+	public class MetadataService : IMetadataService
+	{
+		private DbContext _dbContext;
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		public MetadataService()
+		{
+			this._dbContext = Startup.DbContext ?? throw new ArgumentNullException(nameof(Startup.DbContext));
+		}
+
+		/// <summary>
+		/// Gets the table name from the mapped entity on EF
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <returns>Table name or null</returns>
+		public string GetTableName<T>() where T : class
+		{
+			return this.GetTableName(typeof(T));
+		}
+
+		/// <summary>
+		/// Gets the table name from the mapped entity on EF
+		/// </summary>
+		/// <param name="type">Type of the mapped entity</param>
+		/// <returns>Table name or null</returns>
+		public string GetTableName(Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			return this._dbContext.GetTableName(type);
+		}
+
+		/// <summary>
+		/// Gets a mapping between the model properties and the mapped column names
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <returns>Mapping or null</returns>
+		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class
+		{
+			return this.GetMappings(typeof(T));
+		}
+
+		/// <summary>
+		/// Gets a mapping between the model properties and the mapped column names
+		/// </summary>
+		/// <param name="type">Type of the mapped entity</param>
+		/// <returns>Mapping or null</returns>
+		public IDictionary<PropertyInfo, string> GetMappings(Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			return this._dbContext.GetMappings(type);
+		}
+
+		/// <summary>
+		/// Gets the database table schema
+		/// </summary>
+		/// <param name="tableName">The name of the database table</param>
+		/// <returns>A datatable that represents a mirror of the database table schema</returns>
+		public DataTable GetTableSchema(string tableName)
+		{
+			if (string.IsNullOrWhiteSpace(tableName))
+			{
+				throw new ArgumentException(nameof(tableName));
+			}
+
+			DataTable dataTable;
+
+			try
+			{
+				var connection = this._dbContext.Database.Connection;
+
+				using (var command = connection.CreateCommand())
+				{
+					if (connection.State != ConnectionState.Open)
+					{
+						connection.Open();
+					}
+
+					command.CommandText = string.Format(DataResources.MetadataService_GetSchemaTable, tableName);
+					command.CommandType = CommandType.Text;
+
+					using (var reader = command.ExecuteReader())
+					{
+						dataTable = new DataTable
+						{
+							TableName = tableName
+						};
+
+						dataTable.BeginLoadData();
+						dataTable.Load(reader);
+						dataTable.EndLoadData();
+					}
+
+					if (connection.State != ConnectionState.Closed)
+					{
+						connection.Close();
+					}
+				}
+			}
+			catch
+			{
+				dataTable = null;
+			}
+
+			return dataTable;
+		}
+
+		#region IDisposable Members
+
+		private bool _disposed;
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!this._disposed)
+			{
+				if (disposing)
+				{
+					this._dbContext = null;
+				}
+			}
+
+			this._disposed = true;
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion IDisposable Members
+	}
+}
