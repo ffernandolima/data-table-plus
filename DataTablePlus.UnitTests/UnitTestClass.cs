@@ -1,9 +1,5 @@
 ﻿/*******************************************************************************
  * You may amend and distribute as you like, but don't remove this header!
- *
- * DataTablePlus provides some extensions in order to transform list of objects in data tables
- * based on the object mappings (Mappings which come from EntityFramework configurations) and also some sql helpers which perform
- * some batch operations using the data tables previously built.
  * 
  * See https://github.com/ffernandolima/data-table-plus for details.
  *
@@ -49,13 +45,14 @@ namespace DataTablePlus.UnitTests
 		[TestMethod]
 		public void GeneralTestMethod()
 		{
-			// Some things should be done before running this test method.
+			// Some things should be done before running this test method:
 			//
 			// - Configure the EF and the ConnectionString in the App.config
 			// - Create a new database table
 			// - Create a new data model and a new mapping configuration that represent the database table
 			// - Add this configuration to the DbContext configurations
-			// - Change the list type in order to use the data model type that has been created in the previous steps
+			// - Change the list type below in order to use the data model type that has been created in the previous steps
+			// - Change the update SQL below in order to update your data
 
 			var entities = new List<object>();
 
