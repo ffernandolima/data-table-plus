@@ -141,6 +141,12 @@ Data Table Plus provides some extensions in order to transform object lists into
 			var context = new Context();
 
 			Startup.AddDbContext(context);
+			
+			// And/Or
+			
+			var connectionString = "YourConnectionString";
+			
+			Startup.AddConnectionString(connectionString);
 
 			var entities = new List<User>
 			{
@@ -148,7 +154,8 @@ Data Table Plus provides some extensions in order to transform object lists into
 				new User { Name = "Jane Doe", Email = "janedoe@gmail.com", Password = "Jv7K,6zsv-4Bz7w}" },
 				new User { Name = "Baby Doe", Email = "babydoe@gmail.com", Password = "f7{7LEVeTrJ-M~>." }
 			};
-
+			
+			// Or you can construct your DataTable by another way
 			var dataTable = entities.AsStronglyTypedDataTable();
 
 			using (var sqlService = new SqlService())
