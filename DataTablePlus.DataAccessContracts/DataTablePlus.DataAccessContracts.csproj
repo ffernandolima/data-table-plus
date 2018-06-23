@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="DataConstants.cs" />
     <Compile Include="IgnoredDataColumn.cs" />
+    <Compile Include="Services\IServiceBase.cs" />
     <Compile Include="Services\ISqlService.cs" />
     <Compile Include="Services\IMetadataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

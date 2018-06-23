@@ -54,6 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Services\SqlService.cs" />
     <Compile Include="Services\MetadataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

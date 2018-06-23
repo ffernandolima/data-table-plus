@@ -22,12 +22,10 @@
  * 
  *******************************************************************************/
 
-using DataTablePlus.Configuration;
 using DataTablePlus.DataAccessContracts;
 using DataTablePlus.DataAccessContracts.Services;
 using System;
 using System.Data;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -37,12 +35,10 @@ namespace DataTablePlus.DataAccess.Services
 	/// <summary>
 	/// Service that should be used in order to ingest or update a large amount of data
 	/// </summary>
-	public class SqlService : ISqlService
+	public class SqlService : ServiceBase, ISqlService
 	{
 		private static readonly Regex PARAMETERS_REGEX = new Regex(@"\@\w+", RegexOptions.Compiled);
 		private static readonly TimeSpan DEFAULT_TIMEOUT = TimeSpan.FromMinutes(1);
-
-		private DbContext _dbContext;
 
 		/// <summary>
 		/// Sql command Timeout
@@ -50,11 +46,10 @@ namespace DataTablePlus.DataAccess.Services
 		public TimeSpan Timeout { get; set; }
 
 		/// <summary>
-		/// Ctor
+		/// Parameterless Ctor
 		/// </summary>
 		public SqlService()
 		{
-			this._dbContext = Startup.DbContext ?? throw new ArgumentNullException(nameof(Startup.DbContext));
 			this.Timeout = DEFAULT_TIMEOUT;
 		}
 
@@ -71,18 +66,11 @@ namespace DataTablePlus.DataAccess.Services
 				throw new ArgumentNullException(nameof(dataTable));
 			}
 
-			var connection = this._dbContext.Database.Connection as SqlConnection;
-
-			if (connection == null)
-			{
-				throw new ArgumentNullException(nameof(connection));
-			}
-
 			try
 			{
-				if (connection.State != ConnectionState.Open)
+				if (this.SqlConnection.State != ConnectionState.Open)
 				{
-					connection.Open();
+					this.SqlConnection.Open();
 				}
 
 				#region SqlBulkCopyOptions
@@ -98,7 +86,7 @@ namespace DataTablePlus.DataAccess.Services
 
 				const SqlBulkCopyOptions SQL_BULK_COPY_OPTIONS = SqlBulkCopyOptions.CheckConstraints | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction;
 
-				var sqlBulkCopy = new SqlBulkCopy(connection, options ?? SQL_BULK_COPY_OPTIONS, null)
+				var sqlBulkCopy = new SqlBulkCopy(this.SqlConnection, options ?? SQL_BULK_COPY_OPTIONS, null)
 				{
 					BatchSize = batchSize,
 					DestinationTableName = dataTable.TableName,
@@ -109,6 +97,8 @@ namespace DataTablePlus.DataAccess.Services
 				{
 					sqlBulkCopy.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
 				}
+
+				dataTable.AcceptChanges();
 
 				foreach (var dataRow in dataTable.Rows.Cast<DataRow>().Where(dataRow => dataRow.RowState == DataRowState.Unchanged))
 				{
@@ -126,9 +116,9 @@ namespace DataTablePlus.DataAccess.Services
 			}
 			finally
 			{
-				if (connection.State != ConnectionState.Closed)
+				if (this.SqlConnection.State != ConnectionState.Closed)
 				{
-					connection.Close();
+					this.SqlConnection.Close();
 				}
 			}
 		}
@@ -151,25 +141,18 @@ namespace DataTablePlus.DataAccess.Services
 				throw new ArgumentException(nameof(commandText));
 			}
 
-			var connection = this._dbContext.Database.Connection as SqlConnection;
-
-			if (connection == null)
-			{
-				throw new ArgumentNullException(nameof(connection));
-			}
-
 			SqlTransaction transaction = null;
 
 			try
 			{
-				if (connection.State != ConnectionState.Open)
+				if (this.SqlConnection.State != ConnectionState.Open)
 				{
-					connection.Open();
+					this.SqlConnection.Open();
 				}
 
-				transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+				transaction = this.SqlConnection.BeginTransaction(IsolationLevel.ReadCommitted);
 
-				var updateCommand = new SqlCommand(commandText, connection, transaction)
+				var updateCommand = new SqlCommand(commandText, this.SqlConnection, transaction)
 				{
 					UpdatedRowSource = UpdateRowSource.None,
 					CommandTimeout = Convert.ToInt32(this.Timeout.TotalSeconds)
@@ -191,6 +174,8 @@ namespace DataTablePlus.DataAccess.Services
 					UpdateCommand = updateCommand,
 					UpdateBatchSize = batchSize
 				};
+
+				dataTable.AcceptChanges();
 
 				foreach (var dataRow in dataTable.Rows.Cast<DataRow>().Where(dataRow => dataRow.RowState == DataRowState.Unchanged))
 				{
@@ -222,9 +207,9 @@ namespace DataTablePlus.DataAccess.Services
 			}
 			finally
 			{
-				if (connection.State != ConnectionState.Closed)
+				if (this.SqlConnection.State != ConnectionState.Closed)
 				{
-					connection.Close();
+					this.SqlConnection.Close();
 				}
 			}
 		}
@@ -233,25 +218,19 @@ namespace DataTablePlus.DataAccess.Services
 
 		private bool _disposed;
 
-		protected virtual void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (!this._disposed)
 			{
 				if (disposing)
 				{
-					this._dbContext = null;
+					base.Dispose(true);
 				}
 			}
 
 			this._disposed = true;
 		}
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		#endregion IDisposable Members
+		#endregion
 	}
 }

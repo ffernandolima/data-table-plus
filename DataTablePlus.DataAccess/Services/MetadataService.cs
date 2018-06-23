@@ -22,14 +22,12 @@
  * 
  *******************************************************************************/
 
-using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Extensions;
 using DataTablePlus.DataAccess.Resources;
 using DataTablePlus.DataAccessContracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Reflection;
 
 namespace DataTablePlus.DataAccess.Services
@@ -37,18 +35,8 @@ namespace DataTablePlus.DataAccess.Services
 	/// <summary>
 	/// Service that should be used to get some metadata
 	/// </summary>
-	public class MetadataService : IMetadataService
+	public class MetadataService : ServiceBase, IMetadataService
 	{
-		private DbContext _dbContext;
-
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		public MetadataService()
-		{
-			this._dbContext = Startup.DbContext ?? throw new ArgumentNullException(nameof(Startup.DbContext));
-		}
-
 		/// <summary>
 		/// Gets the table name from the mapped entity on EF
 		/// </summary>
@@ -71,7 +59,7 @@ namespace DataTablePlus.DataAccess.Services
 				throw new ArgumentNullException(nameof(type));
 			}
 
-			return this._dbContext.GetTableName(type);
+			return this.DbContext.GetTableName(type);
 		}
 
 		/// <summary>
@@ -96,7 +84,7 @@ namespace DataTablePlus.DataAccess.Services
 				throw new ArgumentNullException(nameof(type));
 			}
 
-			return this._dbContext.GetMappings(type);
+			return this.DbContext.GetMappings(type);
 		}
 
 		/// <summary>
@@ -115,13 +103,11 @@ namespace DataTablePlus.DataAccess.Services
 
 			try
 			{
-				var connection = this._dbContext.Database.Connection;
-
-				using (var command = connection.CreateCommand())
+				using (var command = this.SqlConnection.CreateCommand())
 				{
-					if (connection.State != ConnectionState.Open)
+					if (this.SqlConnection.State != ConnectionState.Open)
 					{
-						connection.Open();
+						this.SqlConnection.Open();
 					}
 
 					command.CommandText = string.Format(DataResources.MetadataService_GetSchemaTable, tableName);
@@ -139,9 +125,9 @@ namespace DataTablePlus.DataAccess.Services
 						dataTable.EndLoadData();
 					}
 
-					if (connection.State != ConnectionState.Closed)
+					if (this.SqlConnection.State != ConnectionState.Closed)
 					{
-						connection.Close();
+						this.SqlConnection.Close();
 					}
 				}
 			}
@@ -157,25 +143,19 @@ namespace DataTablePlus.DataAccess.Services
 
 		private bool _disposed;
 
-		protected virtual void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (!this._disposed)
 			{
 				if (disposing)
 				{
-					this._dbContext = null;
+					base.Dispose(true);
 				}
 			}
 
 			this._disposed = true;
 		}
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		#endregion IDisposable Members
+		#endregion
 	}
 }

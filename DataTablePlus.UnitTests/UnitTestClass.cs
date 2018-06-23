@@ -40,6 +40,12 @@ namespace DataTablePlus.UnitTests
 			var context = new Context();
 
 			Startup.AddDbContext(context);
+
+			// And/Or
+
+			var connectionString = "YourConnectionString";
+
+			Startup.AddConnectionString(connectionString);
 		}
 
 		[TestMethod]
@@ -56,6 +62,7 @@ namespace DataTablePlus.UnitTests
 
 			var entities = new List<object>();
 
+			// Or you can construct your DataTable by another way
 			var dataTable = entities.AsStronglyTypedDataTable();
 
 			using (var sqlService = new SqlService())
