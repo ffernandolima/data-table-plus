@@ -90,7 +90,6 @@ namespace DataTablePlus.DataAccess.Services
 				{
 					if (this.DbContext != null)
 					{
-						this.DbContext.Dispose();
 						this.DbContext = null;
 					}
 

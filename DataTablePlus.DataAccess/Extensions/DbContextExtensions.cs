@@ -59,7 +59,7 @@ namespace DataTablePlus.DataAccess.Extensions
 												 .Single()
 												 .BaseEntitySets.SingleOrDefault(x => x.Name == entityType.Name);
 
-			return entitySetBase != null ? string.Concat(entitySetBase.MetadataProperties["Schema"].Value, ".", entitySetBase.MetadataProperties["Table"].Value) : null;
+			return entitySetBase != null ? string.Concat("[", entitySetBase.MetadataProperties["Schema"].Value, "]", ".", "[", entitySetBase.MetadataProperties["Table"].Value, "]") : null;
 		}
 
 		/// <summary>
