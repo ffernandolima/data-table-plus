@@ -162,7 +162,7 @@ Data Table Plus provides some extensions in order to transform object lists into
 			{
 				sqlService.BulkInsert(dataTable);
 
-				sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example'");
+				sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE UserId = @UserId");
 			}
 		}
   
