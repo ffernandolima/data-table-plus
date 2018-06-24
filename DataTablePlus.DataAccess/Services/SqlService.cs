@@ -22,6 +22,7 @@
  * 
  *******************************************************************************/
 
+using DataTablePlus.Common;
 using DataTablePlus.DataAccessContracts;
 using DataTablePlus.DataAccessContracts.Services;
 using System;
@@ -63,7 +64,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (dataTable == null)
 			{
-				throw new ArgumentNullException(nameof(dataTable));
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
 			}
 
 			try
@@ -133,12 +134,12 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (dataTable == null)
 			{
-				throw new ArgumentNullException(nameof(dataTable));
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
 			}
 
 			if (string.IsNullOrWhiteSpace(commandText))
 			{
-				throw new ArgumentException(nameof(commandText));
+				throw new ArgumentException($"{nameof(commandText)} {CommonResources.App_CannotBeNullOrWhiteSpace}", nameof(commandText));
 			}
 
 			SqlTransaction transaction = null;

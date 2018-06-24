@@ -63,6 +63,20 @@ namespace DataTablePlus.DataAccessContracts.Services
 		IDictionary<PropertyInfo, string> GetMappings(Type type);
 
 		/// <summary>
+		/// Gets the entity keys
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <returns>A list that contains the entity keys</returns>
+		IList<string> GetKeyNames<T>() where T : class;
+
+		/// <summary>
+		/// Gets the entity keys
+		/// </summary>
+		/// <param name="type">Type of the mapped entity</param>
+		/// <returns>A list that contains the entity keys</returns>
+		IList<string> GetKeyNames(Type type);
+
+		/// <summary>
 		/// Gets the database table schema
 		/// </summary>
 		/// <param name="tableName">The name of the database table</param>

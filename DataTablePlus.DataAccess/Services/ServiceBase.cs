@@ -22,6 +22,7 @@
  * 
  *******************************************************************************/
 
+using DataTablePlus.Common;
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccessContracts.Services;
 using System;
@@ -64,17 +65,41 @@ namespace DataTablePlus.DataAccess.Services
 			if (dbContext != null)
 			{
 				this.DbContext = dbContext;
+
+				ValidateConnectionString(this.DbContext.Database.Connection.ConnectionString);
+
 				this.SqlConnection = this.DbContext.Database.Connection as SqlConnection;
 			}
 
 			if (!string.IsNullOrWhiteSpace(connectionString))
 			{
+				ValidateConnectionString(connectionString);
+
 				this.SqlConnection = new SqlConnection(connectionString);
 			}
 
-			if (DbContext == null || this.SqlConnection == null)
+			if (this.DbContext == null && this.SqlConnection == null)
 			{
-				throw new ArgumentNullException("Please provide a valid DbContext and/or a SqlConnection.");
+				throw new ArgumentNullException($"{CommonResources.App_MissingConfiguration}");
+			}
+		}
+
+		/// <summary>
+		/// Validates the connection string which has been provided
+		/// </summary>
+		/// <param name="connectionString">ConnectionString to be tested</param>
+		private static void ValidateConnectionString(string connectionString)
+		{
+			try
+			{
+				using (var sqlconnection = new SqlConnection(connectionString))
+				{
+					sqlconnection.Open();
+				}
+			}
+			catch
+			{
+				throw new Exception($"{CommonResources.App_InvalidConnectionString}");
 			}
 		}
 

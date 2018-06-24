@@ -25,6 +25,7 @@
 using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccessContracts;
+using DataTablePlus.DataAccessContracts.Services;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace DataTablePlus.Extensions
 		{
 			if (objects == null)
 			{
-				throw new ArgumentNullException(nameof(objects));
+				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.App_CannotBeNull}");
 			}
 
 			return AsStronglyTypedDataTable(objects, typeof(T));
@@ -65,39 +66,40 @@ namespace DataTablePlus.Extensions
 		{
 			if (objects == null)
 			{
-				throw new ArgumentNullException(nameof(objects));
+				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.App_CannotBeNull}");
 			}
 
 			if (derivedObjectType == null)
 			{
-				throw new ArgumentNullException(nameof(derivedObjectType));
+				throw new ArgumentNullException(nameof(derivedObjectType), $"{nameof(derivedObjectType)} {CommonResources.App_CannotBeNull}");
 			}
 
-			MetadataService metadataService = null;
-
-			try
+			using (IMetadataService metadataService = new MetadataService())
 			{
-				metadataService = new MetadataService();
-
 				var tableName = metadataService.GetTableName(derivedObjectType);
 
 				var mappings = metadataService.GetMappings(derivedObjectType);
 
 				if (string.IsNullOrWhiteSpace(tableName))
 				{
-					throw new ArgumentNullException(nameof(tableName));
+					throw new ArgumentNullException(nameof(tableName), $"{nameof(tableName)} {CommonResources.App_CannotBeNull}");
 				}
 
 				if (mappings == null)
 				{
-					throw new ArgumentNullException(nameof(mappings));
+					throw new ArgumentNullException(nameof(mappings), $"{nameof(mappings)} {CommonResources.App_CannotBeNull}");
 				}
 
 				var dataTable = metadataService.GetTableSchema(tableName);
 
-				if (dataTable == null || dataTable.Columns == null)
+				if (dataTable == null)
 				{
-					throw new ArgumentNullException(nameof(dataTable));
+					throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
+				}
+
+				if (dataTable.Columns == null)
+				{
+					throw new ArgumentNullException(nameof(dataTable.Columns), $"{nameof(dataTable.Columns)} {CommonResources.App_CannotBeNull}");
 				}
 
 				var dataColumn = new IgnoredDataColumn
@@ -108,14 +110,9 @@ namespace DataTablePlus.Extensions
 
 				dataTable.Columns.Add(dataColumn);
 
-				return FillDataTable(objects, dataTable, mappings);
-			}
-			finally
-			{
-				if (metadataService != null)
-				{
-					metadataService.Dispose();
-				}
+				dataTable = FillDataTable(objects, dataTable, mappings);
+
+				return dataTable;
 			}
 		}
 
@@ -131,17 +128,17 @@ namespace DataTablePlus.Extensions
 		{
 			if (objects == null)
 			{
-				throw new ArgumentNullException(nameof(objects));
+				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.App_CannotBeNull}");
 			}
 
 			if (dataTable == null)
 			{
-				throw new ArgumentNullException(nameof(dataTable));
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
 			}
 
 			if (mappings == null)
 			{
-				throw new ArgumentNullException(nameof(mappings));
+				throw new ArgumentNullException(nameof(mappings), $"{nameof(mappings)} {CommonResources.App_CannotBeNull}");
 			}
 
 			foreach (var obj in objects)

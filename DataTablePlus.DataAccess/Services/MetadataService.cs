@@ -22,6 +22,7 @@
  * 
  *******************************************************************************/
 
+using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Extensions;
 using DataTablePlus.DataAccess.Resources;
 using DataTablePlus.DataAccessContracts.Services;
@@ -56,7 +57,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException(nameof(type));
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
 			}
 
 			return this.DbContext.GetTableName(type);
@@ -81,10 +82,35 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException(nameof(type));
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
 			}
 
 			return this.DbContext.GetMappings(type);
+		}
+
+		/// <summary>
+		/// Gets the entity keys
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <returns>A list that contains the entity keys</returns>
+		public IList<string> GetKeyNames<T>() where T : class
+		{
+			return this.GetKeyNames(typeof(T));
+		}
+
+		/// <summary>
+		/// Gets the entity keys
+		/// </summary>
+		/// <param name="type">Type of the mapped entity</param>
+		/// <returns>A list that contains the entity keys</returns>
+		public IList<string> GetKeyNames(Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
+			}
+
+			return this.DbContext.GetKeyNames(type);
 		}
 
 		/// <summary>
@@ -96,7 +122,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (string.IsNullOrWhiteSpace(tableName))
 			{
-				throw new ArgumentException(nameof(tableName));
+				throw new ArgumentException($"{nameof(tableName)} {CommonResources.App_CannotBeNullOrWhiteSpace}", nameof(tableName));
 			}
 
 			DataTable dataTable;
@@ -133,7 +159,7 @@ namespace DataTablePlus.DataAccess.Services
 			}
 			catch
 			{
-				dataTable = null;
+				throw;
 			}
 
 			return dataTable;
