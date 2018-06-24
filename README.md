@@ -4,7 +4,7 @@ Data Table Plus provides some extensions in order to transform object lists into
 # Dependencies
 
 - EntityFramework >= 6.2.0 
-- ServiceStack.Text >= 5.0.2
+- ServiceStack.Text >= 5.1.0
 
 # Getting Started
 
