@@ -18,7 +18,7 @@ Data Table Plus provides some extensions in order to transform object lists into
 		<section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/>
 	</configSections>
 	<connectionStrings>
-		<add name="Context" providerName="System.Data.SqlClient" connectionString=""/>
+		<add name="Context" providerName="System.Data.SqlClient" connectionString="YourConnectionString"/>
 	</connectionStrings>
 	<entityFramework>
 		<defaultConnectionFactory type="System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework">
