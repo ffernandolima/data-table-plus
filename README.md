@@ -36,7 +36,7 @@ Data Table Plus provides some extensions in order to transform object lists into
 ```PLSQL
 
 	CREATE TABLE [dbo].[User](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [varchar](250) NOT NULL,
 	[Email] [varchar](150) NOT NULL,
 	[Password] [varchar](255) NOT NULL,
