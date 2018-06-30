@@ -26,8 +26,15 @@ using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 
 namespace DataTablePlus.UnitTests
 {
@@ -37,14 +44,19 @@ namespace DataTablePlus.UnitTests
 		[ClassInitialize()]
 		public static void MyClassInitialize(TestContext testContext)
 		{
+			// Creates the DbContext
 			var context = new Context();
 
+			// Adds the DbContext to DataTablePlus configurations
 			Startup.AddDbContext(context);
 
-			// And/Or
+			// Also, a connection string can be added to these configurations 
+			// You should specify at least one of them (DbContext and/or a ConnectionString) and just a reminder: if a DbContext was not provided, the EF extensions will not be available
 
-			var connectionString = "YourConnectionString";
+			// Gets the connection string from the configuration file
+			var connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
 
+			// Adds the connection string to DataTablePlus configurations
 			Startup.AddConnectionString(connectionString);
 		}
 
@@ -57,19 +69,97 @@ namespace DataTablePlus.UnitTests
 			// - Create a new database table
 			// - Create a new data model and a new mapping configuration that represent the database table
 			// - Add this configuration to the DbContext configurations
-			// - Change the list type below in order to use the data model type that has been created in the previous steps
-			// - Change the update SQL below in order to update your data
 
-			var entities = new List<object>();
+			// Notes:
+			// this example builds a list of 1 000 000 objects, executes a bulk insert and after that a batch update
 
-			// Or you can construct your DataTable by another way
+			// Bulk Insert time spent: 
+			//	- About 1 minute retrieving the primary key names
+			//	- About 5 seconds whitout retrieving the primary key names
+
+			// Batch Update time spent: 
+			//	- About 50 seconds updating 1 000 000 of rows
+
+			// The measurement was taken while running some tests in Debug mode, so in Release mode it should be faster
+			// To sum up, although it was taken in Debug mode, still faster than Entity Framework (much faster)
+
+			// Sets the culture to invariant culture in order to avoid some exception details in another language
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+			// Creates a list of User objects
+			var entities = new List<User>();
+
+			for (int i = 0; i < 1000000; i++)
+			{
+				var entity = new User
+				{
+					Name = $"John Doe {i}",
+					Email = $"johndoe{i}@gmail.com",
+					Password = "rH&n&}eEB7!v5d&}"
+				};
+
+				entities.Add(entity);
+			}
+
+			// Creates the data table using the extensions method
+			// You can also construct your data table by another way, but this method can simplify it
 			var dataTable = entities.AsStronglyTypedDataTable();
 
+			// Creates the services
+			// ps.: The MetadataService is needed only to get the primary key names, if you do not want to get them automatically, do not need to create this instance
+			using (var metadataService = new MetadataService())
 			using (var sqlService = new SqlService())
 			{
-				sqlService.BulkInsert(dataTable);
+				// Overrides the default timeout setting 2 minutes to ensure that the data will be inserted successfully
+				// ps.: Default timeout is 1 minute
+				sqlService.Timeout = TimeSpan.FromMinutes(2);
 
-				sqlService.BatchUpdate(dataTable, string.Empty);
+				// Setting the primary key names and passing them as parameter, their values will be retrieved from the database after the bulk insert execution
+				// It's optional, does not need to be set
+				// Not setting them can save a lot time
+
+				// Gets the primary key names from the entity mapping
+				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromCollection());
+
+				// You can specify the primary key names directly, get from another source or pass null
+				// var databaseKeyNames = new List<string> { "Id" };
+				// Or
+				// IList<string> databaseKeyNames = null;
+
+				// Creates a Stopwatch, just to know the time which was spent during the execution
+				var stopwatch = Stopwatch.StartNew();
+
+				// Invokes the BulkInsert method
+				// You can also pass the BatchSize and the SqlBulkCopyOptions parameters to this method
+
+				// BatchSize will be used to flush the values against the database table
+				// SqlBulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
+
+				sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
+
+				// Stops the Stopwatch
+				stopwatch.Stop();
+
+				// Gets the total of time spent
+				Debug.WriteLine($"Bulk Insert Elapsed Time: {stopwatch.Elapsed}");
+
+				if (databaseKeyNames != null && databaseKeyNames.Any())
+				{
+					// Reestarts the Stopwatch
+					stopwatch.Restart();
+
+					// Invokes the BatchUpdate method
+					// You can also pass the BatchSize parameter to this method
+					// BatchSize will be used to flush the values against the database table
+
+					sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE Id = @Id");
+
+					// Stops the Stopwatch
+					stopwatch.Stop();
+
+					// Gets the total of time spent
+					Debug.WriteLine($"Batch Update Elapsed Time: {stopwatch.Elapsed}");
+				}
 			}
 		}
 	}
@@ -101,8 +191,55 @@ namespace DataTablePlus.UnitTests
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			// Add the configurations here like this:
-			//
-			// modelBuilder.Configurations.Add(new YourConfigurationMap());
+			modelBuilder.Configurations.Add(new UserMap());
+		}
+	}
+
+	/// <summary>
+	/// Sample POCO class
+	/// </summary>
+	public partial class User
+	{
+		public User()
+		{ }
+
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public string Email { get; set; }
+		public string Password { get; set; }
+	}
+
+	/// <summary>
+	/// Sample POCO class EF mapping
+	/// </summary>
+	public class UserMap : EntityTypeConfiguration<User>
+	{
+		public UserMap()
+		{
+			// Primary Key
+			this.HasKey(t => t.Id);
+
+			// Properties
+			this.Property(t => t.Name)
+				.HasMaxLength(250)
+				.IsRequired();
+
+			this.Property(t => t.Email)
+				.HasMaxLength(150)
+				.IsRequired();
+
+			this.Property(t => t.Password)
+				.HasMaxLength(255)
+				.IsRequired();
+
+			// Table & Column Mappings
+			this.ToTable("User");
+			this.Property(t => t.Id).HasColumnName("Id");
+			this.Property(t => t.Name).HasColumnName("Name");
+			this.Property(t => t.Email).HasColumnName("Email");
+			this.Property(t => t.Password).HasColumnName("Password");
+
+			// Relationships
 		}
 	}
 }
