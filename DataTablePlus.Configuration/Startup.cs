@@ -50,7 +50,7 @@ namespace DataTablePlus.Configuration
 		/// <param name="dbContext">EF DbContext</param>
 		public static void AddDbContext<T>(T dbContext) where T : DbContext
 		{
-			DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.App_CannotBeNull}");
+			DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
 
 			AddConnectionString(DbContext.Database.Connection.ConnectionString);
 		}
@@ -61,7 +61,7 @@ namespace DataTablePlus.Configuration
 		/// <param name="connectionString">ConnectionString</param>
 		public static void AddConnectionString(string connectionString)
 		{
-			ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.App_CannotBeNull}");
+			ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
 		}
 	}
 }

@@ -51,30 +51,44 @@ namespace DataTablePlus.DataAccessContracts.Services
 		/// <summary>
 		/// Gets a mapping between the model properties and the mapped column names
 		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>Mapping or null</returns>
 		IDictionary<PropertyInfo, string> GetMappings<T>() where T : class;
 
 		/// <summary>
 		/// Gets a mapping between the model properties and the mapped column names
 		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
+		/// <param name="type">Type of the mapped entity on EF</param>
 		/// <returns>Mapping or null</returns>
 		IDictionary<PropertyInfo, string> GetMappings(Type type);
 
 		/// <summary>
-		/// Gets the entity keys
+		/// Gets the entity keys from the mapped entity on EF
 		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>A list that contains the entity keys</returns>
 		IList<string> GetKeyNames<T>() where T : class;
 
 		/// <summary>
-		/// Gets the entity keys
+		/// Gets the entity keys from the mapped entity on EF
 		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
+		/// <param name="type">Type of the mapped entity on EF</param>
 		/// <returns>A list that contains the entity keys</returns>
 		IList<string> GetKeyNames(Type type);
+
+		/// <summary>
+		/// Gets the database keys based on the EF mappings
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+		/// <returns>A list that contains the database keys</returns>
+		IList<string> GetDbKeyNames<T>() where T : class;
+
+		/// <summary>
+		/// Gets the database keys based on the EF mappings
+		/// </summary>
+		/// <param name="type">Type of the mapped entity on EF</param>
+		/// <returns>A list that contains the database keys</returns>
+		IList<string> GetDbKeyNames(Type type);
 
 		/// <summary>
 		/// Gets the database table schema

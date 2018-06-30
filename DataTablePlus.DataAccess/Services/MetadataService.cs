@@ -29,6 +29,7 @@ using DataTablePlus.DataAccessContracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 
 namespace DataTablePlus.DataAccess.Services
@@ -57,7 +58,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
 			}
 
 			return this.DbContext.GetTableName(type);
@@ -66,7 +67,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Gets a mapping between the model properties and the mapped column names
 		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>Mapping or null</returns>
 		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class
 		{
@@ -76,22 +77,22 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Gets a mapping between the model properties and the mapped column names
 		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
+		/// <param name="type">Type of the mapped entity on EF</param>
 		/// <returns>Mapping or null</returns>
 		public IDictionary<PropertyInfo, string> GetMappings(Type type)
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
 			}
 
 			return this.DbContext.GetMappings(type);
 		}
 
 		/// <summary>
-		/// Gets the entity keys
+		/// Gets the entity keys from the mapped entity on EF
 		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>A list that contains the entity keys</returns>
 		public IList<string> GetKeyNames<T>() where T : class
 		{
@@ -99,18 +100,53 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Gets the entity keys
+		/// Gets the entity keys from the mapped entity on EF
 		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
+		/// <param name="type">Type of the mapped entity on EF</param>
 		/// <returns>A list that contains the entity keys</returns>
 		public IList<string> GetKeyNames(Type type)
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
 			}
 
 			return this.DbContext.GetKeyNames(type);
+		}
+
+		/// <summary>
+		/// Gets the database keys based on the EF mappings
+		/// </summary>
+		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+		/// <returns>A list that contains the database keys</returns>
+		public IList<string> GetDbKeyNames<T>() where T : class
+		{
+			return this.GetDbKeyNames(typeof(T));
+		}
+
+		/// <summary>
+		/// Gets the database keys based on the EF mappings
+		/// </summary>
+		/// <param name="type">Type of the mapped entity on EF</param>
+		/// <returns>A list that contains the database keys</returns>
+		public IList<string> GetDbKeyNames(Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+			}
+
+			IList<string> primaryKeyNames = null;
+
+			var keyNames = this.GetKeyNames(type);
+			var mappings = this.GetMappings(type);
+
+			if (keyNames != null && mappings != null)
+			{
+				primaryKeyNames = mappings.Where(mapping => keyNames.Contains(mapping.Key.Name)).Select(mapping => mapping.Value).ToList();
+			}
+
+			return primaryKeyNames;
 		}
 
 		/// <summary>
@@ -122,44 +158,33 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			if (string.IsNullOrWhiteSpace(tableName))
 			{
-				throw new ArgumentException($"{nameof(tableName)} {CommonResources.App_CannotBeNullOrWhiteSpace}", nameof(tableName));
+				throw new ArgumentException($"{nameof(tableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(tableName));
 			}
 
 			DataTable dataTable;
 
 			try
 			{
-				using (var command = this.SqlConnection.CreateCommand())
+				this.OpenConnection();
+
+				var commandText = string.Format(DataResources.GetSchemaTable, tableName);
+
+				using (var command = this.CreateCommand(commandText: commandText))
+				using (var reader = command.ExecuteReader())
 				{
-					if (this.SqlConnection.State != ConnectionState.Open)
+					dataTable = new DataTable
 					{
-						this.SqlConnection.Open();
-					}
+						TableName = tableName
+					};
 
-					command.CommandText = string.Format(DataResources.MetadataService_GetSchemaTable, tableName);
-					command.CommandType = CommandType.Text;
-
-					using (var reader = command.ExecuteReader())
-					{
-						dataTable = new DataTable
-						{
-							TableName = tableName
-						};
-
-						dataTable.BeginLoadData();
-						dataTable.Load(reader);
-						dataTable.EndLoadData();
-					}
-
-					if (this.SqlConnection.State != ConnectionState.Closed)
-					{
-						this.SqlConnection.Close();
-					}
+					dataTable.BeginLoadData();
+					dataTable.Load(reader);
+					dataTable.EndLoadData();
 				}
 			}
-			catch
+			finally
 			{
-				throw;
+				this.CloseConnection();
 			}
 
 			return dataTable;

@@ -15,14 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTablePlus.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTablePlus.Extensions", "DataTablePlus.Extensions\DataTablePlus.Extensions.csproj", "{38428834-8E39-4ABB-B6D8-4F170628216C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GAC", "GAC", "{E0EA2CB3-50CA-4752-8FAE-91C02265D841}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C630B864-8CC9-4D11-A2C5-E99DC65D0691}"
 	ProjectSection(SolutionItems) = preProject
-		GAC\SharedAssemblyInfo.cs = GAC\SharedAssemblyInfo.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPackage", "NugetPackage", "{E324D02C-B96F-4A09-A895-672A75870960}"
-	ProjectSection(SolutionItems) = preProject
+		AppVeyor.yml = AppVeyor.yml
 		DataTablePlus.nuspec = DataTablePlus.nuspec
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Global

@@ -23,11 +23,14 @@
  *******************************************************************************/
 
 using DataTablePlus.Common;
+using DataTablePlus.DataAccess.Resources;
 using DataTablePlus.DataAccessContracts;
 using DataTablePlus.DataAccessContracts.Services;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -39,20 +42,6 @@ namespace DataTablePlus.DataAccess.Services
 	public class SqlService : ServiceBase, ISqlService
 	{
 		private static readonly Regex PARAMETERS_REGEX = new Regex(@"\@\w+", RegexOptions.Compiled);
-		private static readonly TimeSpan DEFAULT_TIMEOUT = TimeSpan.FromMinutes(1);
-
-		/// <summary>
-		/// Sql command Timeout
-		/// </summary>
-		public TimeSpan Timeout { get; set; }
-
-		/// <summary>
-		/// Parameterless Ctor
-		/// </summary>
-		public SqlService()
-		{
-			this.Timeout = DEFAULT_TIMEOUT;
-		}
 
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data
@@ -60,67 +49,54 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
-		public void BulkInsert(DataTable dataTable, int batchSize = DataConstants.BATCHSIZE, SqlBulkCopyOptions? options = null)
+		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
+		public void BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
 		{
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
-			}
+			this.ValidateBulkInsertParameters(dataTable);
+
+			string trackerColumnName = null;
 
 			try
 			{
-				if (this.SqlConnection.State != ConnectionState.Open)
+				this.OpenConnection();
+
+				if (primaryKeyNames != null)
 				{
-					this.SqlConnection.Open();
+					primaryKeyNames = primaryKeyNames.Where(primaryKeyName => !string.IsNullOrWhiteSpace(primaryKeyName)).ToList();
+
+					if (primaryKeyNames.Any())
+					{
+						trackerColumnName = this.CreateTrackerColumn(dataTable);
+
+						this.DropIndex(dataTable.TableName);
+
+						this.CreateIndex(dataTable.TableName, trackerColumnName);
+					}
 				}
 
-				#region SqlBulkCopyOptions
+				this.SetStatus(dataTable, DataRowState.Added);
 
-				// src: https://msdn.microsoft.com/pt-br/library/system.data.sqlclient.sqlbulkcopyoptions(v=vs.110).aspx
-				//
-				// CheckConstraints: Check constraints while data is being inserted. By default, constraints are not checked.
-				// KeepNulls: Preserve null values in the destination table regardless of the settings for default values. When not specified, null values are replaced by default values where applicable.
-				// TableLock: Obtain a bulk update lock for the duration of the bulk copy operation. When not specified, row locks are used.
-				// UseInternalTransaction: When specified, each batch of the bulk-copy operation will occur within a transaction. If you indicate this option and also provide a SqlTransaction object to the constructor, an ArgumentException occurs.
-
-				#endregion
-
-				const SqlBulkCopyOptions SQL_BULK_COPY_OPTIONS = SqlBulkCopyOptions.CheckConstraints | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction;
-
-				var sqlBulkCopy = new SqlBulkCopy(this.SqlConnection, options ?? SQL_BULK_COPY_OPTIONS, null)
-				{
-					BatchSize = batchSize,
-					DestinationTableName = dataTable.TableName,
-					BulkCopyTimeout = Convert.ToInt32(this.Timeout.TotalSeconds)
-				};
-
-				foreach (var dataColumn in dataTable.Columns.Cast<DataColumn>().Where(c => !(c is IgnoredDataColumn)))
-				{
-					sqlBulkCopy.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
-				}
-
-				dataTable.AcceptChanges();
-
-				foreach (var dataRow in dataTable.Rows.Cast<DataRow>().Where(dataRow => dataRow.RowState == DataRowState.Unchanged))
-				{
-					dataRow.SetAdded();
-				}
-
-				using (sqlBulkCopy)
+				using (var sqlBulkCopy = this.CreateSqlBulkCopy(dataTable, batchSize, options))
 				{
 					sqlBulkCopy.WriteToServer(dataTable);
 				}
-			}
-			catch
-			{
-				throw;
+
+				if (primaryKeyNames != null && primaryKeyNames.Any())
+				{
+					this.SetReadOnlyFalse(dataTable, primaryKeyNames);
+
+					this.RetrievePrimaryKeyValues(dataTable, trackerColumnName, primaryKeyNames);
+				}
 			}
 			finally
 			{
-				if (this.SqlConnection.State != ConnectionState.Closed)
-				{
-					this.SqlConnection.Close();
-				}
+				this.DropIndex(dataTable.TableName);
+
+				this.DropDbTrackerColumn(dataTable.TableName, trackerColumnName);
+
+				this.RemoveTrackerColumn(dataTable, trackerColumnName);
+
+				this.CloseConnection();
 			}
 		}
 
@@ -130,45 +106,19 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
-		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BATCHSIZE)
+		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
 		{
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.App_CannotBeNull}");
-			}
-
-			if (string.IsNullOrWhiteSpace(commandText))
-			{
-				throw new ArgumentException($"{nameof(commandText)} {CommonResources.App_CannotBeNullOrWhiteSpace}", nameof(commandText));
-			}
-
-			SqlTransaction transaction = null;
+			this.ValidateBatchUpdateParameters(dataTable, commandText);
 
 			try
 			{
-				if (this.SqlConnection.State != ConnectionState.Open)
-				{
-					this.SqlConnection.Open();
-				}
+				this.OpenConnection();
 
-				transaction = this.SqlConnection.BeginTransaction(IsolationLevel.ReadCommitted);
+				var parameters = this.BuildUpdateParameters(commandText);
 
-				var updateCommand = new SqlCommand(commandText, this.SqlConnection, transaction)
-				{
-					UpdatedRowSource = UpdateRowSource.None,
-					CommandTimeout = Convert.ToInt32(this.Timeout.TotalSeconds)
-				};
+				var updateCommand = this.CreateCommand(commandText: commandText, parameters: parameters, useInternalTransaction: true);
 
-				var parameters = PARAMETERS_REGEX.Matches(commandText)
-												 .Cast<Match>()
-												 .Select(x => new SqlParameter
-												 {
-													 ParameterName = x.Value,
-													 SourceColumn = x.Value.Replace("@", string.Empty)
-
-												 }).ToList();
-
-				updateCommand.Parameters.AddRange(parameters.ToArray());
+				updateCommand.UpdatedRowSource = UpdateRowSource.None;
 
 				var sqlDataAdapter = new SqlDataAdapter
 				{
@@ -176,41 +126,346 @@ namespace DataTablePlus.DataAccess.Services
 					UpdateBatchSize = batchSize
 				};
 
-				dataTable.AcceptChanges();
-
-				foreach (var dataRow in dataTable.Rows.Cast<DataRow>().Where(dataRow => dataRow.RowState == DataRowState.Unchanged))
-				{
-					dataRow.SetModified();
-				}
+				this.SetStatus(dataTable, DataRowState.Modified);
 
 				using (updateCommand)
 				using (sqlDataAdapter)
 				{
 					sqlDataAdapter.Update(dataTable);
-					transaction.Commit();
+
+					this.Commit();
 				}
 			}
-			catch (Exception)
+			catch
 			{
-				if (transaction != null)
-				{
-					try
-					{
-						transaction.Rollback();
-					}
-					catch
-					{
-						// ignored
-					}
-				}
+				this.Rollback();
 
 				throw;
 			}
 			finally
 			{
-				if (this.SqlConnection.State != ConnectionState.Closed)
+				this.CloseConnection();
+			}
+		}
+
+		/// <summary>
+		/// Validates the provided parameters to avoid some problems during the bulk insert
+		/// </summary>
+		/// <param name="dataTable">Data table taht contains the data</param>
+		private void ValidateBulkInsertParameters(DataTable dataTable)
+		{
+			this.ValidateDataTableParameters(dataTable);
+
+			if (string.IsNullOrWhiteSpace(dataTable.TableName))
+			{
+				throw new ArgumentException($"{nameof(dataTable.TableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(dataTable.TableName));
+			}
+		}
+
+		/// <summary>
+		/// Validates the provided parameters to avoid some problems during the batch update
+		/// </summary>
+		/// <param name="dataTable">Data table taht contains the data</param>
+		/// <param name="commandText">Commnad text to update the data</param>
+		private void ValidateBatchUpdateParameters(DataTable dataTable, string commandText)
+		{
+			this.ValidateDataTableParameters(dataTable);
+
+			if (string.IsNullOrWhiteSpace(commandText))
+			{
+				throw new ArgumentException($"{nameof(commandText)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(commandText));
+			}
+		}
+
+		/// <summary>
+		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+		/// </summary>
+		/// <param name="dataTable"></param>
+		private void ValidateDataTableParameters(DataTable dataTable)
+		{
+			if (dataTable == null)
+			{
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
+			}
+
+			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+			}
+
+			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
+			}
+		}
+
+		/// <summary>
+		/// Drops the datatabse non clustered index if it exists
+		/// </summary>
+		/// <param name="tableName">Name of the table that has the index</param>
+		private void DropIndex(string tableName)
+		{
+			try
+			{
+				var commandText = string.Format(DataResources.DropNonClustedIndex, tableName);
+
+				using (var command = this.CreateCommand(commandText: commandText))
 				{
-					this.SqlConnection.Close();
+					command.ExecuteNonQuery();
+				}
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+
+
+		/// <summary>
+		/// Create the datatabse non clustered index
+		/// </summary>
+		/// <param name="tableName">Name of the table that is going to receive the non clustered index</param>
+		private void CreateIndex(string tableName, string trackerColumnName)
+		{
+			try
+			{
+				var commandText = string.Format(DataResources.CreateNonClustedIndex, tableName, trackerColumnName);
+
+				using (var command = this.CreateCommand(commandText: commandText))
+				{
+					command.ExecuteNonQuery();
+				}
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+
+		/// <summary>
+		/// Creates a column in the current data table to track the inserted values
+		/// </summary>
+		/// <param name="dataTable"></param>
+		/// <returns></returns>
+		private string CreateTrackerColumn(DataTable dataTable)
+		{
+			var trackerColumnName = DataResources.TrackerColumnName;
+
+			var trackerColumn = new DataColumn
+			{
+				ColumnName = trackerColumnName,
+				DataType = typeof(int),
+				AllowDBNull = true
+			};
+
+			dataTable.Columns.Add(trackerColumn);
+
+			var idx = 0;
+
+			foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
+			{
+				idx++;
+				dataRow[trackerColumnName] = idx;
+			}
+
+			this.CreateDbTrackerColumn(dataTable.TableName, trackerColumnName);
+
+			return trackerColumnName;
+		}
+
+		/// <summary>
+		/// Creates a column in the current database table to track the inserted values
+		/// </summary>
+		/// <param name="tableName">Database table name</param>
+		/// <param name="trackerColumnName">The name of the column</param>
+		private void CreateDbTrackerColumn(string tableName, string trackerColumnName)
+		{
+			var commandText = string.Format(DataResources.AddTrackerColumnStatement, tableName, trackerColumnName);
+
+			using (var command = this.CreateCommand(commandText: commandText))
+			{
+				command.ExecuteNonQuery();
+			}
+		}
+
+		/// <summary>
+		/// Allows the primary key columns to receive some data
+		/// </summary>
+		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="primaryKeyNames">The name of the primary keys</param>
+		private void SetReadOnlyFalse(DataTable dataTable, IList<string> primaryKeyNames)
+		{
+			var dataColumns = dataTable.Columns.Cast<DataColumn>().Where(dataColumn => primaryKeyNames.Contains(dataColumn.ColumnName));
+
+			foreach (var dataColumn in dataColumns)
+			{
+				dataColumn.ReadOnly = false;
+			}
+		}
+
+		/// <summary>
+		/// Gets the primary key values back from the database
+		/// </summary>
+		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="trackerColumnName">The name of the column<</param>
+		/// <param name="primaryKeyNames">The name of the primary keys</param>
+		private void RetrievePrimaryKeyValues(DataTable dataTable, string trackerColumnName, IList<string> primaryKeyNames)
+		{
+			var fields = new List<string>(primaryKeyNames)
+			{
+				trackerColumnName
+			};
+
+			var fieldNames = fields.Select(primaryKey => string.Concat(Constants.LeftSquareBracket, primaryKey, Constants.RigthSquareBracket));
+
+			var selectClause = string.Join(Constants.Comma, fieldNames);
+
+			var parameters = this.BuildInsertParameters(dataTable, trackerColumnName);
+
+			var commandText = string.Format(DataResources.SelectPrimaryKeysStatement, selectClause, dataTable.TableName, trackerColumnName, DataResources.MinParameterName, DataResources.MaxParameterName);
+
+			using (var command = this.CreateCommand(commandText: commandText, parameters: parameters))
+			{
+				using (var reader = command.ExecuteReader())
+				{
+					foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
+					{
+						reader.Read();
+#if DEBUG
+						var drTrackerColumnValue = Convert.ToString(dataRow[trackerColumnName]);
+						var dbTrackerColumnValue = Convert.ToString(reader[trackerColumnName]);
+
+						if (!string.Equals(drTrackerColumnValue, dbTrackerColumnValue, StringComparison.OrdinalIgnoreCase))
+						{
+							Debug.WriteLine($"DataRowTrackerColumnValue: {drTrackerColumnValue} and DatabaseTrackerColumnValue {dbTrackerColumnValue} are not equal.");
+						}
+#endif
+						foreach (var primaryKeyName in primaryKeyNames)
+						{
+							dataRow[primaryKeyName] = reader[primaryKeyName];
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Creates the bulk insert parameters
+		/// </summary>
+		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="trackerColumnName">The name of the column</param>
+		/// <returns></returns>
+		private SqlParameter[] BuildInsertParameters(DataTable dataTable, string trackerColumnName)
+		{
+			var dataRows = dataTable.Rows.Cast<DataRow>();
+
+			var parameters = new[]
+			{
+				new SqlParameter
+				{
+					ParameterName = DataResources.MinParameterName,
+					Value = dataRows.Min(dataRow => Convert.ToInt32(dataRow[trackerColumnName]))
+				},
+
+				new SqlParameter
+				{
+					ParameterName = DataResources.MaxParameterName,
+					Value = dataRows.Max(dataRow => Convert.ToInt32(dataRow[trackerColumnName]))
+				}
+			};
+
+			return parameters;
+		}
+
+		/// <summary>
+		/// Drops the tracker column in the database table
+		/// </summary>
+		/// <param name="tableName">Database table name</param>
+		/// <param name="trackerColumnName">The name of the column</param>
+		private void DropDbTrackerColumn(string tableName, string trackerColumnName)
+		{
+			if (!string.IsNullOrWhiteSpace(trackerColumnName))
+			{
+				try
+				{
+					var commandText = string.Format(DataResources.DropTrackerColumnStatement, tableName, trackerColumnName);
+
+					using (var command = this.CreateCommand(commandText: commandText))
+					{
+						command.ExecuteNonQuery();
+					}
+				}
+				catch
+				{
+					// ignored
+				}
+			}
+		}
+
+		/// <summary>
+		/// Drops the tracker column in the current data table
+		/// </summary>
+		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="trackerColumnName">The name of the column</param>
+		private void RemoveTrackerColumn(DataTable dataTable, string trackerColumnName)
+		{
+			if (!string.IsNullOrWhiteSpace(trackerColumnName))
+			{
+				try
+				{
+					dataTable.Columns.Remove(trackerColumnName);
+				}
+				catch
+				{
+					// ignored
+				}
+			}
+		}
+
+		/// <summary>
+		/// Creates the batch update parameters
+		/// </summary>
+		/// <param name="commandText">Cmmand text which will be used to update the data</param>
+		/// <returns></returns>
+		private SqlParameter[] BuildUpdateParameters(string commandText)
+		{
+			var parameters = PARAMETERS_REGEX.Matches(commandText)
+											 .Cast<Match>()
+											 .Select(match => new SqlParameter
+											 {
+												 ParameterName = match.Value,
+												 SourceColumn = match.Value.Replace("@", string.Empty)
+
+											 }).ToArray();
+
+			return parameters;
+		}
+
+		/// <summary>
+		/// Sets the provided status to the current data table rows
+		/// </summary>
+		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataRowState">The row state to be set</param>
+		private void SetStatus(DataTable dataTable, DataRowState dataRowState)
+		{
+			dataTable.AcceptChanges();
+
+			var dataRows = dataTable.Rows.Cast<DataRow>().Where(dataRow => dataRow.RowState == DataRowState.Unchanged);
+
+			foreach (var dataRow in dataRows)
+			{
+				switch (dataRowState)
+				{
+					case DataRowState.Added:
+						dataRow.SetAdded();
+						break;
+
+					case DataRowState.Modified:
+						dataRow.SetModified();
+						break;
+
+					default:
+						break;
 				}
 			}
 		}

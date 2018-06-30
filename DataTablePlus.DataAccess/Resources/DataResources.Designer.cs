@@ -61,11 +61,103 @@ namespace DataTablePlus.DataAccess.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ALTER TABLE {0} ADD [{1}] INT NULL.
+        /// </summary>
+        internal static string AddTrackerColumnStatement {
+            get {
+                return ResourceManager.GetString("AddTrackerColumnStatement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CREATE NONCLUSTERED INDEX IX_TrackerColumn   
+        ///    ON {0} ([{1}]).
+        /// </summary>
+        internal static string CreateNonClustedIndex {
+            get {
+                return ResourceManager.GetString("CreateNonClustedIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IF EXISTS (SELECT name FROM sys.indexes WHERE name = N&apos;IX_TrackerColumn&apos;)   
+        ///    DROP INDEX IX_TrackerColumn ON {0}.
+        /// </summary>
+        internal static string DropNonClustedIndex {
+            get {
+                return ResourceManager.GetString("DropNonClustedIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ALTER TABLE {0} DROP COLUMN [{1}].
+        /// </summary>
+        internal static string DropTrackerColumnStatement {
+            get {
+                return ResourceManager.GetString("DropTrackerColumnStatement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT TOP 0 * FROM {0}.
         /// </summary>
-        internal static string MetadataService_GetSchemaTable {
+        internal static string GetSchemaTable {
             get {
-                return ResourceManager.GetString("MetadataService_GetSchemaTable", resourceCulture);
+                return ResourceManager.GetString("GetSchemaTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @MaxParam.
+        /// </summary>
+        internal static string MaxParameterName {
+            get {
+                return ResourceManager.GetString("MaxParameterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @MinParam.
+        /// </summary>
+        internal static string MinParameterName {
+            get {
+                return ResourceManager.GetString("MinParameterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create more than one transaction..
+        /// </summary>
+        internal static string MoreThanOneTransaction {
+            get {
+                return ResourceManager.GetString("MoreThanOneTransaction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT {0} FROM {1} WHERE [{2}] &gt;= {3} AND [{2}] &lt;= {4} ORDER BY [{2}].
+        /// </summary>
+        internal static string SelectPrimaryKeysStatement {
+            get {
+                return ResourceManager.GetString("SelectPrimaryKeysStatement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TrackerColumn.
+        /// </summary>
+        internal static string TrackerColumnName {
+            get {
+                return ResourceManager.GetString("TrackerColumnName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot commit because the transaction is null..
+        /// </summary>
+        internal static string TransactionIsNull {
+            get {
+                return ResourceManager.GetString("TransactionIsNull", resourceCulture);
             }
         }
     }

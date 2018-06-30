@@ -32,6 +32,6 @@ namespace DataTablePlus.DataAccessContracts
 		/// <summary>
 		/// Value: 5000
 		/// </summary>
-		public const int BATCHSIZE = 5000;
+		public const int BatchSize = 5000;
 	}
 }

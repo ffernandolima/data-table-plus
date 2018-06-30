@@ -63,36 +63,45 @@ namespace DataTablePlus.Common {
         /// <summary>
         ///   Looks up a localized string similar to cannot be null..
         /// </summary>
-        public static string App_CannotBeNull {
+        public static string CannotBeNull {
             get {
-                return ResourceManager.GetString("App_CannotBeNull", resourceCulture);
+                return ResourceManager.GetString("CannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to cannot be null or empty..
+        /// </summary>
+        public static string CannotBeNullOrEmpty {
+            get {
+                return ResourceManager.GetString("CannotBeNullOrEmpty", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to cannot be null or white-space..
         /// </summary>
-        public static string App_CannotBeNullOrWhiteSpace {
+        public static string CannotBeNullOrWhiteSpace {
             get {
-                return ResourceManager.GetString("App_CannotBeNullOrWhiteSpace", resourceCulture);
+                return ResourceManager.GetString("CannotBeNullOrWhiteSpace", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The ConnectionString which has been provided is invalid..
         /// </summary>
-        public static string App_InvalidConnectionString {
+        public static string InvalidConnectionString {
             get {
-                return ResourceManager.GetString("App_InvalidConnectionString", resourceCulture);
+                return ResourceManager.GetString("InvalidConnectionString", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Please configure this application through DataTablePlus.Configuration.Startup class..
         /// </summary>
-        public static string App_MissingConfiguration {
+        public static string MissingConfiguration {
             get {
-                return ResourceManager.GetString("App_MissingConfiguration", resourceCulture);
+                return ResourceManager.GetString("MissingConfiguration", resourceCulture);
             }
         }
     }

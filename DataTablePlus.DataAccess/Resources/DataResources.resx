@@ -117,7 +117,39 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MetadataService_GetSchemaTable" xml:space="preserve">
+  <data name="AddTrackerColumnStatement" xml:space="preserve">
+    <value>ALTER TABLE {0} ADD [{1}] INT NULL</value>
+  </data>
+  <data name="CreateNonClustedIndex" xml:space="preserve">
+    <value>CREATE NONCLUSTERED INDEX IX_TrackerColumn   
+    ON {0} ([{1}])</value>
+  </data>
+  <data name="DropNonClustedIndex" xml:space="preserve">
+    <value>IF EXISTS (SELECT name FROM sys.indexes WHERE name = N'IX_TrackerColumn')   
+    DROP INDEX IX_TrackerColumn ON {0}</value>
+  </data>
+  <data name="DropTrackerColumnStatement" xml:space="preserve">
+    <value>ALTER TABLE {0} DROP COLUMN [{1}]</value>
+  </data>
+  <data name="GetSchemaTable" xml:space="preserve">
     <value>SELECT TOP 0 * FROM {0}</value>
+  </data>
+  <data name="MaxParameterName" xml:space="preserve">
+    <value>@MaxParam</value>
+  </data>
+  <data name="MinParameterName" xml:space="preserve">
+    <value>@MinParam</value>
+  </data>
+  <data name="MoreThanOneTransaction" xml:space="preserve">
+    <value>Cannot create more than one transaction.</value>
+  </data>
+  <data name="SelectPrimaryKeysStatement" xml:space="preserve">
+    <value>SELECT {0} FROM {1} WHERE [{2}] &gt;= {3} AND [{2}] &lt;= {4} ORDER BY [{2}]</value>
+  </data>
+  <data name="TrackerColumnName" xml:space="preserve">
+    <value>TrackerColumn</value>
+  </data>
+  <data name="TransactionIsNull" xml:space="preserve">
+    <value>Cannot commit because the transaction is null.</value>
   </data>
 </root>

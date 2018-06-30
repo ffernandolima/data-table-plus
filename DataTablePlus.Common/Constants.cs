@@ -30,8 +30,23 @@ namespace DataTablePlus.Common
 	public class Constants
 	{
 		/// <summary>
-		/// Value: <END_LINE>
+		/// Value: ,
 		/// </summary>
-		public const string END_LINE = "<END_LINE>";
+		public const string Comma = ",";
+
+		/// <summary>
+		/// Value: .
+		/// </summary>
+		public const string FullStop = ".";
+
+		/// <summary>
+		/// Value: [
+		/// </summary>
+		public const string LeftSquareBracket = "[";
+
+		/// <summary>
+		/// Value: ]
+		/// </summary>
+		public const string RigthSquareBracket = "]";
 	}
 }

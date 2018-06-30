@@ -23,6 +23,7 @@
  *******************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -39,7 +40,8 @@ namespace DataTablePlus.DataAccessContracts.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
-		void BulkInsert(DataTable dataTable, int batchSize = DataConstants.BATCHSIZE, SqlBulkCopyOptions? options = null);
+		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
+		void BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null);
 
 		/// <summary>
 		/// Executes a batch update in order to get a high performance level while updating a lot of data
@@ -47,6 +49,6 @@ namespace DataTablePlus.DataAccessContracts.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
-		void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BATCHSIZE);
+		void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize);
 	}
 }

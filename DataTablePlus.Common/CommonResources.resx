@@ -117,16 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="App_CannotBeNull" xml:space="preserve">
+  <data name="CannotBeNull" xml:space="preserve">
     <value>cannot be null.</value>
   </data>
-  <data name="App_CannotBeNullOrWhiteSpace" xml:space="preserve">
+  <data name="CannotBeNullOrEmpty" xml:space="preserve">
+    <value>cannot be null or empty.</value>
+  </data>
+  <data name="CannotBeNullOrWhiteSpace" xml:space="preserve">
     <value>cannot be null or white-space.</value>
   </data>
-  <data name="App_InvalidConnectionString" xml:space="preserve">
+  <data name="InvalidConnectionString" xml:space="preserve">
     <value>The ConnectionString which has been provided is invalid.</value>
   </data>
-  <data name="App_MissingConfiguration" xml:space="preserve">
+  <data name="MissingConfiguration" xml:space="preserve">
     <value>Please configure this application through DataTablePlus.Configuration.Startup class.</value>
   </data>
 </root>

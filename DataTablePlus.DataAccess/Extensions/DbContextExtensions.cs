@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -57,10 +56,13 @@ namespace DataTablePlus.DataAccess.Extensions
 		/// <returns>Table name or null</returns>
 		public static string GetTableName(this DbContext dbContext, Type entityType)
 		{
+			const string Schema = "Schema";
+			const string Table = "Table";
+
 			var objectContextAdapter = (dbContext as IObjectContextAdapter);
 			if (objectContextAdapter == null)
 			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
 			}
 
 			var objectContext = objectContextAdapter.ObjectContext;
@@ -71,7 +73,15 @@ namespace DataTablePlus.DataAccess.Extensions
 												 .Single()
 												 .BaseEntitySets.SingleOrDefault(x => x.Name == entityType.Name);
 
-			var tableName = entitySetBase != null ? string.Concat("[", entitySetBase.MetadataProperties["Schema"].Value, "]", ".", "[", entitySetBase.MetadataProperties["Table"].Value, "]") : null;
+			string tableName = null;
+
+			if (entitySetBase != null)
+			{
+				var schema = entitySetBase.MetadataProperties[Schema].Value;
+				var table = entitySetBase.MetadataProperties[Table].Value;
+
+				tableName = string.Concat(Constants.LeftSquareBracket, schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, table, Constants.RigthSquareBracket);
+			}
 
 			return tableName;
 		}
@@ -87,7 +97,7 @@ namespace DataTablePlus.DataAccess.Extensions
 			var objectContextAdapter = (dbContext as IObjectContextAdapter);
 			if (objectContextAdapter == null)
 			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
 			}
 
 			var objectContext = objectContextAdapter.ObjectContext;
@@ -108,13 +118,10 @@ namespace DataTablePlus.DataAccess.Extensions
 
 			if (storageEntityType != null && objectEntityType != null)
 			{
-				var mappings = (storageEntityType.Properties.Select((edmProperty, idx) =>
+				var mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
 				{
-					return new
-					{
-						Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
-						edmProperty.Name
-					};
+					Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
+					edmProperty.Name
 
 				}).ToDictionary(x => x.Property, x => x.Name));
 
@@ -132,16 +139,21 @@ namespace DataTablePlus.DataAccess.Extensions
 		/// <returns>String array that contains the entity keys</returns>
 		public static IList<string> GetKeyNames(this DbContext dbContext, Type entityType)
 		{
+			const string MethodName = "CreateObjectSet";
+
 			var objectContextAdapter = (dbContext as IObjectContextAdapter);
 			if (objectContextAdapter == null)
 			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.App_CannotBeNull}");
+				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
 			}
 
 			var objectContext = objectContextAdapter.ObjectContext;
 
-			var methodInfo = typeof(ObjectContext).GetMethod("CreateObjectSet", Type.EmptyTypes).MakeGenericMethod(entityType);
-			dynamic objectSet = methodInfo.Invoke(objectContext, null);
+			var objectContextType = objectContext.GetType();
+			var methodInfo = objectContextType.GetMethod(MethodName, Type.EmptyTypes);
+			var genericMethodInfo = methodInfo.MakeGenericMethod(entityType);
+
+			dynamic objectSet = genericMethodInfo.Invoke(objectContext, null);
 			IEnumerable<dynamic> keyMembers = objectSet.EntitySet.ElementType.KeyMembers;
 
 			var keyNames = keyMembers.Select(keyMember => (string)keyMember.Name).ToList();
