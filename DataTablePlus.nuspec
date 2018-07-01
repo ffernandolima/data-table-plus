@@ -145,5 +145,37 @@
 
 		<file src="DataTablePlus.Extensions\bin\Release-Net47\DataTablePlus.Extensions.dll"						target="lib\net47\DataTablePlus.Extensions.dll" />
 		<file src="DataTablePlus.Extensions\bin\Release-Net47\DataTablePlus.Extensions.pdb"						target="lib\net47\DataTablePlus.Extensions.pdb" />
+
+		<!-- net471 -->
+		<file src="DataTablePlus.Common\bin\Release-Net471\DataTablePlus.Common.dll"							target="lib\net471\DataTablePlus.Common.dll" />
+		<file src="DataTablePlus.Common\bin\Release-Net471\DataTablePlus.Common.pdb"							target="lib\net471\DataTablePlus.Common.pdb" />
+
+		<file src="DataTablePlus.Configuration\bin\Release-Net471\DataTablePlus.Configuration.dll"				target="lib\net471\DataTablePlus.Configuration.dll" />
+		<file src="DataTablePlus.Configuration\bin\Release-Net471\DataTablePlus.Configuration.pdb"				target="lib\net471\DataTablePlus.Configuration.pdb" />
+
+		<file src="DataTablePlus.DataAccess\bin\Release-Net471\DataTablePlus.DataAccess.dll"					target="lib\net471\DataTablePlus.DataAccess.dll" />
+		<file src="DataTablePlus.DataAccess\bin\Release-Net471\DataTablePlus.DataAccess.pdb"					target="lib\net471\DataTablePlus.DataAccess.pdb" />
+
+		<file src="DataTablePlus.DataAccessContracts\bin\Release-Net471\DataTablePlus.DataAccessContracts.dll"	target="lib\net471\DataTablePlus.DataAccessContracts.dll" />
+		<file src="DataTablePlus.DataAccessContracts\bin\Release-Net471\DataTablePlus.DataAccessContracts.pdb"	target="lib\net471\DataTablePlus.DataAccessContracts.pdb" />
+
+		<file src="DataTablePlus.Extensions\bin\Release-Net471\DataTablePlus.Extensions.dll"					target="lib\net471\DataTablePlus.Extensions.dll" />
+		<file src="DataTablePlus.Extensions\bin\Release-Net471\DataTablePlus.Extensions.pdb"					target="lib\net471\DataTablePlus.Extensions.pdb" />
+
+		<!-- net472 -->
+		<file src="DataTablePlus.Common\bin\Release-Net472\DataTablePlus.Common.dll"							target="lib\net472\DataTablePlus.Common.dll" />
+		<file src="DataTablePlus.Common\bin\Release-Net472\DataTablePlus.Common.pdb"							target="lib\net472\DataTablePlus.Common.pdb" />
+
+		<file src="DataTablePlus.Configuration\bin\Release-Net472\DataTablePlus.Configuration.dll"				target="lib\net472\DataTablePlus.Configuration.dll" />
+		<file src="DataTablePlus.Configuration\bin\Release-Net472\DataTablePlus.Configuration.pdb"				target="lib\net472\DataTablePlus.Configuration.pdb" />
+
+		<file src="DataTablePlus.DataAccess\bin\Release-Net472\DataTablePlus.DataAccess.dll"					target="lib\net472\DataTablePlus.DataAccess.dll" />
+		<file src="DataTablePlus.DataAccess\bin\Release-Net472\DataTablePlus.DataAccess.pdb"					target="lib\net472\DataTablePlus.DataAccess.pdb" />
+
+		<file src="DataTablePlus.DataAccessContracts\bin\Release-Net472\DataTablePlus.DataAccessContracts.dll"	target="lib\net472\DataTablePlus.DataAccessContracts.dll" />
+		<file src="DataTablePlus.DataAccessContracts\bin\Release-Net472\DataTablePlus.DataAccessContracts.pdb"	target="lib\net472\DataTablePlus.DataAccessContracts.pdb" />
+
+		<file src="DataTablePlus.Extensions\bin\Release-Net472\DataTablePlus.Extensions.dll"					target="lib\net472\DataTablePlus.Extensions.dll" />
+		<file src="DataTablePlus.Extensions\bin\Release-Net472\DataTablePlus.Extensions.pdb"					target="lib\net472\DataTablePlus.Extensions.pdb" />
 	</files>
 </package>
