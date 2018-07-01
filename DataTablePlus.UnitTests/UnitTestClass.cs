@@ -44,6 +44,9 @@ namespace DataTablePlus.UnitTests
 		[ClassInitialize()]
 		public static void MyClassInitialize(TestContext testContext)
 		{
+			// Sets the culture to invariant culture in order to avoid some exception details in another language
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
 			// Creates the DbContext
 			var context = new Context();
 
@@ -82,9 +85,6 @@ namespace DataTablePlus.UnitTests
 
 			// The measurement was taken while running some tests in Debug mode, so in Release mode it should be faster
 			// To sum up, although it was taken in Debug mode, still faster than Entity Framework (much faster)
-
-			// Sets the culture to invariant culture in order to avoid some exception details in another language
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
 			// Creates a list of User objects
 			var entities = new List<User>();
@@ -152,7 +152,7 @@ namespace DataTablePlus.UnitTests
 					// You can also pass the BatchSize parameter to this method
 					// BatchSize will be used to flush the values against the database table
 
-					sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE Id = @Id");
+					sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
 
 					// Stops the Stopwatch
 					stopwatch.Stop();
