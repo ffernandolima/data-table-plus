@@ -1,10 +1,43 @@
-﻿using System;
+﻿/*******************************************************************************
+ * You may amend and distribute as you like, but don't remove this header!
+ * 
+ * See https://github.com/ffernandolima/data-table-plus for details.
+ *
+ * Copyright (C) 2018 Fernando Luiz de Lima
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ * See the GNU Lesser General Public License for more details.
+ *
+ * The GNU Lesser General Public License can be viewed at http://www.opensource.org/licenses/lgpl-license.php
+ * If you unfamiliar with this license or have questions about it, here is a FAQ: http://www.gnu.org/licenses/gpl-faq.html
+ *
+ * All code and executables are provided "as is" with no warranty either express or implied. 
+ * The author accepts no liability for any damage or loss of business that this product may cause.
+ * 
+ *******************************************************************************/
+
+using System;
 using System.Collections.Generic;
 
 namespace DataTablePlus.Extensions
 {
+	/// <summary>
+	/// Class that contains Collection extensions
+	/// </summary>
 	public static class CollectionExtensions
 	{
+		/// <summary>
+		/// Gets the entity type from the collection
+		/// </summary>
+		/// <typeparam name="T">Type of the colletion</typeparam>
+		/// <param name="collection">Current collection of objects</param>
+		/// <returns>Returns the entity type from the collection</returns>
 		public static Type GetTypeFromCollection<T>(this ICollection<T> collection)
 		{
 			return typeof(T);

@@ -135,7 +135,12 @@ namespace DataTablePlus.UnitTests
 				// BatchSize will be used to flush the values against the database table
 				// SqlBulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
 
-				sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
+				var bulkInsertTask = sqlService.BulkInsertAsync(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
+
+				// You can do something here while waiting for the task completion
+
+				// Waits for the task completion
+				dataTable = bulkInsertTask.Result;
 
 				// Stops the Stopwatch
 				stopwatch.Stop();
@@ -152,7 +157,12 @@ namespace DataTablePlus.UnitTests
 					// You can also pass the BatchSize parameter to this method
 					// BatchSize will be used to flush the values against the database table
 
-					sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
+					var batchUpdateTask = sqlService.BatchUpdateAsync(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
+
+					// You can do something here while waiting for the task completion
+
+					// Waits for the task completion
+					batchUpdateTask.Wait();
 
 					// Stops the Stopwatch
 					stopwatch.Stop();

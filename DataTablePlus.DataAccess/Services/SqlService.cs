@@ -33,6 +33,8 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DataTablePlus.DataAccess.Services
 {
@@ -50,7 +52,100 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
-		public void BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
+		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
+		public DataTable BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
+		{
+			return this.BulkInsertInternal(dataTable, batchSize, options, primaryKeyNames);
+		}
+
+		/// <summary>
+		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="options">Bulk insert options></param>
+		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
+		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
+		public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
+		{
+			var cancellationTokenSource = new CancellationTokenSource();
+
+			var cancellationToken = cancellationTokenSource.Token;
+
+			var task = this.BulkInsertAsync(dataTable, cancellationToken, batchSize, options, primaryKeyNames);
+
+			return task;
+		}
+
+		/// <summary>
+		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="cancellationToken">A token for stopping the task if needed</param>
+		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="options">Bulk insert options></param>
+		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
+		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
+		public Task<DataTable> BulkInsertAsync(DataTable dataTable, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
+		{
+			var task = Task.Factory.StartNew(() => this.BulkInsert(dataTable, batchSize, options, primaryKeyNames), cancellationToken);
+
+			return task;
+		}
+
+		/// <summary>
+		/// Executes a batch update in order to get a high performance level while updating a lot of data
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="commandText">The sql command text that will be used to update the data</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
+		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
+		{
+			this.BatchUpdateInternal(dataTable, commandText, batchSize);
+		}
+
+		/// <summary>
+		/// Executes an async batch update in order to get a high performance level while updating a lot of data
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="commandText">The sql command text that will be used to update the data</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
+		/// <returns>Returns a task which will be processing the update</returns>
+		public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
+		{
+			var cancellationTokenSource = new CancellationTokenSource();
+
+			var cancellationToken = cancellationTokenSource.Token;
+
+			var task = this.BatchUpdateAsync(dataTable, commandText, cancellationToken, batchSize);
+
+			return task;
+		}
+
+		/// <summary>
+		/// Executes an async batch update in order to get a high performance level while updating a lot of data
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="commandText">The sql command text that will be used to update the data</param>
+		/// <param name="cancellationToken">A token for stopping the task if needed</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
+		/// <returns>Returns a task which will be processing the update</returns>
+		public Task BatchUpdateAsync(DataTable dataTable, string commandText, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize)
+		{
+			var task = Task.Factory.StartNew(() => this.BatchUpdate(dataTable, commandText, batchSize), cancellationToken);
+
+			return task;
+		}
+
+		/// <summary>
+		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (an internal method)
+		/// </summary>
+		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="options">Bulk insert options</param>
+		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
+		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
+		private DataTable BulkInsertInternal(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
 		{
 			this.ValidateBulkInsertParameters(dataTable);
 
@@ -98,15 +193,17 @@ namespace DataTablePlus.DataAccess.Services
 
 				this.CloseConnection();
 			}
+
+			return dataTable;
 		}
 
 		/// <summary>
-		/// Executes a batch update in order to get a high performance level while updating a lot of data
+		/// Executes a batch update in order to get a high performance level while updating a lot of data (an internal method)
 		/// </summary>
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
-		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
+		private void BatchUpdateInternal(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
 		{
 			this.ValidateBatchUpdateParameters(dataTable, commandText);
 
@@ -219,7 +316,6 @@ namespace DataTablePlus.DataAccess.Services
 				// ignored
 			}
 		}
-
 
 		/// <summary>
 		/// Create the datatabse non clustered index
