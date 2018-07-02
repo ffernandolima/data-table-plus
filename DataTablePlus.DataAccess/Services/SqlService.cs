@@ -138,7 +138,7 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (an internal method)
+		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (internal method)
 		/// </summary>
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
@@ -198,7 +198,7 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Executes a batch update in order to get a high performance level while updating a lot of data (an internal method)
+		/// Executes a batch update in order to get a high performance level while updating a lot of data (internal method)
 		/// </summary>
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
@@ -248,7 +248,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Validates the provided parameters to avoid some problems during the bulk insert
 		/// </summary>
-		/// <param name="dataTable">Data table taht contains the data</param>
+		/// <param name="dataTable">Data table that contains the data</param>
 		private void ValidateBulkInsertParameters(DataTable dataTable)
 		{
 			this.ValidateDataTableParameters(dataTable);
@@ -262,7 +262,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Validates the provided parameters to avoid some problems during the batch update
 		/// </summary>
-		/// <param name="dataTable">Data table taht contains the data</param>
+		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">Commnad text to update the data</param>
 		private void ValidateBatchUpdateParameters(DataTable dataTable, string commandText)
 		{
@@ -277,7 +277,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
 		/// </summary>
-		/// <param name="dataTable"></param>
+		/// <param name="dataTable">Data table that contains the data</param>
 		private void ValidateDataTableParameters(DataTable dataTable)
 		{
 			if (dataTable == null)

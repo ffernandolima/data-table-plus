@@ -211,7 +211,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataTableExtensions.cs" />
-    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

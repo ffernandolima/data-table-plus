@@ -39,6 +39,17 @@ namespace DataTablePlus.Extensions
 	public static class EnumerableExtensions
 	{
 		/// <summary>
+		/// Gets the entity type from the enumerable
+		/// </summary>
+		/// <typeparam name="T">Type of the enumerable</typeparam>
+		/// <param name="enumerable">Current enumerable of objects</param>
+		/// <returns>Returns the entity type from the enumerable</returns>
+		public static Type GetTypeFromEnumerable<T>(this IEnumerable<T> enumerable)
+		{
+			return typeof(T);
+		}
+
+		/// <summary>
 		/// Transforms a list of objects into a data table
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
@@ -103,6 +114,8 @@ namespace DataTablePlus.Extensions
 
 				dataTable = FillDataTable(objects, dataTable, mappings);
 
+				dataTable.AcceptChanges();
+
 				return dataTable;
 			}
 		}
@@ -117,21 +130,6 @@ namespace DataTablePlus.Extensions
 		/// <returns></returns>
 		private static DataTable FillDataTable<T>(IEnumerable<T> objects, DataTable dataTable, IDictionary<PropertyInfo, string> mappings) where T : class
 		{
-			if (objects == null)
-			{
-				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.CannotBeNull}");
-			}
-
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
-			}
-
-			if (mappings == null)
-			{
-				throw new ArgumentNullException(nameof(mappings), $"{nameof(mappings)} {CommonResources.CannotBeNull}");
-			}
-
 			foreach (var obj in objects)
 			{
 				var dataRow = dataTable.NewRow();
@@ -177,8 +175,6 @@ namespace DataTablePlus.Extensions
 
 				dataTable.Rows.Add(dataRow);
 			}
-
-			dataTable.AcceptChanges();
 
 			return dataTable;
 		}

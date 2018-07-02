@@ -116,10 +116,10 @@ namespace DataTablePlus.UnitTests
 
 				// Setting the primary key names and passing them as parameter, their values will be retrieved from the database after the bulk insert execution
 				// It's optional, does not need to be set
-				// Not setting them can save a lot time
+				// Not setting them can save a lot of time
 
 				// Gets the primary key names from the entity mapping
-				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromCollection());
+				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromEnumerable());
 
 				// You can specify the primary key names directly, get from another source or pass null
 				// var databaseKeyNames = new List<string> { "Id" };

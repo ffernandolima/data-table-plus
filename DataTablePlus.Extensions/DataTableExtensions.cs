@@ -22,8 +22,12 @@
  * 
  *******************************************************************************/
 
+using DataTablePlus.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 
 namespace DataTablePlus.Extensions
 {
@@ -33,14 +37,108 @@ namespace DataTablePlus.Extensions
 	public static class DataTableExtensions
 	{
 		/// <summary>
-		/// 
+		/// Transforms a data table into a list of objects
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="dataTable"></param>
-		/// <returns></returns>
-		public static IList<T> ToList<T>(this DataTable dataTable) where T : class
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="dataTable">Current data table to be transformed</param>
+		/// <returns>A new list of objects</returns>
+		public static IList<T> ToList<T>(this DataTable dataTable) where T : class, new()
 		{
-			return null;
+			var entities = Transform<T>(dataTable);
+
+			return entities.ToList();
+		}
+
+		/// <summary>
+		/// Transforms a data table into an array of objects
+		/// </summary>
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="dataTable">Current data table to be transformed</param>
+		/// <returns>A new array of objects</returns>
+		public static T[] ToArray<T>(this DataTable dataTable) where T : class, new()
+		{
+			var entities = Transform<T>(dataTable);
+
+			return entities.ToArray();
+		}
+
+		/// <summary>
+		/// Transforms a data table into an enumerable of objects
+		/// </summary>
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="dataTable">Current data table to be transformed</param>
+		/// <returns>A new enumerable of objects</returns>
+		private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class, new()
+		{
+			ValidateDataTableParameters(dataTable);
+
+			return TransformInternal<T>(dataTable);
+		}
+
+		/// <summary>
+		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+		/// </summary>
+		/// <param name="dataTable">Current data table to be validated</param>
+		private static void ValidateDataTableParameters(DataTable dataTable)
+		{
+			if (dataTable == null)
+			{
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
+			}
+
+			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+			}
+
+			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
+			}
+		}
+
+		/// <summary>
+		/// Transforms a data table into an enumerable of objects (internal)
+		/// </summary>
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="dataTable">Current data table to be transformed</param>
+		/// <returns>A new enumerable of objects</returns>
+		private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class, new()
+		{
+			var entities = new List<T>();
+
+			var entityType = typeof(T);
+
+			var dataColumnNames = dataTable.Columns.Cast<DataColumn>().Select(dataColumn => dataColumn.ColumnName);
+
+			var properties = entityType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+			foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
+			{
+				var entity = new T();
+
+				foreach (var property in properties.Where(property => dataColumnNames.Contains(property.Name)))
+				{
+					var dataRowValue = dataRow[property.Name];
+
+					if (dataRowValue == null || dataRowValue == DBNull.Value)
+					{
+						property.SetValue(entity, null, null);
+					}
+					else
+					{
+						var underlyingType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+						var value = Convert.ChangeType(dataRowValue, underlyingType);
+
+						property.SetValue(entity, value, null);
+					}
+				}
+
+				entities.Add(entity);
+			}
+
+			return entities;
 		}
 	}
 }
