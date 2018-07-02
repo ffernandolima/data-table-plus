@@ -426,7 +426,10 @@ namespace DataTablePlus.DataAccess.Services
 				{
 					foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
 					{
-						reader.Read();
+						if (!reader.Read())
+						{
+							continue;
+						}
 #if DEBUG
 						var drTrackerColumnValue = Convert.ToString(dataRow[trackerColumnName]);
 						var dbTrackerColumnValue = Convert.ToString(reader[trackerColumnName]);
@@ -434,6 +437,7 @@ namespace DataTablePlus.DataAccess.Services
 						if (!string.Equals(drTrackerColumnValue, dbTrackerColumnValue, StringComparison.OrdinalIgnoreCase))
 						{
 							Debug.WriteLine($"DataRowTrackerColumnValue: {drTrackerColumnValue} and DatabaseTrackerColumnValue {dbTrackerColumnValue} are not equal.");
+							continue;
 						}
 #endif
 						foreach (var primaryKeyName in primaryKeyNames)
