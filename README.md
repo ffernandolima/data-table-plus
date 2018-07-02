@@ -207,7 +207,7 @@ Data Table Plus provides some extensions in order to transform object lists into
 
 				// Setting the primary key names and passing them as parameter, their values will be retrieved from the database after the bulk insert execution
 				// It's optional, does not need to be set
-				// Not setting them can save a lot time
+				// Not setting them can save a lot of time
 
 				// Gets the primary key names from the entity mapping
 				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromCollection());
