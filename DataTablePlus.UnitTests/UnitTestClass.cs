@@ -89,7 +89,7 @@ namespace DataTablePlus.UnitTests
 			// Creates a list of User objects
 			IList<User> entities = new List<User>();
 
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 1000000; i++)
 			{
 				var entity = new User
 				{
