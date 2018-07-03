@@ -87,9 +87,9 @@ namespace DataTablePlus.UnitTests
 			// To sum up, although it was taken in Debug mode, still faster than Entity Framework (much faster)
 
 			// Creates a list of User objects
-			var entities = new List<User>();
+			IList<User> entities = new List<User>();
 
-			for (int i = 0; i < 1000000; i++)
+			for (int i = 0; i < 100; i++)
 			{
 				var entity = new User
 				{
@@ -170,6 +170,9 @@ namespace DataTablePlus.UnitTests
 					// Gets the total of time spent
 					Debug.WriteLine($"Batch Update Elapsed Time: {stopwatch.Elapsed}");
 				}
+
+				// Transforms back the data table into a list of objects
+				entities = dataTable.ToList<User>();
 			}
 		}
 	}
