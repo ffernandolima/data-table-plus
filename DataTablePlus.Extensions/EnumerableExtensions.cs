@@ -25,7 +25,6 @@
 using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccessContracts.Services;
-using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Data;

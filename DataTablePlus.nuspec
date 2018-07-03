@@ -12,14 +12,13 @@
 		<projectUrl>https://github.com/ffernandolima/data-table-plus</projectUrl>
 		<dependencies>
 			<dependency id="EntityFramework" version="6.2.0" />
-			<dependency id="ServiceStack.Text" version="5.1.0" />
 		</dependencies>
 		<tags>Data Table DataTable DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations</tags>
 		<releaseNotes>
-			- 1.0.0.4				
+			- 1.0.0.4
 				- Finished .NET Framework Multi-Targeting support (Now it supports the following .NET Framework versions: 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1, 4.6.2, 4.7, 4.7.1, 4.7.2);
 				- Added support for async methods (BulkInsertAsync and BatchUpdateAsync).
-			
+
 			- 1.0.0.3
 				- Added the ability of retrieving primary key values after ingesting a lot of data;
 				- .NET Framework Multi-Targeting support;
