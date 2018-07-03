@@ -56,11 +56,6 @@ namespace DataTablePlus.Extensions
 		/// <returns>A data table</returns>
 		public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects) where T : class
 		{
-			if (objects == null)
-			{
-				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.CannotBeNull}");
-			}
-
 			return AsStronglyTypedDataTable(objects, typeof(T));
 		}
 
