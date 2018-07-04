@@ -28,6 +28,7 @@ using DataTablePlus.DataAccessContracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 
 namespace DataTablePlus.Extensions
@@ -53,15 +54,16 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="objects">List of objects</param>
+		/// <param name="useDbContextMappings">A flag that indicates if it shall use DbContext mappings</param>
 		/// <returns>A data table</returns>
-		public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects) where T : class
+		public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, bool? useDbContextMappings = true) where T : class
 		{
 			if (objects == null)
 			{
 				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.CannotBeNull}");
 			}
 
-			return AsStronglyTypedDataTable(objects, typeof(T));
+			return AsStronglyTypedDataTable(objects, typeof(T), useDbContextMappings);
 		}
 
 		/// <summary>
@@ -70,8 +72,9 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="objects">List of objects</param>
 		/// <param name="derivedObjectType">Derived type of the objects if there's polymorphism</param>
+		/// <param name="useDbContextMappings">A flag that indicates if it shall use DbContext mappings</param>
 		/// <returns>A data table</returns>
-		public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType) where T : class
+		public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, bool? useDbContextMappings = true) where T : class
 		{
 			if (objects == null)
 			{
@@ -83,16 +86,50 @@ namespace DataTablePlus.Extensions
 				throw new ArgumentNullException(nameof(derivedObjectType), $"{nameof(derivedObjectType)} {CommonResources.CannotBeNull}");
 			}
 
+			DataTable dataTable = null;
+
+			IDictionary<PropertyInfo, string> mappings = null;
+
+			if (useDbContextMappings.GetValueOrDefault())
+			{
+				dataTable = GetTableSchemaFromDatabase(derivedObjectType, out mappings);
+			}
+			else
+			{
+				dataTable = GetTableSchemaFromEntityStructure(derivedObjectType, out mappings);
+
+			}
+
+			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+			}
+
+			FillDataTable(objects, dataTable, mappings);
+
+			dataTable.AcceptChanges();
+
+			return dataTable;
+		}
+
+		/// <summary>
+		/// Gets the table schema from database using DbContext mappings for getting some information as well
+		/// </summary>
+		/// <param name="derivedObjectType">Derived type of the objects if there's polymorphism</param>
+		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <returns>A data table</returns>
+		private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings)
+		{
 			using (IMetadataService metadataService = new MetadataService())
 			{
 				var tableName = metadataService.GetTableName(derivedObjectType);
-
-				var mappings = metadataService.GetMappings(derivedObjectType);
 
 				if (string.IsNullOrWhiteSpace(tableName))
 				{
 					throw new ArgumentNullException(nameof(tableName), $"{nameof(tableName)} {CommonResources.CannotBeNull}");
 				}
+
+				mappings = metadataService.GetMappings(derivedObjectType);
 
 				if (mappings == null)
 				{
@@ -106,17 +143,40 @@ namespace DataTablePlus.Extensions
 					throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
 				}
 
-				if (dataTable.Columns == null)
-				{
-					throw new ArgumentNullException(nameof(dataTable.Columns), $"{nameof(dataTable.Columns)} {CommonResources.CannotBeNull}");
-				}
-
-				dataTable = FillDataTable(objects, dataTable, mappings);
-
-				dataTable.AcceptChanges();
-
 				return dataTable;
 			}
+		}
+
+		/// <summary>
+		/// Gets the table schema from entity structure
+		/// </summary>
+		/// <param name="derivedObjectType">Derived type of the objects if there's polymorphism</param>
+		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <returns>A data table</returns>
+		private static DataTable GetTableSchemaFromEntityStructure(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings)
+		{
+			const string Schema = "dbo";
+
+			var properties = derivedObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+			mappings = properties?.ToDictionary(property => property, property => property.Name);
+
+			var dataTable = new DataTable
+			{
+				TableName = string.Concat(Constants.LeftSquareBracket, Schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, derivedObjectType.Name, Constants.RigthSquareBracket)
+			};
+
+			if (properties != null && properties.Any())
+			{
+				foreach (var property in properties)
+				{
+					var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+					dataTable.Columns.Add(property.Name, propertyType);
+				}
+			}
+
+			return dataTable;
 		}
 
 		/// <summary>
