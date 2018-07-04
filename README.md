@@ -3,8 +3,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 
 # Dependencies
 
-- EntityFramework >= 6.2.0 
-- ServiceStack.Text >= 5.1.0
+- EntityFramework >= 6.2.0
 
 # Getting Started
 
