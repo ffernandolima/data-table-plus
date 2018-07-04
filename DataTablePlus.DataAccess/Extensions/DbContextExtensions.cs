@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -38,7 +39,7 @@ namespace DataTablePlus.DataAccess.Extensions
 	/// </summary>
 	internal static class DbContextExtensions
 	{
-		#region DataSpace Enum Exaplanation
+		#region DataSpace Enum Explanation
 
 		// C-Space - This is where the metadata about our conceptual model is found. Here we will get access to all Edm objects and the tables in our generated model.
 		// S-Space - This is where metadata about the database is found. Here we will get access to all Sql objects and the tables in our database
@@ -46,7 +47,7 @@ namespace DataTablePlus.DataAccess.Extensions
 		// CS-Space - This is where metadata about mapping is found
 		// OC-Space - This is where EF holds the mapping between our conceptual model (C-Space) and the CLR objects (O-Space).
 
-		#endregion DataSpace Enum Exaplanation
+		#endregion DataSpace Enum Explanation
 
 		/// <summary>
 		/// Tries to get a table name from a mapped entity
@@ -56,31 +57,32 @@ namespace DataTablePlus.DataAccess.Extensions
 		/// <returns>Table name or null</returns>
 		public static string GetTableName(this DbContext dbContext, Type entityType)
 		{
+			ValidateParameters(dbContext, entityType);
+
 			const string Schema = "Schema";
 			const string Table = "Table";
 
-			var objectContextAdapter = (dbContext as IObjectContextAdapter);
-			if (objectContextAdapter == null)
-			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
-			}
-
-			var objectContext = objectContextAdapter.ObjectContext;
-			var metadataWorkspace = objectContext.MetadataWorkspace;
-
-			var entitySetBase = metadataWorkspace.GetItemCollection(DataSpace.SSpace)
-												 .GetItems<EntityContainer>()
-												 .Single()
-												 .BaseEntitySets.SingleOrDefault(x => x.Name == entityType.Name);
-
 			string tableName = null;
 
-			if (entitySetBase != null)
-			{
-				var schema = entitySetBase.MetadataProperties[Schema].Value;
-				var table = entitySetBase.MetadataProperties[Table].Value;
+			var objectContext = dbContext.GetObjectContext();
 
-				tableName = string.Concat(Constants.LeftSquareBracket, schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, table, Constants.RigthSquareBracket);
+			var metadataWorkspace = objectContext.MetadataWorkspace;
+
+			if (metadataWorkspace != null)
+			{
+				var entitySetBase = metadataWorkspace.GetItemCollection(DataSpace.SSpace)
+													 .GetItems<EntityContainer>()
+													 .Single()
+													 .BaseEntitySets.SingleOrDefault(x => x.Name == entityType.Name);
+
+				if (entitySetBase != null)
+				{
+					var schema = entitySetBase.MetadataProperties[Schema].Value;
+
+					var table = entitySetBase.MetadataProperties[Table].Value;
+
+					tableName = string.Concat(Constants.LeftSquareBracket, schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, table, Constants.RigthSquareBracket);
+				}
 			}
 
 			return tableName;
@@ -94,38 +96,38 @@ namespace DataTablePlus.DataAccess.Extensions
 		/// <returns>Dictionary that contains a mapping between the model properties and the mapped column names</returns>
 		public static IDictionary<PropertyInfo, string> GetMappings(this DbContext dbContext, Type entityType)
 		{
-			var objectContextAdapter = (dbContext as IObjectContextAdapter);
-			if (objectContextAdapter == null)
-			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
-			}
+			ValidateParameters(dbContext, entityType);
 
-			var objectContext = objectContextAdapter.ObjectContext;
+			var objectContext = dbContext.GetObjectContext();
+
 			var metadataWorkspace = objectContext.MetadataWorkspace;
 
-			var storageEntityType = metadataWorkspace.GetItems(DataSpace.SSpace)
-													 .Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
-													 .OfType<EntityType>()
-													 .SingleOrDefault(x =>
-														 x.Name == entityType.Name ||
-														 (entityType.BaseType != null && x.Name == entityType.BaseType.Name)  // It considers inheritance between mapped objects
-													 );
-
-			var objectEntityType = metadataWorkspace.GetItems(DataSpace.OSpace)
-													.Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
-													.OfType<EntityType>()
-													.SingleOrDefault(x => x.Name == entityType.Name);
-
-			if (storageEntityType != null && objectEntityType != null)
+			if (metadataWorkspace != null)
 			{
-				var mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
+				var storageEntityType = metadataWorkspace.GetItems(DataSpace.SSpace)
+														 .Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
+														 .OfType<EntityType>()
+														 .SingleOrDefault(x =>
+															 x.Name == entityType.Name ||
+															 (entityType.BaseType != null && x.Name == entityType.BaseType.Name)  // It considers inheritance between mapped objects
+														 );
+
+				var objectEntityType = metadataWorkspace.GetItems(DataSpace.OSpace)
+														.Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
+														.OfType<EntityType>()
+														.SingleOrDefault(x => x.Name == entityType.Name);
+
+				if (storageEntityType != null && objectEntityType != null)
 				{
-					Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
-					edmProperty.Name
+					var mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
+					{
+						Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
+						edmProperty.Name
 
-				}).ToDictionary(x => x.Property, x => x.Name));
+					}).ToDictionary(x => x.Property, x => x.Name));
 
-				return mappings;
+					return mappings;
+				}
 			}
 
 			return null;
@@ -139,9 +141,54 @@ namespace DataTablePlus.DataAccess.Extensions
 		/// <returns>String array that contains the entity keys</returns>
 		public static IList<string> GetKeyNames(this DbContext dbContext, Type entityType)
 		{
+			ValidateParameters(dbContext, entityType);
+
 			const string MethodName = "CreateObjectSet";
 
+			var objectContext = dbContext.GetObjectContext();
+
+			var objectContextType = objectContext.GetType();
+
+			var methodInfo = objectContextType.GetMethod(MethodName, Type.EmptyTypes);
+
+			var genericMethodInfo = methodInfo.MakeGenericMethod(entityType);
+
+			dynamic objectSet = genericMethodInfo.Invoke(objectContext, null);
+
+			IEnumerable<dynamic> keyMembers = objectSet.EntitySet.ElementType.KeyMembers;
+
+			var keyNames = keyMembers.Select(keyMember => (string)keyMember.Name).ToList();
+
+			return keyNames;
+		}
+
+		/// <summary>
+		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+		/// </summary>
+		/// <param name="dbContext">EF DbContext</param>
+		/// <param name="entityType">Entity type</param>
+		private static void ValidateParameters(DbContext dbContext, Type entityType)
+		{
+			if (dbContext == null)
+			{
+				throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+			}
+
+			if (entityType == null)
+			{
+				throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+			}
+		}
+
+		/// <summary>
+		/// Gets ObjectContext from EF DbContext
+		/// </summary>
+		/// <param name="dbContext">EF DbContext</param>
+		/// <returns>ObjectContext from EF DbContext</returns>
+		private static ObjectContext GetObjectContext(this DbContext dbContext)
+		{
 			var objectContextAdapter = (dbContext as IObjectContextAdapter);
+
 			if (objectContextAdapter == null)
 			{
 				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
@@ -149,16 +196,12 @@ namespace DataTablePlus.DataAccess.Extensions
 
 			var objectContext = objectContextAdapter.ObjectContext;
 
-			var objectContextType = objectContext.GetType();
-			var methodInfo = objectContextType.GetMethod(MethodName, Type.EmptyTypes);
-			var genericMethodInfo = methodInfo.MakeGenericMethod(entityType);
+			if (objectContext == null)
+			{
+				throw new ArgumentNullException(nameof(objectContext), $"{nameof(objectContext)} {CommonResources.CannotBeNull}");
+			}
 
-			dynamic objectSet = genericMethodInfo.Invoke(objectContext, null);
-			IEnumerable<dynamic> keyMembers = objectSet.EntitySet.ElementType.KeyMembers;
-
-			var keyNames = keyMembers.Select(keyMember => (string)keyMember.Name).ToList();
-
-			return keyNames;
+			return objectContext;
 		}
 	}
 }
