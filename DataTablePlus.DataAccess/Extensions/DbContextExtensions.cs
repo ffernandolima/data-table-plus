@@ -60,6 +60,7 @@ namespace DataTablePlus.DataAccess.Extensions
 			ValidateParameters(dbContext, entityType);
 
 			const string Schema = "Schema";
+
 			const string Table = "Table";
 
 			string tableName = null;
@@ -107,10 +108,7 @@ namespace DataTablePlus.DataAccess.Extensions
 				var storageEntityType = metadataWorkspace.GetItems(DataSpace.SSpace)
 														 .Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
 														 .OfType<EntityType>()
-														 .SingleOrDefault(x =>
-															 x.Name == entityType.Name ||
-															 (entityType.BaseType != null && x.Name == entityType.BaseType.Name)  // It considers inheritance between mapped objects
-														 );
+														 .SingleOrDefault(x => x.Name == entityType.Name || (entityType.BaseType != null && x.Name == entityType.BaseType.Name)); // It considers inheritance between mapped objects
 
 				var objectEntityType = metadataWorkspace.GetItems(DataSpace.OSpace)
 														.Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType)
