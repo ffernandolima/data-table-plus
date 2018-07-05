@@ -27,7 +27,7 @@ using System.Reflection;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyDescription("Data Table Plus provides some extensions in order to transform object lists into data tables based on the object mappings (EntityFramework mappings) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some EF performance issues while ingesting or updating a lot of data (represented as objects).")]
+[assembly: AssemblyDescription("DataTablePlus provides some extensions in order to transform object lists into data tables based on the object mappings (it's able to use the entity framework mappings or just the objects structure) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some performance issues while ingesting or updating a lot of data (represented as objects).")]
 [assembly: AssemblyCompany("Lima Technology Services")]
 [assembly: AssemblyProduct("DataTablePlus")]
 [assembly: AssemblyCopyright("Copyright © Lima Technology Services")]
