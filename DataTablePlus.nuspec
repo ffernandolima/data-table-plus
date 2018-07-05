@@ -13,7 +13,7 @@
 		<dependencies>
 			<dependency id="EntityFramework" version="6.2.0" />
 		</dependencies>
-		<tags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer</tags>
+		<tags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer Database ADO.NET</tags>
 		<releaseNotes>
 			- 1.0.0.4
 				- Finished .NET Framework Multi-Targeting support (Now it supports the following .NET Framework versions: 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1, 4.6.2, 4.7, 4.7.1, 4.7.2);
