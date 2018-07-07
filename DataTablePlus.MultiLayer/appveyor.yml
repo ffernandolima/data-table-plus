@@ -1,7 +1,0 @@
-image: Visual Studio 2017
-
-build:
-  project: DataTablePlus.sln
-
-before_build:
-  nuget.exe restore DataTablePlus.sln
