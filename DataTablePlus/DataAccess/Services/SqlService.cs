@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static DataTablePlus.Extensions.DataTableExtensions;
 
 namespace DataTablePlus.DataAccess.Services
 {
@@ -251,7 +252,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		private void ValidateBulkInsertParameters(DataTable dataTable)
 		{
-			this.ValidateDataTableParameters(dataTable);
+			ValidateDataTableParameters(dataTable);
 
 			if (string.IsNullOrWhiteSpace(dataTable.TableName))
 			{
@@ -266,33 +267,11 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="commandText">Commnad text to update the data</param>
 		private void ValidateBatchUpdateParameters(DataTable dataTable, string commandText)
 		{
-			this.ValidateDataTableParameters(dataTable);
+			ValidateDataTableParameters(dataTable);
 
 			if (string.IsNullOrWhiteSpace(commandText))
 			{
 				throw new ArgumentException($"{nameof(commandText)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(commandText));
-			}
-		}
-
-		/// <summary>
-		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
-		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
-		private void ValidateDataTableParameters(DataTable dataTable)
-		{
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
-			}
-
-			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
-			}
-
-			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
 			}
 		}
 
@@ -555,19 +534,29 @@ namespace DataTablePlus.DataAccess.Services
 
 			foreach (var dataRow in dataRows)
 			{
-				switch (dataRowState)
-				{
-					case DataRowState.Added:
-						dataRow.SetAdded();
-						break;
+				SetStatusInternal(dataRow, dataRowState);
+			}
+		}
 
-					case DataRowState.Modified:
-						dataRow.SetModified();
-						break;
+		/// <summary>
+		/// Sets the provided status to the current data table rows (internal method)
+		/// </summary>
+		/// <param name="dataRow">Data Row which will receive the current state</param>
+		/// <param name="dataRowState">The row state to be set</param>
+		private void SetStatusInternal(DataRow dataRow, DataRowState dataRowState)
+		{
+			switch (dataRowState)
+			{
+				case DataRowState.Added:
+					dataRow.SetAdded();
+					break;
 
-					default:
-						break;
-				}
+				case DataRowState.Modified:
+					dataRow.SetModified();
+					break;
+
+				default:
+					break;
 			}
 		}
 

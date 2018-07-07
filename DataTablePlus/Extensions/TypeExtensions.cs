@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace DataTablePlus.Extensions
@@ -34,6 +35,19 @@ namespace DataTablePlus.Extensions
 	internal static class TypeExtensions
 	{
 		private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
+
+		/// <summary>
+		/// Gets the properties according to the BindingFlags passed as parameter
+		/// </summary>
+		/// <param name="type">Type for getting the properties</param>
+		/// <param name="bindingFlags">BindingFlags for getting the properties</param>
+		/// <returns>An array of property info</returns>
+		internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+		{
+			var properties = type.GetProperties(bindingFlags);
+
+			return properties;
+		}
 
 		/// <summary>
 		/// Gets the default value according to its type

@@ -152,7 +152,7 @@ namespace DataTablePlus.Extensions
 		{
 			const string Schema = "dbo";
 
-			var properties = derivedObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			var properties = derivedObjectType.GetPropertiesFromBindingFlags();
 
 			mappings = properties?.ToDictionary(property => property, property => property.Name);
 

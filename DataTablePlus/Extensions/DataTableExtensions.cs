@@ -37,6 +37,28 @@ namespace DataTablePlus.Extensions
 	public static class DataTableExtensions
 	{
 		/// <summary>
+		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+		/// </summary>
+		/// <param name="dataTable">Current data table to be validated</param>
+		internal static void ValidateDataTableParameters(DataTable dataTable)
+		{
+			if (dataTable == null)
+			{
+				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
+			}
+
+			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+			}
+
+			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
+			}
+		}
+
+		/// <summary>
 		/// Transforms a data table into a list of objects
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
@@ -76,28 +98,6 @@ namespace DataTablePlus.Extensions
 		}
 
 		/// <summary>
-		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
-		/// </summary>
-		/// <param name="dataTable">Current data table to be validated</param>
-		private static void ValidateDataTableParameters(DataTable dataTable)
-		{
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
-			}
-
-			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
-			}
-
-			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
-			}
-		}
-
-		/// <summary>
 		/// Transforms a data table into an enumerable of objects (internal)
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
@@ -111,7 +111,7 @@ namespace DataTablePlus.Extensions
 
 			var dataColumnNames = dataTable.Columns.Cast<DataColumn>().Select(dataColumn => dataColumn.ColumnName);
 
-			var properties = entityType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			var properties = entityType.GetPropertiesFromBindingFlags();
 
 			foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
 			{
