@@ -155,7 +155,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 			//	- About 50 seconds updating 1 000 000 of rows
 
 			// The measurement was taken while running some tests in Debug mode, so in Release mode it should be faster
-			// To sum up, although it was taken in Debug mode, still faster than Entity Framework (much faster)
+			// To sum up, although it was taken in Debug mode, it is still faster than Entity Framework (much faster)
 			
 			// Sets the culture to invariant in order to avoid some exception details in another language
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
