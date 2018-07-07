@@ -148,8 +148,8 @@ DataTablePlus provides some extensions in order to transform object lists into d
 			// this example builds a list of 1 000 000 objects, executes a bulk insert and after that a batch update
 
 			// Bulk Insert time spent: 
-			//	- About 1 minute retrieving the primary key names
-			//	- About 5 seconds whitout retrieving the primary key names
+			//	- About 1 minute retrieving the primary key values
+			//	- About 5 seconds whitout retrieving the primary key values
 
 			// Batch Update time spent: 
 			//	- About 50 seconds updating 1 000 000 of rows
@@ -157,7 +157,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 			// The measurement was taken while running some tests in Debug mode, so in Release mode it should be faster
 			// To sum up, although it was taken in Debug mode, still faster than Entity Framework (much faster)
 			
-			// Sets the culture to invariant culture in order to avoid some exception details in another language
+			// Sets the culture to invariant in order to avoid some exception details in another language
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 			
 			// Creates the DbContext
@@ -176,7 +176,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 			// Adds the connection string to DataTablePlus configurations
 			Startup.AddConnectionString(connectionString);
 
-			// Creates a list of User objects
+			// Creates a list of Users
 			var entities = new List<User>();
 
 			for (int i = 0; i < 1000000; i++)
