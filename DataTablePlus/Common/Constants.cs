@@ -35,18 +35,8 @@ namespace DataTablePlus.Common
 		public const string Comma = ",";
 
 		/// <summary>
-		/// Value: .
+		/// Value: dbo
 		/// </summary>
-		public const string FullStop = ".";
-
-		/// <summary>
-		/// Value: [
-		/// </summary>
-		public const string LeftSquareBracket = "[";
-
-		/// <summary>
-		/// Value: ]
-		/// </summary>
-		public const string RigthSquareBracket = "]";
+		public const string DefaultSchema = "dbo";
 	}
 }

@@ -59,9 +59,6 @@ namespace DataTablePlus.Configuration
 		/// Initializes the application providing a connectionString
 		/// </summary>
 		/// <param name="connectionString">ConnectionString</param>
-		public static void AddConnectionString(string connectionString)
-		{
-			ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
-		}
+		public static void AddConnectionString(string connectionString) => ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
 	}
 }

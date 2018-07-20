@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 
 namespace DataTablePlus.Extensions
 {
@@ -40,7 +39,7 @@ namespace DataTablePlus.Extensions
 		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
 		/// </summary>
 		/// <param name="dataTable">Current data table to be validated</param>
-		internal static void ValidateDataTableParameters(DataTable dataTable)
+		internal static void ValidateParameters(this DataTable dataTable)
 		{
 			if (dataTable == null)
 			{
@@ -92,7 +91,7 @@ namespace DataTablePlus.Extensions
 		/// <returns>A new enumerable of objects</returns>
 		private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class, new()
 		{
-			ValidateDataTableParameters(dataTable);
+			dataTable.ValidateParameters();
 
 			return TransformInternal<T>(dataTable);
 		}

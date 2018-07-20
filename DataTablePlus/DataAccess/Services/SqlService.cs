@@ -26,6 +26,7 @@ using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Resources;
 using DataTablePlus.DataAccessContracts;
 using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -35,7 +36,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static DataTablePlus.Extensions.DataTableExtensions;
 
 namespace DataTablePlus.DataAccess.Services
 {
@@ -252,7 +252,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		private void ValidateBulkInsertParameters(DataTable dataTable)
 		{
-			ValidateDataTableParameters(dataTable);
+			dataTable.ValidateParameters();
 
 			if (string.IsNullOrWhiteSpace(dataTable.TableName))
 			{
@@ -267,7 +267,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="commandText">Commnad text to update the data</param>
 		private void ValidateBatchUpdateParameters(DataTable dataTable, string commandText)
 		{
-			ValidateDataTableParameters(dataTable);
+			dataTable.ValidateParameters();
 
 			if (string.IsNullOrWhiteSpace(commandText))
 			{
@@ -392,7 +392,7 @@ namespace DataTablePlus.DataAccess.Services
 				trackerColumnName
 			};
 
-			var fieldNames = fields.Select(primaryKey => string.Concat(Constants.LeftSquareBracket, primaryKey, Constants.RigthSquareBracket));
+			var fieldNames = fields.Select(primaryKey => $"[{primaryKey}]");
 
 			var selectClause = string.Join(Constants.Comma, fieldNames);
 

@@ -44,10 +44,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the enumerable</typeparam>
 		/// <param name="enumerable">Current enumerable of objects</param>
 		/// <returns>Returns the entity type from the enumerable</returns>
-		public static Type GetTypeFromEnumerable<T>(this IEnumerable<T> enumerable)
-		{
-			return typeof(T);
-		}
+		public static Type GetTypeFromEnumerable<T>(this IEnumerable<T> enumerable) => typeof(T);
 
 		/// <summary>
 		/// Transforms a list of objects into a data table
@@ -150,15 +147,13 @@ namespace DataTablePlus.Extensions
 		/// <returns>A data table</returns>
 		private static DataTable GetTableSchemaFromEntityStructure(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings)
 		{
-			const string Schema = "dbo";
-
 			var properties = derivedObjectType.GetPropertiesFromBindingFlags();
 
 			mappings = properties?.ToDictionary(property => property, property => property.Name);
 
 			var dataTable = new DataTable
 			{
-				TableName = string.Concat(Constants.LeftSquareBracket, Schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, derivedObjectType.Name, Constants.RigthSquareBracket)
+				TableName = $"[{Constants.DefaultSchema}].[{derivedObjectType.Name}]"
 			};
 
 			if (properties != null && properties.Any())

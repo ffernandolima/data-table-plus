@@ -44,10 +44,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// </summary>
 		/// <typeparam name="T">Type of the mapped entity</typeparam>
 		/// <returns>Table name or null</returns>
-		public string GetTableName<T>() where T : class
-		{
-			return this.GetTableName(typeof(T));
-		}
+		public string GetTableName<T>() where T : class => this.GetTableName(typeof(T));
 
 		/// <summary>
 		/// Gets the table name from the mapped entity on EF
@@ -69,10 +66,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// </summary>
 		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>Mapping or null</returns>
-		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class
-		{
-			return this.GetMappings(typeof(T));
-		}
+		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class => this.GetMappings(typeof(T));
 
 		/// <summary>
 		/// Gets a mapping between the model properties and the mapped column names
@@ -94,10 +88,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// </summary>
 		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>A list that contains the entity keys</returns>
-		public IList<string> GetKeyNames<T>() where T : class
-		{
-			return this.GetKeyNames(typeof(T));
-		}
+		public IList<string> GetKeyNames<T>() where T : class => this.GetKeyNames(typeof(T));
 
 		/// <summary>
 		/// Gets the entity keys from the mapped entity on EF
@@ -119,10 +110,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// </summary>
 		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>A list that contains the database keys</returns>
-		public IList<string> GetDbKeyNames<T>() where T : class
-		{
-			return this.GetDbKeyNames(typeof(T));
-		}
+		public IList<string> GetDbKeyNames<T>() where T : class => this.GetDbKeyNames(typeof(T));
 
 		/// <summary>
 		/// Gets the database keys based on the EF mappings

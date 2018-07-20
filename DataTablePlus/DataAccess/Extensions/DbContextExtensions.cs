@@ -59,10 +59,6 @@ namespace DataTablePlus.DataAccess.Extensions
 		{
 			ValidateParameters(dbContext, entityType);
 
-			const string Schema = "Schema";
-
-			const string Table = "Table";
-
 			string tableName = null;
 
 			var objectContext = dbContext.GetObjectContext();
@@ -78,11 +74,11 @@ namespace DataTablePlus.DataAccess.Extensions
 
 				if (entitySetBase != null)
 				{
-					var schema = entitySetBase.MetadataProperties[Schema].Value;
+					var schema = entitySetBase.MetadataProperties["Schema"].Value;
 
-					var table = entitySetBase.MetadataProperties[Table].Value;
+					var table = entitySetBase.MetadataProperties["Table"].Value;
 
-					tableName = string.Concat(Constants.LeftSquareBracket, schema, Constants.RigthSquareBracket, Constants.FullStop, Constants.LeftSquareBracket, table, Constants.RigthSquareBracket);
+					tableName = $"[{schema}].[{table}]";
 				}
 			}
 

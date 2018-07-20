@@ -40,8 +40,6 @@ namespace DataTablePlus.DataAccess.Services
 	/// </summary>
 	public class ServiceBase : IServiceBase
 	{
-		private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
-
 		/// <summary>
 		/// EF DbContext
 		/// </summary>
@@ -60,16 +58,12 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Sql command Timeout
 		/// </summary>
-		public TimeSpan Timeout { get; set; }
+		public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
 
 		/// <summary>
 		/// Parameterless Ctor
 		/// </summary>
-		public ServiceBase()
-		{
-			this.Construct();
-			this.Timeout = DefaultTimeout;
-		}
+		public ServiceBase() => this.Construct();
 
 		/// <summary>
 		/// Opens the current connection

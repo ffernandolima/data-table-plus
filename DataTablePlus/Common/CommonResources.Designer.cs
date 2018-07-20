@@ -61,6 +61,15 @@ namespace DataTablePlus.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to cannot be less than zero..
+        /// </summary>
+        internal static string CannotBeLessThanZero {
+            get {
+                return ResourceManager.GetString("CannotBeLessThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to cannot be null..
         /// </summary>
         internal static string CannotBeNull {
@@ -88,6 +97,15 @@ namespace DataTablePlus.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Data types do not match..
+        /// </summary>
+        internal static string DataTypesDoNotMatch {
+            get {
+                return ResourceManager.GetString("DataTypesDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ConnectionString which has been provided is invalid..
         /// </summary>
         internal static string InvalidConnectionString {
@@ -102,6 +120,15 @@ namespace DataTablePlus.Common {
         internal static string MissingConfiguration {
             get {
                 return ResourceManager.GetString("MissingConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Null value is not allowed..
+        /// </summary>
+        internal static string NullValueIsNotAllowed {
+            get {
+                return ResourceManager.GetString("NullValueIsNotAllowed", resourceCulture);
             }
         }
     }
