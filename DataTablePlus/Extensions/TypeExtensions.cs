@@ -42,12 +42,7 @@ namespace DataTablePlus.Extensions
 		/// <param name="type">Type for getting the properties</param>
 		/// <param name="bindingFlags">BindingFlags for getting the properties</param>
 		/// <returns>An array of property info</returns>
-		internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
-		{
-			var properties = type.GetProperties(bindingFlags);
-
-			return properties;
-		}
+		internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance) => type.GetProperties(bindingFlags);
 
 		/// <summary>
 		/// Gets the default value according to its type

@@ -31,7 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -54,10 +53,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
-		public DataTable BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
-		{
-			return this.BulkInsertInternal(dataTable, batchSize, options, primaryKeyNames);
-		}
+		public DataTable BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null) => this.BulkInsertInternal(dataTable, batchSize, options, primaryKeyNames);
 
 		/// <summary>
 		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
@@ -87,12 +83,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="options">Bulk insert options></param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
-		public Task<DataTable> BulkInsertAsync(DataTable dataTable, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
-		{
-			var task = Task.Factory.StartNew(() => this.BulkInsert(dataTable, batchSize, options, primaryKeyNames), cancellationToken);
-
-			return task;
-		}
+		public Task<DataTable> BulkInsertAsync(DataTable dataTable, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null) => Task.Factory.StartNew(() => this.BulkInsert(dataTable, batchSize, options, primaryKeyNames), cancellationToken);
 
 		/// <summary>
 		/// Executes a batch update in order to get a high performance level while updating a lot of data
@@ -100,10 +91,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
-		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
-		{
-			this.BatchUpdateInternal(dataTable, commandText, batchSize);
-		}
+		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize) => this.BatchUpdateInternal(dataTable, commandText, batchSize);
 
 		/// <summary>
 		/// Executes an async batch update in order to get a high performance level while updating a lot of data
@@ -131,12 +119,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		/// <returns>Returns a task which will be processing the update</returns>
-		public Task BatchUpdateAsync(DataTable dataTable, string commandText, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize)
-		{
-			var task = Task.Factory.StartNew(() => this.BatchUpdate(dataTable, commandText, batchSize), cancellationToken);
-
-			return task;
-		}
+		public Task BatchUpdateAsync(DataTable dataTable, string commandText, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize) => Task.Factory.StartNew(() => this.BatchUpdate(dataTable, commandText, batchSize), cancellationToken);
 
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (internal method)

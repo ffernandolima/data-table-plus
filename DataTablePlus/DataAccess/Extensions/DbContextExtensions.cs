@@ -72,13 +72,13 @@ namespace DataTablePlus.DataAccess.Extensions
 													 .Single()
 													 .BaseEntitySets.SingleOrDefault(x => x.Name == entityType.Name);
 
-				if (entitySetBase != null)
+				if (entitySetBase != null && entitySetBase.MetadataProperties != null && entitySetBase.MetadataProperties.Any())
 				{
-					var schema = entitySetBase.MetadataProperties["Schema"].Value;
+					var schemaMetadataProperty = entitySetBase.MetadataProperties["Schema"];
 
-					var table = entitySetBase.MetadataProperties["Table"].Value;
+					var tableMetadataProperty = entitySetBase.MetadataProperties["Table"];
 
-					tableName = $"[{schema}].[{table}]";
+					tableName = $"[{schemaMetadataProperty.Value}].[{tableMetadataProperty.Value}]";
 				}
 			}
 
@@ -137,13 +137,11 @@ namespace DataTablePlus.DataAccess.Extensions
 		{
 			ValidateParameters(dbContext, entityType);
 
-			const string MethodName = "CreateObjectSet";
-
 			var objectContext = dbContext.GetObjectContext();
 
 			var objectContextType = objectContext.GetType();
 
-			var methodInfo = objectContextType.GetMethod(MethodName, Type.EmptyTypes);
+			var methodInfo = objectContextType.GetMethod("CreateObjectSet", Type.EmptyTypes);
 
 			var genericMethodInfo = methodInfo.MakeGenericMethod(entityType);
 

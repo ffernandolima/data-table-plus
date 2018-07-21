@@ -61,6 +61,15 @@ namespace DataTablePlus.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to cannot be empty..
+        /// </summary>
+        internal static string CannotBeEmpty {
+            get {
+                return ResourceManager.GetString("CannotBeEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to cannot be less than zero..
         /// </summary>
         internal static string CannotBeLessThanZero {

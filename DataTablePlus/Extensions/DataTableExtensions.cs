@@ -63,25 +63,15 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new list of objects</returns>
-		public static IList<T> ToList<T>(this DataTable dataTable) where T : class, new()
-		{
-			var entities = Transform<T>(dataTable);
-
-			return entities.ToList();
-		}
+		public static IList<T> ToList<T>(this DataTable dataTable) where T : class, new() => Transform<T>(dataTable).ToList();
 
 		/// <summary>
-		/// Transforms a data table into an array of objects
+		/// Transforms a data table into an array of objects 
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new array of objects</returns>
-		public static T[] ToArray<T>(this DataTable dataTable) where T : class, new()
-		{
-			var entities = Transform<T>(dataTable);
-
-			return entities.ToArray();
-		}
+		public static T[] ToArray<T>(this DataTable dataTable) where T : class, new() => Transform<T>(dataTable).ToArray();
 
 		/// <summary>
 		/// Transforms a data table into an enumerable of objects
