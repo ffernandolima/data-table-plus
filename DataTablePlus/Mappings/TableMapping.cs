@@ -95,19 +95,66 @@ namespace DataTablePlus.Mappings
 		public IReadOnlyList<ColumnMapping> ColumnMappings => this._columnMappings.Where(mapping => mapping != null).OrderBy(mapping => mapping.Ordinal).ToList().AsReadOnly();
 
 		/// <summary>
+		/// Creates a new TableMapping object
+		/// </summary>
+		/// <returns>TableMapping object (Builder pattern)</returns>
+		public static TableMapping Create() => new TableMapping();
+
+		/// <summary>
+		/// Adds a schema 
+		/// </summary>
+		/// <param name="schema">Schema</param>
+		/// <returns>TableMapping object (Builder pattern)</returns>
+		public TableMapping AddSchema(string schema)
+		{
+			this.Schema = schema;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Adds a table name
+		/// </summary>
+		/// <param name="tableName">Table name</param>
+		/// <returns>TableMapping object (Builder pattern)</returns>
+		public TableMapping AddTableName(string tableName)
+		{
+			this.TableName = tableName;
+
+			return this;
+		}
+
+		/// <summary>
 		/// Allows adding a new column mapping
 		/// </summary>
 		/// <param name="columnName">Column name</param>
 		/// <param name="columnType">Column type</param>
 		/// <param name="ordinal">Ordinal</param>
+		/// <param name="isPrimaryKey">Is primary key</param>
+		/// <param name="allowNull">Allows null</param>
 		/// <param name="defaultValue">Default value</param>
-		public void AddColumnMapping(string columnName, Type columnType, int? ordinal = null, object defaultValue = null) => this.AddColumnMapping(new ColumnMapping { Name = columnName, Type = columnType, Ordinal = ordinal.GetValueOrDefault(), DefaultValue = defaultValue });
+		/// <returns>TableMapping object (Builder pattern)</returns>
+		public TableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null)
+		{
+			var mapping = new ColumnMapping
+			{
+				Name         = columnName,
+				Type         = columnType,
+				Ordinal      = ordinal.GetValueOrDefault(),
+				IsPrimaryKey = isPrimaryKey.GetValueOrDefault(),
+				AllowNull    = allowNull.GetValueOrDefault(),
+				DefaultValue = defaultValue
+			};
+
+			return this.AddColumnMapping(mapping);
+		}
 
 		/// <summary>
 		/// Allows adding a new column mapping
 		/// </summary>
 		/// <param name="columnMapping">Column mapping object</param>
-		public void AddColumnMapping(ColumnMapping columnMapping)
+		/// <returns>TableMapping object (Builder pattern)</returns>
+		public TableMapping AddColumnMapping(ColumnMapping columnMapping)
 		{
 			if (columnMapping == null)
 			{
@@ -127,6 +174,8 @@ namespace DataTablePlus.Mappings
 			}
 
 			this._columnMappings.Add(columnMapping);
+
+			return this;
 		}
 
 		/// <summary>

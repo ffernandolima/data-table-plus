@@ -121,15 +121,10 @@ namespace DataTablePlus.Extensions
 
 			if (objects.Any(x => (x?.Length).GetValueOrDefault() != tableMapping.ColumnMappings.Count))
 			{
-				throw new ArgumentException();
+				throw new ArgumentException(CommonResources.InvalidLength);
 			}
 
-			DataTable dataTable = null;
-
-			if (tableMapping != null)
-			{
-				dataTable = GetTableSchemaFromTableMapping(tableMapping);
-			}
+			var dataTable = GetTableSchemaFromTableMapping(tableMapping);
 
 			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
 			{
@@ -239,7 +234,9 @@ namespace DataTablePlus.Extensions
 		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
 		private static void Populate<T>(this DataTable dataTable, IEnumerable<T> objects, IDictionary<PropertyInfo, string> mappings) where T : class
 		{
-			foreach (var item in objects)
+			var internalObjects = objects.Where(item => item != null);
+
+			foreach (var item in internalObjects)
 			{
 				var dataRow = dataTable.NewRow();
 
@@ -259,6 +256,10 @@ namespace DataTablePlus.Extensions
 						}
 						else
 						{
+							var underlyingType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+							value = Convert.ChangeType(value, underlyingType);
+
 							dataRow[columnName] = value;
 						}
 					}
@@ -296,15 +297,17 @@ namespace DataTablePlus.Extensions
 		/// <param name="tableMapping">Table mappings as well as its columns and so on</param>
 		private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, TableMapping tableMapping)
 		{
-			foreach (var objectArray in objects)
+			var internalObjects = objects.Where(item => item != null && item.Length > 0);
+
+			foreach (var objectArray in internalObjects)
 			{
 				var dataRow = dataTable.NewRow();
 
-				var columnMappins = tableMapping.ColumnMappings;
+				var columnMappings = tableMapping.ColumnMappings;
 
-				for (int idx = 0; idx < columnMappins.Count; idx++)
+				for (int idx = 0; idx < columnMappings.Count; idx++)
 				{
-					var columnMapping = columnMappins[idx];
+					var columnMapping = columnMappings[idx];
 
 					var columnName = columnMapping.Name;
 
@@ -312,12 +315,14 @@ namespace DataTablePlus.Extensions
 
 					if (value != null)
 					{
-						if (value is Enum)
+						if (columnMapping.Type.IsEnum)
 						{
 							dataRow[columnName] = value.GetHashCode();
 						}
 						else
 						{
+							value = Convert.ChangeType(value, columnMapping.Type);
+
 							dataRow[columnName] = value;
 						}
 					}
@@ -339,9 +344,9 @@ namespace DataTablePlus.Extensions
 							dataRow[columnName] = DBNull.Value;
 						}
 					}
-
-					dataTable.Rows.Add(dataRow);
 				}
+
+				dataTable.Rows.Add(dataRow);
 			}
 		}
 	}

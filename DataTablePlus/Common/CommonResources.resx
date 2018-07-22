@@ -138,6 +138,9 @@
   <data name="InvalidConnectionString" xml:space="preserve">
     <value>The ConnectionString which has been provided is invalid.</value>
   </data>
+  <data name="InvalidLength" xml:space="preserve">
+    <value>Objects have different lengths.</value>
+  </data>
   <data name="MissingConfiguration" xml:space="preserve">
     <value>Please configure this application through DataTablePlus.Configuration.Startup class.</value>
   </data>

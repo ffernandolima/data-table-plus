@@ -124,6 +124,15 @@ namespace DataTablePlus.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Objects have different lengths..
+        /// </summary>
+        internal static string InvalidLength {
+            get {
+                return ResourceManager.GetString("InvalidLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please configure this application through DataTablePlus.Configuration.Startup class..
         /// </summary>
         internal static string MissingConfiguration {

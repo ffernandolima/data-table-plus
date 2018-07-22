@@ -82,7 +82,7 @@ namespace DataTablePlus.Mappings
 			set
 			{
 				this.ValidateType(value);
-				this._type = value;
+				this._type = Nullable.GetUnderlyingType(value) ?? value;
 			}
 		}
 
@@ -139,6 +139,84 @@ namespace DataTablePlus.Mappings
 		}
 
 		/// <summary>
+		/// Creates a new ColumnMapping object
+		/// </summary>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public static ColumnMapping Create() => new ColumnMapping();
+
+		/// <summary>
+		/// Adds a column name
+		/// </summary>
+		/// <param name="name">Column name</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping AddName(string name)
+		{
+			this.Name = name;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Adds a column type
+		/// </summary>
+		/// <param name="type">Column type</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping AddType(Type type)
+		{
+			this.Type = type;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Adds a column ordinal
+		/// </summary>
+		/// <param name="ordinal">Column ordinal</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping AddOrdinal(int ordinal)
+		{
+			this.Ordinal = ordinal;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Indicates if it is the primary key
+		/// </summary>
+		/// <param name="primaryKey">Primary key flag</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping PrimaryKey(bool primaryKey)
+		{
+			this.IsPrimaryKey = primaryKey;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Indicates if it accepts null values
+		/// </summary>
+		/// <param name="acceptNull">Accept null flag</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping AcceptNull(bool acceptNull)
+		{
+			this.AllowNull = acceptNull;
+
+			return this;
+		}
+
+		/// <summary>
+		/// Adds a column default value
+		/// </summary>
+		/// <param name="defaultValue">Column default value</param>
+		/// <returns>ColumnMapping object (Builder pattern)</returns>
+		public ColumnMapping AddDefaultValue(object defaultValue)
+		{
+			this.DefaultValue = defaultValue;
+
+			return this;
+		}
+
+		/// <summary>
 		/// Transforms this object to a new DataColumn object
 		/// </summary>
 		/// <returns>A new DataColumn object</returns>
@@ -147,7 +225,20 @@ namespace DataTablePlus.Mappings
 		/// <summary>
 		/// Tries to set a default value to DefaultValue property based on the data type
 		/// </summary>
-		private void EnsureDefaultValue() => this.DefaultValue = this.DefaultValue ?? this.Type?.GetDefaultValue();
+		private void EnsureDefaultValue()
+		{
+			if (this.Type != null && this.DefaultValue == null)
+			{
+				if (this.Type == typeof(string))
+				{
+					this.DefaultValue = string.Empty;
+				}
+				else
+				{
+					this.DefaultValue = this.Type.GetDefaultValue();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Validates the provided column name
@@ -216,6 +307,10 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		private void ValidateDataType() => this.ValidateDataType(this.DefaultValue);
 
+		/// <summary>
+		/// Validates if the default value type has the same type of the property data type
+		/// </summary>
+		/// <param name="value">Default value</param>
 		private void ValidateDataType(object value)
 		{
 			if (value != null && this.Type != null && value.GetType() != this.Type)
