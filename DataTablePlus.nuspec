@@ -11,7 +11,7 @@
 		<copyright>Copyright © Lima Technology Services</copyright>
 		<projectUrl>https://github.com/ffernandolima/data-table-plus</projectUrl>
 		<dependencies>
-			<dependency id="EntityFramework" version="6.2.0" />
+			<dependency id="EntityFramework" version="6.0.0" />
 		</dependencies>
 		<tags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer Database ADO.NET</tags>
 		<releaseNotes>
