@@ -226,14 +226,14 @@ DataTablePlus provides some extensions in order to transform object lists into d
 				// You can also pass the BatchSize and the SqlBulkCopyOptions parameters to this method
 
 				// BatchSize will be used to flush the values against the database table
-				// SqlBulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
+				// SqlBulkCopyOptions can be mixed up to get lots of advantages, by default some options will be set
 
 				sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
 				// Stops the Stopwatch
 				stopwatch.Stop();
 
-				// Gets the total of time spent
+				// Gets the total time spent
 				Debug.WriteLine($"Bulk Insert Elapsed Time: {stopwatch.Elapsed}");
 
 				if (databaseKeyNames != null && databaseKeyNames.Any())
@@ -250,7 +250,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 					// Stops the Stopwatch
 					stopwatch.Stop();
 
-					// Gets the total of time spent
+					// Gets the total time spent
 					Debug.WriteLine($"Batch Update Elapsed Time: {stopwatch.Elapsed}");
 				}
 			}
