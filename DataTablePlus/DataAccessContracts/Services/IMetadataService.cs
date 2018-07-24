@@ -32,7 +32,7 @@ namespace DataTablePlus.DataAccessContracts.Services
 	/// <summary>
 	/// MetadataService interface
 	/// </summary>
-	public interface IMetadataService : IDisposable
+	public interface IMetadataService : IServiceBase, IDisposable
 	{
 		/// <summary>
 		/// Gets the table name from the mapped entity on EF

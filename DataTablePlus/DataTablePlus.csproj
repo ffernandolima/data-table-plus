@@ -250,7 +250,6 @@
     <Compile Include="DataAccessContracts\Services\IMetadataService.cs" />
     <Compile Include="DataAccessContracts\Services\IServiceBase.cs" />
     <Compile Include="DataAccessContracts\Services\ISqlService.cs" />
-    <Compile Include="DataAccess\Extensions\DbContextExtensions.cs" />
     <Compile Include="DataAccess\Resources\DataResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -260,14 +259,18 @@
     <Compile Include="DataAccess\Services\ServiceBase.cs" />
     <Compile Include="DataAccess\Services\SqlService.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Mappings\ColumnMapping.cs" />
+    <Compile Include="Mappings\IColumnMapping.cs" />
+    <Compile Include="Mappings\ITableMapping.cs" />
     <Compile Include="Mappings\TableMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Threading\CancellationTokenFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Common\CommonResources.resx">

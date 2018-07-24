@@ -22,21 +22,26 @@
  * 
  *******************************************************************************/
 
-namespace DataTablePlus.Common
+using System.Threading;
+
+namespace DataTablePlus.Threading
 {
 	/// <summary>
-	/// Class that centralizes constants
+	/// An internal class that helps managing CancellationTokens
 	/// </summary>
-	internal static class Constants
+	internal static class CancellationTokenFactory
 	{
 		/// <summary>
-		/// Value: ,
+		/// Creates a new CancellationToken
 		/// </summary>
-		public const string Comma = ",";
+		/// <returns>A new CancellationToken</returns>
+		public static CancellationToken Token()
+		{
+			var cancellationTokenSource = new CancellationTokenSource();
 
-		/// <summary>
-		/// Value: dbo
-		/// </summary>
-		public const string DefaultSchema = "dbo";
+			var cancellationToken = cancellationTokenSource.Token;
+
+			return cancellationToken;
+		}
 	}
 }

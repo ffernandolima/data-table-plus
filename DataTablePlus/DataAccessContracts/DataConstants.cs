@@ -27,7 +27,7 @@ namespace DataTablePlus.DataAccessContracts
 	/// <summary>
 	/// Class that centralizes data constants
 	/// </summary>
-	public class DataConstants
+	public static class DataConstants
 	{
 		/// <summary>
 		/// Value: 5000

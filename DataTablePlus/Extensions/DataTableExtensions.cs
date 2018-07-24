@@ -63,7 +63,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new list of objects</returns>
-		public static IList<T> ToList<T>(this DataTable dataTable) where T : class, new() => Transform<T>(dataTable).ToList();
+		public static IList<T> ToList<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToList();
 
 		/// <summary>
 		/// Transforms a data table into an array of objects 
@@ -71,7 +71,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new array of objects</returns>
-		public static T[] ToArray<T>(this DataTable dataTable) where T : class, new() => Transform<T>(dataTable).ToArray();
+		public static T[] ToArray<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToArray();
 
 		/// <summary>
 		/// Transforms a data table into an enumerable of objects
@@ -79,7 +79,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new enumerable of objects</returns>
-		private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class, new()
+		private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class
 		{
 			dataTable.ValidateParameters();
 
@@ -92,7 +92,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Current data table to be transformed</param>
 		/// <returns>A new enumerable of objects</returns>
-		private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class, new()
+		private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class
 		{
 			var entities = new List<T>();
 
@@ -104,7 +104,7 @@ namespace DataTablePlus.Extensions
 
 			foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
 			{
-				var entity = new T();
+				var entity = (T)Activator.CreateInstance(entityType);
 
 				foreach (var property in properties.Where(property => dataColumnNames.Contains(property.Name)))
 				{

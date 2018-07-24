@@ -34,7 +34,7 @@ namespace DataTablePlus.DataAccessContracts.Services
 	/// <summary>
 	/// SqlService interface
 	/// </summary>
-	public interface ISqlService : IDisposable
+	public interface ISqlService : IServiceBase, IDisposable
 	{
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data

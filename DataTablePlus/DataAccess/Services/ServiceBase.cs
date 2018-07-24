@@ -61,9 +61,11 @@ namespace DataTablePlus.DataAccess.Services
 		public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
 
 		/// <summary>
-		/// Parameterless Ctor
+		/// Ctor
 		/// </summary>
-		public ServiceBase() => this.Construct();
+		/// <param name="dbContext">Db Context</param>
+		/// <param name="connectionString">Connection String</param>
+		public ServiceBase(DbContext dbContext = null, string connectionString = null) => this.Construct(dbContext, connectionString);
 
 		/// <summary>
 		/// Opens the current connection
@@ -222,12 +224,14 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Fill the properties out using the values from the Startup
+		/// Fill the properties out using the values from the Ctor or from the Startup class
 		/// </summary>
-		private void Construct()
+		/// <param name="dbContext">Db Context</param>
+		/// <param name="connectionString">Connection string</param>
+		private void Construct(DbContext dbContext = null, string connectionString = null)
 		{
-			var dbContext = Startup.DbContext;
-			var connectionString = Startup.ConnectionString;
+			dbContext = dbContext ?? Startup.DbContext;
+			connectionString = connectionString ?? Startup.ConnectionString;
 
 			if (dbContext != null)
 			{

@@ -31,5 +31,6 @@ namespace DataTablePlus.DataAccessContracts.Services
 	/// </summary>
 	public interface IServiceBase : IDisposable
 	{
+		TimeSpan Timeout { get; set; }
 	}
 }

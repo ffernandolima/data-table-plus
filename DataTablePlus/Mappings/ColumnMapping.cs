@@ -32,7 +32,7 @@ namespace DataTablePlus.Mappings
 	/// <summary>
 	/// Class that allows creating some mappings which represent a database table column
 	/// </summary>
-	public class ColumnMapping
+	public class ColumnMapping : IColumnMapping
 	{
 		/// <summary>
 		/// Database table column name field
@@ -142,14 +142,14 @@ namespace DataTablePlus.Mappings
 		/// Creates a new ColumnMapping object
 		/// </summary>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public static ColumnMapping Create() => new ColumnMapping();
+		public static IColumnMapping Create() => new ColumnMapping();
 
 		/// <summary>
 		/// Adds a column name
 		/// </summary>
 		/// <param name="name">Column name</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping AddName(string name)
+		public IColumnMapping AddName(string name)
 		{
 			this.Name = name;
 
@@ -161,7 +161,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="type">Column type</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping AddType(Type type)
+		public IColumnMapping AddType(Type type)
 		{
 			this.Type = type;
 
@@ -173,7 +173,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="ordinal">Column ordinal</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping AddOrdinal(int ordinal)
+		public IColumnMapping AddOrdinal(int ordinal)
 		{
 			this.Ordinal = ordinal;
 
@@ -185,7 +185,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="primaryKey">Primary key flag</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping PrimaryKey(bool primaryKey)
+		public IColumnMapping PrimaryKey(bool primaryKey)
 		{
 			this.IsPrimaryKey = primaryKey;
 
@@ -197,7 +197,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="acceptNull">Accept null flag</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping AcceptNull(bool acceptNull)
+		public IColumnMapping AcceptNull(bool acceptNull)
 		{
 			this.AllowNull = acceptNull;
 
@@ -209,7 +209,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="defaultValue">Column default value</param>
 		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		public ColumnMapping AddDefaultValue(object defaultValue)
+		public IColumnMapping AddDefaultValue(object defaultValue)
 		{
 			this.DefaultValue = defaultValue;
 
@@ -220,7 +220,18 @@ namespace DataTablePlus.Mappings
 		/// Transforms this object to a new DataColumn object
 		/// </summary>
 		/// <returns>A new DataColumn object</returns>
-		public DataColumn AsDataColumn() => new DataColumn { ColumnName = this.Name, DataType = this.Type, AllowDBNull = this.AllowNull, DefaultValue = this.DefaultValue };
+		public DataColumn AsDataColumn()
+		{
+			var dataColumn = new DataColumn
+			{
+				ColumnName   = this.Name,
+				DataType     = this.Type,
+				AllowDBNull  = this.AllowNull,
+				DefaultValue = this.DefaultValue
+			};
+
+			return dataColumn;
+		}
 
 		/// <summary>
 		/// Tries to set a default value to DefaultValue property based on the data type

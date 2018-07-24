@@ -24,6 +24,7 @@
 
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
+using DataTablePlus.DataAccessContracts.Services;
 using DataTablePlus.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -107,8 +108,8 @@ namespace DataTablePlus.UnitTests
 
 			// Creates the services
 			// ps.: The MetadataService is needed only to get the primary key names, if you do not want to get them automatically, do not need to create this instance
-			using (var metadataService = new MetadataService())
-			using (var sqlService = new SqlService())
+			using (IMetadataService metadataService = new MetadataService())
+			using (ISqlService sqlService = new SqlService())
 			{
 				// Overrides the default timeout setting 2 minutes to ensure that the data will be inserted successfully
 				// ps.: Default timeout is 1 minute

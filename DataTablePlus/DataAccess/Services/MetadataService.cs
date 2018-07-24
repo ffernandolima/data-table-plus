@@ -23,12 +23,13 @@
  *******************************************************************************/
 
 using DataTablePlus.Common;
-using DataTablePlus.DataAccess.Extensions;
 using DataTablePlus.DataAccess.Resources;
 using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 
@@ -39,6 +40,16 @@ namespace DataTablePlus.DataAccess.Services
 	/// </summary>
 	public class MetadataService : ServiceBase, IMetadataService
 	{
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="dbContext">Db Context</param>
+		/// <param name="connectionString">Connection String</param>
+		public MetadataService(DbContext dbContext = null, string connectionString = null)
+			: base(dbContext, connectionString)
+		{
+		}
+
 		/// <summary>
 		/// Gets the table name from the mapped entity on EF
 		/// </summary>

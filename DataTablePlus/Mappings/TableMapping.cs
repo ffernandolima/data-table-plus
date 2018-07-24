@@ -32,7 +32,7 @@ namespace DataTablePlus.Mappings
 	/// <summary>
 	/// Class that allows creating some mappings which represent a database table
 	/// </summary>
-	public class TableMapping
+	public class TableMapping : ITableMapping
 	{
 		/// <summary>
 		/// Database schema field
@@ -47,7 +47,7 @@ namespace DataTablePlus.Mappings
 		/// <summary>
 		/// Database table column mappings field
 		/// </summary>
-		private readonly IList<ColumnMapping> _columnMappings;
+		private readonly IList<IColumnMapping> _columnMappings;
 
 		/// <summary>
 		/// Ctor
@@ -55,7 +55,7 @@ namespace DataTablePlus.Mappings
 		public TableMapping()
 		{
 			this.Schema = Constants.DefaultSchema;
-			this._columnMappings = new List<ColumnMapping>();
+			this._columnMappings = new List<IColumnMapping>();
 		}
 
 		/// <summary>
@@ -92,20 +92,39 @@ namespace DataTablePlus.Mappings
 		/// <summary>
 		/// Database table column mappings ordered by ordinal property
 		/// </summary>
-		public IReadOnlyList<ColumnMapping> ColumnMappings => this._columnMappings.Where(mapping => mapping != null).OrderBy(mapping => mapping.Ordinal).ToList().AsReadOnly();
+		public IReadOnlyList<IColumnMapping> ColumnMappings => this._columnMappings.Where(mapping => mapping != null).OrderBy(mapping => mapping.Ordinal).ToList().AsReadOnly();
+
+		/// <summary>
+		/// Validates the whole table mapping object including the column mappings
+		/// </summary>
+		public void Validate()
+		{
+			this.ValidateTableName();
+			this.ValidateSchema();
+
+			if (!this._columnMappings.Any())
+			{
+				throw new ArgumentException($"{nameof(this._columnMappings)} {CommonResources.CannotBeEmpty}", nameof(this._columnMappings));
+			}
+
+			foreach (var columnMapping in this._columnMappings)
+			{
+				columnMapping.Validate();
+			}
+		}
 
 		/// <summary>
 		/// Creates a new TableMapping object
 		/// </summary>
 		/// <returns>TableMapping object (Builder pattern)</returns>
-		public static TableMapping Create() => new TableMapping();
+		public static ITableMapping Create() => new TableMapping();
 
 		/// <summary>
 		/// Adds a schema 
 		/// </summary>
 		/// <param name="schema">Schema</param>
 		/// <returns>TableMapping object (Builder pattern)</returns>
-		public TableMapping AddSchema(string schema)
+		public ITableMapping AddSchema(string schema)
 		{
 			this.Schema = schema;
 
@@ -117,7 +136,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="tableName">Table name</param>
 		/// <returns>TableMapping object (Builder pattern)</returns>
-		public TableMapping AddTableName(string tableName)
+		public ITableMapping AddTableName(string tableName)
 		{
 			this.TableName = tableName;
 
@@ -134,9 +153,9 @@ namespace DataTablePlus.Mappings
 		/// <param name="allowNull">Allows null</param>
 		/// <param name="defaultValue">Default value</param>
 		/// <returns>TableMapping object (Builder pattern)</returns>
-		public TableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null)
+		public ITableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null)
 		{
-			var mapping = new ColumnMapping
+			IColumnMapping mapping = new ColumnMapping
 			{
 				Name         = columnName,
 				Type         = columnType,
@@ -154,7 +173,7 @@ namespace DataTablePlus.Mappings
 		/// </summary>
 		/// <param name="columnMapping">Column mapping object</param>
 		/// <returns>TableMapping object (Builder pattern)</returns>
-		public TableMapping AddColumnMapping(ColumnMapping columnMapping)
+		public ITableMapping AddColumnMapping(IColumnMapping columnMapping)
 		{
 			if (columnMapping == null)
 			{
@@ -176,25 +195,6 @@ namespace DataTablePlus.Mappings
 			this._columnMappings.Add(columnMapping);
 
 			return this;
-		}
-
-		/// <summary>
-		/// Validates the whole table mapping object including the column mappings
-		/// </summary>
-		public void Validate()
-		{
-			this.ValidateTableName();
-			this.ValidateSchema();
-
-			if (!this._columnMappings.Any())
-			{
-				throw new ArgumentException($"{nameof(this._columnMappings)} {CommonResources.CannotBeEmpty}", nameof(this._columnMappings));
-			}
-
-			foreach (var columnMapping in this._columnMappings)
-			{
-				columnMapping.Validate();
-			}
 		}
 
 		/// <summary>

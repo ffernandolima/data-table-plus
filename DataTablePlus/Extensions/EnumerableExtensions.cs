@@ -25,10 +25,10 @@
 using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccessContracts.Services;
-using DataTablePlus.Mappings;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 
@@ -40,12 +40,52 @@ namespace DataTablePlus.Extensions
 	public static class EnumerableExtensions
 	{
 		/// <summary>
-		/// Gets the entity type from the enumerable
+		/// Transforms a list of objects into a data table
 		/// </summary>
-		/// <typeparam name="T">Type of the enumerable values</typeparam>
-		/// <param name="enumerable">Current enumerable of objects</param>
-		/// <returns>Returns the entity type from the enumerable</returns>
-		public static Type GetTypeFromEnumerable<T>(this IEnumerable<T> enumerable) => typeof(T);
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="objects">List of objects</param>
+		/// <param name="dbContext">EF DbContext if it hasn't been provided through the Startup class</param>
+		/// <returns>A data table</returns>
+		internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, DbContext dbContext) where T : class => AsStronglyTypedDataTable(objects, typeof(T), dbContext);
+
+		/// <summary>
+		/// Transforms a list of objects into a data table
+		/// </summary>
+		/// <typeparam name="T">Type of the objects</typeparam>
+		/// <param name="objects">List of objects</param>
+		/// <param name="derivedObjectType">Derived type of objects if there's polymorphism</param>
+		/// <param name="dbContext">EF DbContext if it hasn't been provided through the Startup class</param>
+		/// <returns>A data table</returns>
+		internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, DbContext dbContext) where T : class
+		{
+			if (objects == null)
+			{
+				throw new ArgumentNullException(nameof(objects), $"{nameof(objects)} {CommonResources.CannotBeNull}");
+			}
+
+			if (derivedObjectType == null)
+			{
+				throw new ArgumentNullException(nameof(derivedObjectType), $"{nameof(derivedObjectType)} {CommonResources.CannotBeNull}");
+			}
+
+			if (dbContext == null)
+			{
+				throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+			}
+
+			var dataTable = GetTableSchemaFromDatabase(derivedObjectType, out IDictionary<PropertyInfo, string> mappings, dbContext);
+
+			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+			{
+				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+			}
+
+			dataTable.Populate(objects, mappings);
+
+			dataTable.AcceptChanges();
+
+			return dataTable;
+		}
 
 		/// <summary>
 		/// Transforms a list of objects into a data table
@@ -107,7 +147,7 @@ namespace DataTablePlus.Extensions
 		/// <param name="objects">List of object arrays</param>
 		/// <param name="tableMapping">An object that contains the table mapping as well as its columns and so on</param>
 		/// <returns>A data table</returns>
-		public static DataTable AsStronglyTypedDataTable(this IEnumerable<object[]> objects, TableMapping tableMapping)
+		public static DataTable AsStronglyTypedDataTable(this IEnumerable<object[]> objects, Mappings.ITableMapping tableMapping)
 		{
 			if (objects == null)
 			{
@@ -139,14 +179,23 @@ namespace DataTablePlus.Extensions
 		}
 
 		/// <summary>
+		/// Gets the entity type from the enumerable
+		/// </summary>
+		/// <typeparam name="T">Type of the enumerable values</typeparam>
+		/// <param name="enumerable">Current enumerable of objects</param>
+		/// <returns>Returns the entity type from the enumerable</returns>
+		public static Type GetTypeFromEnumerable<T>(this IEnumerable<T> enumerable) => typeof(T);
+
+		/// <summary>
 		/// Gets the table schema from database using DbContext mappings for getting some information as well
 		/// </summary>
 		/// <param name="derivedObjectType">Derived type of objects if there's polymorphism</param>
 		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <param name="dbContext">EF DbContext if it hasn't been provided through the Startup class</param>
 		/// <returns>A data table</returns>
-		private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings)
+		private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings, DbContext dbContext = null)
 		{
-			using (IMetadataService metadataService = new MetadataService())
+			using (IMetadataService metadataService = new MetadataService(dbContext))
 			{
 				var tableName = metadataService.GetTableName(derivedObjectType);
 
@@ -208,7 +257,7 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <param name="tableMapping">Table mappings as well as its columns and so on</param>
 		/// <returns>A data table</returns>
-		private static DataTable GetTableSchemaFromTableMapping(TableMapping tableMapping)
+		private static DataTable GetTableSchemaFromTableMapping(Mappings.ITableMapping tableMapping)
 		{
 			tableMapping.Validate();
 
@@ -295,7 +344,7 @@ namespace DataTablePlus.Extensions
 		/// <param name="dataTable">Data table to be filled out</param>
 		/// <param name="objects">List of object arrays</param>
 		/// <param name="tableMapping">Table mappings as well as its columns and so on</param>
-		private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, TableMapping tableMapping)
+		private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, Mappings.ITableMapping tableMapping)
 		{
 			var internalObjects = objects.Where(item => item != null && item.Length > 0);
 
