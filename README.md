@@ -2,14 +2,14 @@
 
 DataTablePlus provides some extensions in order to transform object lists into data tables based on the object mappings (it's able to use the entity framework mappings or just the objects structure) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some performance issues while ingesting or updating a lot of data (represented as objects).
 
+# Dependencies
+
+- EntityFramework >= 6.2.0
+
 # Nuget Status
 
 [![NuGet Version](https://img.shields.io/nuget/v/DataTablePlus.svg)](https://www.nuget.org/packages/DataTablePlus/ "NuGet Version")
 [![NuGet Downloads](https://img.shields.io/nuget/dt/DataTablePlus.svg)](https://www.nuget.org/packages/DataTablePlus/ "NuGet Downloads")
-
-# Dependencies
-
-- EntityFramework >= 6.2.0
 
 # Getting Started
 
