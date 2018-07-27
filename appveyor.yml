@@ -1,7 +1,9 @@
+version: 1.0.{build}
 image: Visual Studio 2017
-
+configuration: Release
+platform: Any CPU
+before_build:
+- cmd: nuget.exe restore DataTablePlus.sln
 build:
   project: DataTablePlus.sln
-
-before_build:
-  nuget.exe restore DataTablePlus.sln
+  verbosity: minimal
