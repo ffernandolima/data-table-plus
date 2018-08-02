@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>DataTablePlus</id>
-		<version>1.0.0.6</version>
+		<version>2.0.0</version>
 		<title>DataTablePlus</title>
 		<description>DataTablePlus provides some extensions in order to transform object lists into data tables based on the object mappings (it's able to use the entity framework mappings or just the objects structure) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some performance issues while ingesting or updating a lot of data (represented as objects).</description>
 		<authors>Lima Technology Services</authors>
@@ -11,10 +11,49 @@
 		<copyright>Copyright © Lima Technology Services</copyright>
 		<projectUrl>https://github.com/ffernandolima/data-table-plus</projectUrl>
 		<dependencies>
-			<dependency id="EntityFramework" version="6.0.0" />
+			<group targetFramework="net45">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net451">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net452">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net46">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net461">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net462">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net47">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net471">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="net472">
+				<dependency id="EntityFramework" version="6.0.0" />
+			</group>
+			<group targetFramework="netstandard2.0">
+				<dependency id="System.Data.SqlClient" Version="4.5.1" />
+				<dependency id="Microsoft.EntityFrameworkCore" Version="2.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
+			</group>
 		</dependencies>
 		<tags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer Database ADO.NET</tags>
 		<releaseNotes>
+			- 2.0.0
+				- Started using Semantic Versioning 2.0.0 (https://semver.org/);
+				- Added supporting for .netstandard2.0 and .netcore2.0/2.1;
+				- Created some DbContext extensions;
+				- Code enhancements.
+			
 			- 1.0.0.6
 				- Created a new structure that allows creating the database table and columns mappings manually. It also has a builder pattern to make the action of mapping these values easier;
 				- Changed EntityFramework dependency version. Now it accepts any version 6.0.0 and above;
@@ -47,50 +86,57 @@
 	</metadata>
 	<files>
 		<file src="README.md" target="" />
+		<file src="LICENSE.md" target="" />
 
 		<!-- net45 -->
-		<file src="DataTablePlus\bin\Release-Net45\DataTablePlus.dll"	target="lib\net45\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net45\DataTablePlus.pdb"	target="lib\net45\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net45\DataTablePlus.xml"	target="lib\net45\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net45\DataTablePlus.dll"	target="lib\net45\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net45\DataTablePlus.pdb"	target="lib\net45\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net45\DataTablePlus.xml"	target="lib\net45\DataTablePlus.xml" />
 
 		<!-- net451 -->
-		<file src="DataTablePlus\bin\Release-Net451\DataTablePlus.dll"	target="lib\net451\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net451\DataTablePlus.pdb"	target="lib\net451\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net451\DataTablePlus.xml"	target="lib\net451\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net451\DataTablePlus.dll"	target="lib\net451\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net451\DataTablePlus.pdb"	target="lib\net451\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net451\DataTablePlus.xml"	target="lib\net451\DataTablePlus.xml" />
 
 		<!-- net452 -->
-		<file src="DataTablePlus\bin\Release-Net452\DataTablePlus.dll"	target="lib\net452\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net452\DataTablePlus.pdb"	target="lib\net452\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net452\DataTablePlus.xml"	target="lib\net452\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net452\DataTablePlus.dll"	target="lib\net452\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net452\DataTablePlus.pdb"	target="lib\net452\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net452\DataTablePlus.xml"	target="lib\net452\DataTablePlus.xml" />
 
 		<!-- net46 -->
-		<file src="DataTablePlus\bin\Release-Net46\DataTablePlus.dll"	target="lib\net46\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net46\DataTablePlus.pdb"	target="lib\net46\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net46\DataTablePlus.xml"	target="lib\net46\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net46\DataTablePlus.dll"	target="lib\net46\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net46\DataTablePlus.pdb"	target="lib\net46\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net46\DataTablePlus.xml"	target="lib\net46\DataTablePlus.xml" />
 
 		<!-- net461 -->
-		<file src="DataTablePlus\bin\Release-Net461\DataTablePlus.dll"	target="lib\net461\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net461\DataTablePlus.pdb"	target="lib\net461\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net461\DataTablePlus.xml"	target="lib\net461\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net461\DataTablePlus.dll"	target="lib\net461\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net461\DataTablePlus.pdb"	target="lib\net461\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net461\DataTablePlus.xml"	target="lib\net461\DataTablePlus.xml" />
 
 		<!-- net462 -->
-		<file src="DataTablePlus\bin\Release-Net462\DataTablePlus.dll"	target="lib\net462\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net462\DataTablePlus.pdb"	target="lib\net462\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net462\DataTablePlus.xml"	target="lib\net462\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net462\DataTablePlus.dll"	target="lib\net462\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net462\DataTablePlus.pdb"	target="lib\net462\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net462\DataTablePlus.xml"	target="lib\net462\DataTablePlus.xml" />
 
 		<!-- net47 -->
-		<file src="DataTablePlus\bin\Release-Net47\DataTablePlus.dll"	target="lib\net47\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net47\DataTablePlus.pdb"	target="lib\net47\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net47\DataTablePlus.xml"	target="lib\net47\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net47\DataTablePlus.dll"	target="lib\net47\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net47\DataTablePlus.pdb"	target="lib\net47\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net47\DataTablePlus.xml"	target="lib\net47\DataTablePlus.xml" />
 
 		<!-- net471 -->
-		<file src="DataTablePlus\bin\Release-Net471\DataTablePlus.dll"	target="lib\net471\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net471\DataTablePlus.pdb"	target="lib\net471\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net471\DataTablePlus.xml"	target="lib\net471\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net471\DataTablePlus.dll"	target="lib\net471\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net471\DataTablePlus.pdb"	target="lib\net471\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net471\DataTablePlus.xml"	target="lib\net471\DataTablePlus.xml" />
 
 		<!-- net472 -->
-		<file src="DataTablePlus\bin\Release-Net472\DataTablePlus.dll"	target="lib\net472\DataTablePlus.dll" />
-		<file src="DataTablePlus\bin\Release-Net472\DataTablePlus.pdb"	target="lib\net472\DataTablePlus.pdb" />
-		<file src="DataTablePlus\bin\Release-Net472\DataTablePlus.xml"	target="lib\net472\DataTablePlus.xml" />
+		<file src="DataTablePlus\bin\Release\net472\DataTablePlus.dll"	target="lib\net472\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\net472\DataTablePlus.pdb"	target="lib\net472\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\net472\DataTablePlus.xml"	target="lib\net472\DataTablePlus.xml" />
+
+		<!-- netstandard2.0 -->
+		<file src="DataTablePlus\bin\Release\netstandard2.0\DataTablePlus.deps"	target="lib\netstandard2.0\DataTablePlus.deps" />
+		<file src="DataTablePlus\bin\Release\netstandard2.0\DataTablePlus.dll"	target="lib\netstandard2.0\DataTablePlus.dll" />
+		<file src="DataTablePlus\bin\Release\netstandard2.0\DataTablePlus.pdb"	target="lib\netstandard2.0\DataTablePlus.pdb" />
+		<file src="DataTablePlus\bin\Release\netstandard2.0\DataTablePlus.xml"	target="lib\netstandard2.0\DataTablePlus.xml" />
 	</files>
 </package>

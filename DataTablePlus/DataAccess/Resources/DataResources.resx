@@ -121,8 +121,7 @@
     <value>ALTER TABLE {0} ADD [{1}] INT NULL</value>
   </data>
   <data name="CreateNonClustedIndex" xml:space="preserve">
-    <value>CREATE NONCLUSTERED INDEX IX_TrackerColumn   
-    ON {0} ([{1}])</value>
+    <value>CREATE NONCLUSTERED INDEX IX_TrackerColumn  ON {0} ([{1}])</value>
   </data>
   <data name="DropNonClustedIndex" xml:space="preserve">
     <value>IF EXISTS (SELECT name FROM sys.indexes WHERE name = N'IX_TrackerColumn')   

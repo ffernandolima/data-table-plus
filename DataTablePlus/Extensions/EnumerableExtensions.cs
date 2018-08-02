@@ -1,26 +1,28 @@
-﻿/*******************************************************************************
+﻿/*****************************************************************************************************************
  * You may amend and distribute as you like, but don't remove this header!
  * 
  * See https://github.com/ffernandolima/data-table-plus for details.
  *
- * Copyright (C) 2018 Fernando Luiz de Lima
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
- * See the GNU Lesser General Public License for more details.
- *
- * The GNU Lesser General Public License can be viewed at http://www.opensource.org/licenses/lgpl-license.php
- * If you unfamiliar with this license or have questions about it, here is a FAQ: http://www.gnu.org/licenses/gpl-faq.html
- *
- * All code and executables are provided "as is" with no warranty either express or implied. 
- * The author accepts no liability for any damage or loss of business that this product may cause.
+ * MIT License
  * 
- *******************************************************************************/
+ * Copyright (c) 2018 Fernando Luiz de Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or substantial 
+ * portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ ****************************************************************************************************************/
 
 using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Services;
@@ -28,9 +30,16 @@ using DataTablePlus.DataAccessContracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
+
+#if NETSTANDARD20
+using Microsoft.EntityFrameworkCore;
+#endif
+
+#if NETFULL
+using System.Data.Entity;
+#endif
 
 namespace DataTablePlus.Extensions
 {

@@ -1,55 +1,66 @@
-﻿/*******************************************************************************
+/*****************************************************************************************************************
  * You may amend and distribute as you like, but don't remove this header!
  * 
  * See https://github.com/ffernandolima/data-table-plus for details.
  *
- * Copyright (C) 2018 Fernando Luiz de Lima
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
- * See the GNU Lesser General Public License for more details.
- *
- * The GNU Lesser General Public License can be viewed at http://www.opensource.org/licenses/lgpl-license.php
- * If you unfamiliar with this license or have questions about it, here is a FAQ: http://www.gnu.org/licenses/gpl-faq.html
- *
- * All code and executables are provided "as is" with no warranty either express or implied. 
- * The author accepts no liability for any damage or loss of business that this product may cause.
+ * MIT License
  * 
- *******************************************************************************/
+ * Copyright (c) 2018 Fernando Luiz de Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or substantial 
+ * portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ ****************************************************************************************************************/
 
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccessContracts.Services;
 using DataTablePlus.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Xunit;
 
-namespace DataTablePlus.UnitTests
+namespace DataTablePlus.NetCore.UnitTests
 {
-	[TestClass]
 	public class UnitTestClass
 	{
-		[ClassInitialize()]
-		public static void MyClassInitialize(TestContext testContext)
+		public UnitTestClass()
 		{
 			// Sets the culture to invariant in order to avoid some exception details in another language
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
+			var configurationBuilder = new ConfigurationBuilder();
+
+			// Gets the connection string from the configuration file
+			var configuration = configurationBuilder.AddJsonFile("appsettings.json").Build();
+			var connectionString = configuration.GetConnectionString("Context");
+
+			var dbContextOptionsBuilder = new DbContextOptionsBuilder<Context>();
+
+			dbContextOptionsBuilder.UseSqlServer(connectionString);
+			dbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
 			// Creates the DbContext
-			var context = new Context();
+			var context = new Context(dbContextOptionsBuilder.Options);
 
 			// Adds the DbContext to DataTablePlus configurations
 			Startup.AddDbContext(context);
@@ -57,14 +68,11 @@ namespace DataTablePlus.UnitTests
 			// Also, a connection string can be added to these configurations 
 			// You should specify at least one of them (DbContext and/or a ConnectionString) and just a reminder: if a DbContext was not provided, the EF extensions will not be available
 
-			// Gets the connection string from the configuration file
-			var connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
-
 			// Adds the connection string to DataTablePlus configurations
 			Startup.AddConnectionString(connectionString);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void GeneralTestMethod()
 		{
 			// Some things should be done before running this test method:
@@ -90,7 +98,7 @@ namespace DataTablePlus.UnitTests
 			// Creates a list of Users
 			IList<User> entities = new List<User>();
 
-			for (int i = 0; i < 1000000; i++)
+			for (int i = 0; i < 100; i++)
 			{
 				var entity = new User
 				{
@@ -136,12 +144,14 @@ namespace DataTablePlus.UnitTests
 				// BatchSize will be used to flush the values against the database table
 				// SqlBulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
 
-				var bulkInsertTask = sqlService.BulkInsertAsync(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
+				// var bulkInsertTask = sqlService.BulkInsertAsync(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
 				// You can do something here while waiting for the task completion
 
 				// Waits for the task completion
-				dataTable = bulkInsertTask.Result;
+				// dataTable = bulkInsertTask.Result;
+
+				dataTable = sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
 				// Stops the Stopwatch
 				stopwatch.Stop();
@@ -158,12 +168,14 @@ namespace DataTablePlus.UnitTests
 					// You can also pass the BatchSize parameter to this method
 					// BatchSize will be used to flush the values against the database table
 
-					var batchUpdateTask = sqlService.BatchUpdateAsync(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
+					// var batchUpdateTask = sqlService.BatchUpdateAsync(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
 
 					// You can do something here while waiting for the task completion
 
 					// Waits for the task completion
-					batchUpdateTask.Wait();
+					// batchUpdateTask.Wait();
+
+					sqlService.BatchUpdate(dataTable, "Update [User] SET [Name] = 'Batch Update Usage Example' WHERE [Id] = @Id");
 
 					// Stops the Stopwatch
 					stopwatch.Stop();
@@ -183,29 +195,16 @@ namespace DataTablePlus.UnitTests
 	/// </summary>
 	internal class Context : DbContext
 	{
-		static Context()
+		public Context(DbContextOptions<Context> options)
+		: base(options)
 		{
-			Database.SetInitializer<Context>(null);
+			this.Database.AutoTransactionsEnabled = false;
+			this.ChangeTracker.AutoDetectChangesEnabled = false;
 		}
 
-		public Context()
-			: this("Name=Context")
+		protected override void OnModelCreating(ModelBuilder builder)
 		{
-		}
-
-		protected Context(string connectionStringName)
-			: base(connectionStringName)
-		{
-			this.Configuration.LazyLoadingEnabled = false;
-			this.Configuration.ProxyCreationEnabled = false;
-			this.Configuration.AutoDetectChangesEnabled = false;
-			this.Configuration.ValidateOnSaveEnabled = false;
-		}
-
-		protected override void OnModelCreating(DbModelBuilder modelBuilder)
-		{
-			// Add the configurations here like this:
-			modelBuilder.Configurations.Add(new UserMap());
+			builder.ApplyConfiguration(new UserMap());
 		}
 	}
 
@@ -226,32 +225,32 @@ namespace DataTablePlus.UnitTests
 	/// <summary>
 	/// Sample POCO class EF mapping
 	/// </summary>
-	public class UserMap : EntityTypeConfiguration<User>
+	public class UserMap : IEntityTypeConfiguration<User>
 	{
-		public UserMap()
+		public void Configure(EntityTypeBuilder<User> builder)
 		{
 			// Primary Key
-			this.HasKey(t => t.Id);
+			builder.HasKey(t => t.Id);
 
 			// Properties
-			this.Property(t => t.Name)
+			builder.Property(t => t.Name)
 				.HasMaxLength(250)
 				.IsRequired();
 
-			this.Property(t => t.Email)
+			builder.Property(t => t.Email)
 				.HasMaxLength(150)
 				.IsRequired();
 
-			this.Property(t => t.Password)
+			builder.Property(t => t.Password)
 				.HasMaxLength(255)
 				.IsRequired();
 
 			// Table & Column Mappings
-			this.ToTable("User");
-			this.Property(t => t.Id).HasColumnName("Id");
-			this.Property(t => t.Name).HasColumnName("Name");
-			this.Property(t => t.Email).HasColumnName("Email");
-			this.Property(t => t.Password).HasColumnName("Password");
+			builder.ToTable("User");
+			builder.Property(t => t.Id).HasColumnName("Id");
+			builder.Property(t => t.Name).HasColumnName("Name");
+			builder.Property(t => t.Email).HasColumnName("Email");
+			builder.Property(t => t.Password).HasColumnName("Password");
 
 			// Relationships
 		}

@@ -1,15 +1,7 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 configuration:
-- Release-Net45
-- Release-Net451
-- Release-Net452
-- Release-Net46
-- Release-Net461
-- Release-Net462
-- Release-Net47
-- Release-Net471
-- Release-Net472
+- Release
 platform: Any CPU
 before_build:
 - cmd: nuget.exe restore DataTablePlus.sln

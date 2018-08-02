@@ -70,8 +70,7 @@ namespace DataTablePlus.DataAccess.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE NONCLUSTERED INDEX IX_TrackerColumn   
-        ///    ON {0} ([{1}]).
+        ///   Looks up a localized string similar to CREATE NONCLUSTERED INDEX IX_TrackerColumn  ON {0} ([{1}]).
         /// </summary>
         internal static string CreateNonClustedIndex {
             get {

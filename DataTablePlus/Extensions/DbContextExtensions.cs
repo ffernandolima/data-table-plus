@@ -1,26 +1,28 @@
-﻿/*******************************************************************************
+﻿/*****************************************************************************************************************
  * You may amend and distribute as you like, but don't remove this header!
  * 
  * See https://github.com/ffernandolima/data-table-plus for details.
  *
- * Copyright (C) 2018 Fernando Luiz de Lima
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
- * See the GNU Lesser General Public License for more details.
- *
- * The GNU Lesser General Public License can be viewed at http://www.opensource.org/licenses/lgpl-license.php
- * If you unfamiliar with this license or have questions about it, here is a FAQ: http://www.gnu.org/licenses/gpl-faq.html
- *
- * All code and executables are provided "as is" with no warranty either express or implied. 
- * The author accepts no liability for any damage or loss of business that this product may cause.
+ * MIT License
  * 
- *******************************************************************************/
+ * Copyright (c) 2018 Fernando Luiz de Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or substantial 
+ * portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ ****************************************************************************************************************/
 
 using DataTablePlus.Common;
 using DataTablePlus.DataAccess.Services;
@@ -29,15 +31,22 @@ using DataTablePlus.DataAccessContracts.Services;
 using DataTablePlus.Threading;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
+#if NETSTANDARD20
+using Microsoft.EntityFrameworkCore;
+#endif
+
+#if NETFULL
+using System.Data.Entity;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
+#endif
 
 namespace DataTablePlus.Extensions
 {
@@ -76,6 +85,7 @@ namespace DataTablePlus.Extensions
 
 			string tableName = null;
 
+#if NETFULL
 			var objectContext = dbContext.GetObjectContext();
 
 			var metadataWorkspace = objectContext.MetadataWorkspace;
@@ -93,10 +103,23 @@ namespace DataTablePlus.Extensions
 
 					var tableMetadataProperty = entitySetBase.MetadataProperties["Table"];
 
-					tableName = $"[{schemaMetadataProperty.Value}].[{tableMetadataProperty.Value}]";
+					tableName = $"[{schemaMetadataProperty.Value ?? Constants.DefaultSchema}].[{tableMetadataProperty.Value}]";
 				}
 			}
+#endif
 
+#if NETSTANDARD20
+			var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+
+			if (entityTypeObject == null)
+			{
+				throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+			}
+
+			var relationalEntityTypeAnnotations = entityTypeObject.Relational();
+
+			tableName = $"[{relationalEntityTypeAnnotations.Schema ?? Constants.DefaultSchema}].[{relationalEntityTypeAnnotations.TableName}]";
+#endif
 			return tableName;
 		}
 
@@ -118,6 +141,9 @@ namespace DataTablePlus.Extensions
 				throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
 			}
 
+			IDictionary<PropertyInfo, string> mappings = null;
+
+#if NETFULL
 			var objectContext = dbContext.GetObjectContext();
 
 			var metadataWorkspace = objectContext.MetadataWorkspace;
@@ -136,18 +162,27 @@ namespace DataTablePlus.Extensions
 
 				if (storageEntityType != null && objectEntityType != null)
 				{
-					var mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
+					mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
 					{
 						Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
 						edmProperty.Name
 
 					}).ToDictionary(x => x.Property, x => x.Name));
-
-					return mappings;
 				}
 			}
+#endif
 
-			return null;
+#if NETSTANDARD20
+			var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+
+			if (entityTypeObject == null)
+			{
+				throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+			}
+
+			mappings = entityTypeObject.GetProperties().Where(property => !property.IsShadowProperty).ToDictionary(property => property.PropertyInfo, property => property.Relational().ColumnName);
+#endif
+			return mappings;
 		}
 
 		/// <summary>
@@ -168,6 +203,7 @@ namespace DataTablePlus.Extensions
 				throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
 			}
 
+#if NETFULL
 			var objectContext = dbContext.GetObjectContext();
 
 			var objectContextType = objectContext.GetType();
@@ -183,8 +219,68 @@ namespace DataTablePlus.Extensions
 			var keyNames = keyMembers.Select(keyMember => (string)keyMember.Name).ToList();
 
 			return keyNames;
+#endif
+
+#if NETSTANDARD20
+			var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+
+			if (entityTypeObject == null)
+			{
+				throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+			}
+
+			var key = entityTypeObject.FindPrimaryKey();
+
+			var keyNames = key.Properties.Where(property => !property.IsShadowProperty).Select(property => property.Name).ToList();
+
+			return keyNames;
+#endif
 		}
 
+		/// <summary>
+		/// Tries to create a string array containing the db entity keys
+		/// </summary>
+		/// <param name="dbContext">EF DbContext</param>
+		/// <param name="entityType">Type of the entity</param>
+		/// <returns>String array that contains the db entity keys</returns>
+		internal static IList<string> GetDbKeyNames(this DbContext dbContext, Type entityType)
+		{
+			if (dbContext == null)
+			{
+				throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+			}
+
+			if (entityType == null)
+			{
+				throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+			}
+
+			IList<string> dbKeyNames = null;
+
+#if NETFULL
+			var keyNames = dbContext.GetKeyNames(entityType);
+			var mappings = dbContext.GetMappings(entityType);
+
+			if (keyNames != null && mappings != null)
+			{
+				dbKeyNames = mappings.Where(mapping => keyNames.Contains(mapping.Key.Name)).Select(mapping => mapping.Value).ToList();
+			}
+#endif
+
+#if NETSTANDARD20
+			var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+
+			if (entityTypeObject == null)
+			{
+				throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+			}
+
+			var key = entityTypeObject.FindPrimaryKey();
+
+			dbKeyNames = key.Properties.Where(property => !property.IsShadowProperty).Select(property => property.Relational().ColumnName).ToList();
+#endif
+			return dbKeyNames;
+		}
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data
 		/// </summary>
@@ -274,30 +370,6 @@ namespace DataTablePlus.Extensions
 		}
 
 		/// <summary>
-		/// Gets ObjectContext from EF DbContext
-		/// </summary>
-		/// <param name="dbContext">EF DbContext</param>
-		/// <returns>ObjectContext from EF DbContext</returns>
-		private static ObjectContext GetObjectContext(this DbContext dbContext)
-		{
-			var objectContextAdapter = (dbContext as IObjectContextAdapter);
-
-			if (objectContextAdapter == null)
-			{
-				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
-			}
-
-			var objectContext = objectContextAdapter.ObjectContext;
-
-			if (objectContext == null)
-			{
-				throw new ArgumentNullException(nameof(objectContext), $"{nameof(objectContext)} {CommonResources.CannotBeNull}");
-			}
-
-			return objectContext;
-		}
-
-		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (internal method)
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
@@ -376,5 +448,31 @@ namespace DataTablePlus.Extensions
 				sqlService.BatchUpdate(dataTable, commandText, batchSize);
 			}
 		}
+
+#if NETFULL
+		/// <summary>
+		/// Gets the ObjectContext from EF DbContext
+		/// </summary>
+		/// <param name="dbContext">EF DbContext</param>
+		/// <returns>ObjectContext from EF DbContext</returns>
+		private static ObjectContext GetObjectContext(this DbContext dbContext)
+		{
+			var objectContextAdapter = (dbContext as IObjectContextAdapter);
+
+			if (objectContextAdapter == null)
+			{
+				throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
+			}
+
+			var objectContext = objectContextAdapter.ObjectContext;
+
+			if (objectContext == null)
+			{
+				throw new ArgumentNullException(nameof(objectContext), $"{nameof(objectContext)} {CommonResources.CannotBeNull}");
+			}
+
+			return objectContext;
+		}
+#endif
 	}
 }
