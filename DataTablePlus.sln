@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutiom Items", "Solutiom Items", "{75C27982-A1FE-4D00-80AA-72A11A8E9DF8}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
-		DataTablePlus.nuspec = DataTablePlus.nuspec
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
