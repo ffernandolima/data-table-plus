@@ -281,6 +281,7 @@ namespace DataTablePlus.Extensions
 #endif
 			return dbKeyNames;
 		}
+
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data
 		/// </summary>
