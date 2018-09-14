@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTablePlus.NetCore.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTablePlus.NetFull.UnitTests", "DataTablePlus.NetFull.UnitTests\DataTablePlus.NetFull.UnitTests.csproj", "{69F4C27E-A118-4AD2-8183-A5B933A503CE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutiom Items", "Solutiom Items", "{75C27982-A1FE-4D00-80AA-72A11A8E9DF8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75C27982-A1FE-4D00-80AA-72A11A8E9DF8}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
 		LICENSE.md = LICENSE.md
