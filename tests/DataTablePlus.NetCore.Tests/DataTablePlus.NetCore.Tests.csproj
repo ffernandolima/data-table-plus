@@ -19,10 +19,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DataTablePlus\DataTablePlus.csproj" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\DataTablePlus\DataTablePlus.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

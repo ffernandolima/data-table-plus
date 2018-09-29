@@ -303,23 +303,11 @@ namespace DataTablePlus.Extensions
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
-		/// <returns>List of objects filled with the primary key values or not</returns>
-		public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class => BulkInsertAsync(dbContext, entities, CancellationTokenFactory.Token(), batchSize, options, retrievePrimaryKeyValues);
-
-		/// <summary>
-		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
-		/// <param name="options">Bulk insert options</param>
-		/// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
 		/// <returns>List of objects filled with the primary key values or not</returns>
-		public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
+		public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class
 		{
-			if (cancellationToken == null)
+			if (cancellationToken == null || cancellationToken == default(CancellationToken))
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -347,20 +335,10 @@ namespace DataTablePlus.Extensions
 		/// <param name="entities">List of objects which contain the values to insert into the database</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
-		public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class => BatchUpdateAsync(dbContext, entities, commandText, CancellationTokenFactory.Token(), batchSize);
-
-		/// <summary>
-		/// Executes an async batch update in order to get a high performance level while updating a lot of data
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
-		/// <param name="commandText">The sql command text that will be used to update the data</param>
-		/// <param name="cancellationToken">A token for stopping the task if needed</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
-		public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize) where T : class
+		/// <param name="cancellationToken">A token for stopping the task if needed</param> 
+		public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default(CancellationToken)) where T : class
 		{
-			if (cancellationToken == null)
+			if (cancellationToken == null || cancellationToken == default(CancellationToken))
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}

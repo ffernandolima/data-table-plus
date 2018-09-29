@@ -84,21 +84,11 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options></param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
-		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
-		public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null) => this.BulkInsertAsync(dataTable, CancellationTokenFactory.Token(), batchSize, options, primaryKeyNames);
-
-		/// <summary>
-		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
-		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
-		/// <param name="options">Bulk insert options></param>
-		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
-		public Task<DataTable> BulkInsertAsync(DataTable dataTable, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
+		public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken == null)
+			if (cancellationToken == null || cancellationToken == default(CancellationToken))
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -122,20 +112,11 @@ namespace DataTablePlus.DataAccess.Services
 		/// <param name="dataTable">Data table that contains the data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
-		/// <returns>Returns a task which will be processing the update</returns>
-		public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize) => this.BatchUpdateAsync(dataTable, commandText, CancellationTokenFactory.Token(), batchSize);
-
-		/// <summary>
-		/// Executes an async batch update in order to get a high performance level while updating a lot of data
-		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
-		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
-		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		/// <returns>Returns a task which will be processing the update</returns>
-		public Task BatchUpdateAsync(DataTable dataTable, string commandText, CancellationToken cancellationToken, int batchSize = DataConstants.BatchSize)
+		public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken == null)
+			if (cancellationToken == null || cancellationToken == default(CancellationToken))
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}

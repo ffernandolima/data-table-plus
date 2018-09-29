@@ -1,4 +1,4 @@
-/*****************************************************************************************************************
+﻿/*****************************************************************************************************************
  * You may amend and distribute as you like, but don't remove this header!
  * 
  * See https://github.com/ffernandolima/data-table-plus for details.
@@ -28,39 +28,30 @@ using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccessContracts.Services;
 using DataTablePlus.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using Xunit;
 
-namespace DataTablePlus.NetCore.UnitTests
+namespace DataTablePlus.NetFull.Tests.IntegrationTests
 {
-	public class UnitTestClass
+	[TestClass]
+	public class DataTablePlusTests
 	{
-		public UnitTestClass()
+		[ClassInitialize()]
+		public static void MyClassInitialize(TestContext testContext)
 		{
 			// Sets the culture to invariant in order to avoid some exception details in another language
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-			var configurationBuilder = new ConfigurationBuilder();
-
-			// Gets the connection string from the configuration file
-			var configuration = configurationBuilder.AddJsonFile("appsettings.json").Build();
-			var connectionString = configuration.GetConnectionString("Context");
-
-			var dbContextOptionsBuilder = new DbContextOptionsBuilder<Context>();
-
-			dbContextOptionsBuilder.UseSqlServer(connectionString);
-			dbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-
 			// Creates the DbContext
-			var context = new Context(dbContextOptionsBuilder.Options);
+			var context = new Context();
 
 			// Adds the DbContext to DataTablePlus configurations
 			Startup.AddDbContext(context);
@@ -68,11 +59,14 @@ namespace DataTablePlus.NetCore.UnitTests
 			// Also, a connection string can be added to these configurations 
 			// You should specify at least one of them (DbContext and/or a ConnectionString) and just a reminder: if a DbContext was not provided, the EF extensions will not be available
 
+			// Gets the connection string from the configuration file
+			var connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
+
 			// Adds the connection string to DataTablePlus configurations
 			Startup.AddConnectionString(connectionString);
 		}
 
-		[Fact]
+		[TestMethod]
 		public void GeneralTestMethod()
 		{
 			// Some things should be done before running this test method:
@@ -195,16 +189,29 @@ namespace DataTablePlus.NetCore.UnitTests
 	/// </summary>
 	internal class Context : DbContext
 	{
-		public Context(DbContextOptions<Context> options)
-		: base(options)
+		static Context()
 		{
-			this.Database.AutoTransactionsEnabled = false;
-			this.ChangeTracker.AutoDetectChangesEnabled = false;
+			Database.SetInitializer<Context>(null);
 		}
 
-		protected override void OnModelCreating(ModelBuilder builder)
+		public Context()
+			: this("Name=Context")
 		{
-			builder.ApplyConfiguration(new UserMap());
+		}
+
+		protected Context(string connectionStringName)
+			: base(connectionStringName)
+		{
+			this.Configuration.LazyLoadingEnabled = false;
+			this.Configuration.ProxyCreationEnabled = false;
+			this.Configuration.AutoDetectChangesEnabled = false;
+			this.Configuration.ValidateOnSaveEnabled = false;
+		}
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			// Add the configurations here like this:
+			modelBuilder.Configurations.Add(new UserMap());
 		}
 	}
 
@@ -225,32 +232,32 @@ namespace DataTablePlus.NetCore.UnitTests
 	/// <summary>
 	/// Sample POCO class EF mapping
 	/// </summary>
-	public class UserMap : IEntityTypeConfiguration<User>
+	public class UserMap : EntityTypeConfiguration<User>
 	{
-		public void Configure(EntityTypeBuilder<User> builder)
+		public UserMap()
 		{
 			// Primary Key
-			builder.HasKey(t => t.Id);
+			this.HasKey(t => t.Id);
 
 			// Properties
-			builder.Property(t => t.Name)
+			this.Property(t => t.Name)
 				.HasMaxLength(250)
 				.IsRequired();
 
-			builder.Property(t => t.Email)
+			this.Property(t => t.Email)
 				.HasMaxLength(150)
 				.IsRequired();
 
-			builder.Property(t => t.Password)
+			this.Property(t => t.Password)
 				.HasMaxLength(255)
 				.IsRequired();
 
 			// Table & Column Mappings
-			builder.ToTable("User");
-			builder.Property(t => t.Id).HasColumnName("Id");
-			builder.Property(t => t.Name).HasColumnName("Name");
-			builder.Property(t => t.Email).HasColumnName("Email");
-			builder.Property(t => t.Password).HasColumnName("Password");
+			this.ToTable("User");
+			this.Property(t => t.Id).HasColumnName("Id");
+			this.Property(t => t.Name).HasColumnName("Name");
+			this.Property(t => t.Email).HasColumnName("Email");
+			this.Property(t => t.Password).HasColumnName("Password");
 
 			// Relationships
 		}
