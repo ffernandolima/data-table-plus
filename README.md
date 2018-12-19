@@ -224,7 +224,7 @@ DataTablePlus provides some extensions in order to transform object lists into d
 				// Not setting them can save a lot of time
 
 				// Gets the primary key names from the entity mapping
-				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromCollection());
+				var databaseKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromEnumerable());
 
 				// You can specify the primary key names directly, get from another source or pass null
 				// var databaseKeyNames = new List<string> { "UserId" };
