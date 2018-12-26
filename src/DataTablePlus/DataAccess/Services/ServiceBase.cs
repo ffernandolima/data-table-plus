@@ -133,6 +133,10 @@ namespace DataTablePlus.DataAccess.Services
 
 				throw;
 			}
+			finally
+			{
+				this.DisposeTransaction();
+			}
 		}
 
 		/// <summary>
@@ -150,6 +154,10 @@ namespace DataTablePlus.DataAccess.Services
 			catch
 			{
 				// ignored
+			}
+			finally
+			{
+				this.DisposeTransaction();
 			}
 		}
 
@@ -233,6 +241,18 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
+		/// Disposes the current transaction
+		/// </summary>
+		private void DisposeTransaction()
+		{
+			if (this.SqlTransaction != null)
+			{
+				this.SqlTransaction.Dispose();
+				this.SqlTransaction = null;
+			}
+		}
+
+		/// <summary>
 		/// Fill the properties out using the values from the Ctor or from the Startup class
 		/// </summary>
 		/// <param name="dbContext">Db Context</param>
@@ -299,6 +319,8 @@ namespace DataTablePlus.DataAccess.Services
 			{
 				if (disposing)
 				{
+					this.DisposeTransaction();
+
 					if (this.DbContext != null)
 					{
 						this.DbContext = null;
