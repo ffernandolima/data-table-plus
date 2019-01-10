@@ -3,13 +3,16 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
 		<Configurations>Debug;Release</Configurations>
-		<Version>2.0.2</Version>
+		<Version>2.0.3</Version>
 		<Authors>Lima Technology Services</Authors>
 		<Description>DataTablePlus provides some extensions in order to transform object lists into data tables based on the object mappings (it's able to use the entity framework mappings or just the objects structure) and also some sql helpers which perform some batch operations using the previously built data tables. This application is focused on solving some performance issues while ingesting or updating a lot of data (represented as objects).</Description>
 		<Copyright>Copyright © Lima Technology Services</Copyright>
 		<PackageProjectUrl>https://github.com/ffernandolima/data-table-plus</PackageProjectUrl>
 		<PackageTags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer Database ADO.NET</PackageTags>
-		<PackageReleaseNotes>- 2.0.2
+		<PackageReleaseNotes>- 2.0.3
+- DbContext extensions enhancements.
+
+- 2.0.2
 - Db Transactions enhancements.
 
 - 2.0.1
@@ -51,8 +54,8 @@
 - 1.0.0.1
 - Created DataTablePlus library (Initial Package).</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>2.0.2.0</AssemblyVersion>
-		<FileVersion>2.0.2.0</FileVersion>
+		<AssemblyVersion>2.0.3.0</AssemblyVersion>
+		<FileVersion>2.0.3.0</FileVersion>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 

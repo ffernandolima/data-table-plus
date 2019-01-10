@@ -162,12 +162,34 @@ namespace DataTablePlus.Extensions
 
 				if (storageEntityType != null && objectEntityType != null)
 				{
-					mappings = (storageEntityType.Properties.Select((edmProperty, idx) => new
+					// Enum properties usually are ordered at the end of the properties/members collection, so index based approach doesn't work
+					if (!objectEntityType.Properties.Any(x => x.IsEnumType))
 					{
-						Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
-						edmProperty.Name
+						// Tries to get the mappings by property indexes
+						mappings = storageEntityType.Properties.Select((edmProperty, idx) => new
+						{
+							Property = entityType.GetProperty(objectEntityType.Members[idx].Name),
+							edmProperty.Name
 
-					}).ToDictionary(x => x.Property, x => x.Name));
+						}).ToDictionary(x => x.Property, x => x.Name);
+					}
+					else
+					{
+						// Tries to get the mappings by property names since there may be enum properties
+						mappings = storageEntityType.Properties.Select(edmProperty =>
+						{
+							var edmMemberResult = objectEntityType.Members.SingleOrDefault(edmMember => edmMember.Name.Equals(edmProperty.Name, StringComparison.OrdinalIgnoreCase));
+
+							var mapping = new
+							{
+								Property = edmMemberResult != null ? entityType.GetProperty(edmMemberResult.Name) : null,
+								edmProperty.Name
+							};
+
+							return mapping;
+
+						}).ToDictionary(x => x.Property, x => x.Name);
+					}
 				}
 			}
 #endif
