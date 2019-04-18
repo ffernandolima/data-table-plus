@@ -269,6 +269,10 @@ DataTablePlus provides some extensions in order to transform object lists into d
 		}
   
 ```
+
+# Support / Contributing
+If you want to help with the project, feel free to open pull requests and submit issues. 
+
 # Donate
 
 If you would like to show your support for this project, then please feel free to buy me a coffee.
