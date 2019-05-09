@@ -120,10 +120,10 @@
   <data name="AddTrackerColumnStatement" xml:space="preserve">
     <value>ALTER TABLE {0} ADD [{1}] INT NULL</value>
   </data>
-  <data name="CreateNonClustedIndex" xml:space="preserve">
+  <data name="CreateNonClusteredIndex" xml:space="preserve">
     <value>CREATE NONCLUSTERED INDEX IX_TrackerColumn  ON {0} ([{1}])</value>
   </data>
-  <data name="DropNonClustedIndex" xml:space="preserve">
+  <data name="DropNonClusteredIndex" xml:space="preserve">
     <value>IF EXISTS (SELECT name FROM sys.indexes WHERE name = N'IX_TrackerColumn')   
     DROP INDEX IX_TrackerColumn ON {0}</value>
   </data>

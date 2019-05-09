@@ -272,7 +272,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			try
 			{
-				var commandText = string.Format(DataResources.DropNonClustedIndex, tableName);
+				var commandText = string.Format(DataResources.DropNonClusteredIndex, tableName);
 
 				using (var command = this.CreateCommand(commandText: commandText))
 				{
@@ -294,7 +294,7 @@ namespace DataTablePlus.DataAccess.Services
 		{
 			try
 			{
-				var commandText = string.Format(DataResources.CreateNonClustedIndex, tableName, trackerColumnName);
+				var commandText = string.Format(DataResources.CreateNonClusteredIndex, tableName, trackerColumnName);
 
 				using (var command = this.CreateCommand(commandText: commandText))
 				{
@@ -405,7 +405,7 @@ namespace DataTablePlus.DataAccess.Services
 
 						if (!string.Equals(drTrackerColumnValue, dbTrackerColumnValue, StringComparison.OrdinalIgnoreCase))
 						{
-							Debug.WriteLine($"DataRowTrackerColumnValue: {drTrackerColumnValue} and DatabaseTrackerColumnValue {dbTrackerColumnValue} are not equal.");
+							Debug.WriteLine($"DataRowTrackerColumnValue '{drTrackerColumnValue}' and DatabaseTrackerColumnValue '{dbTrackerColumnValue}' are not equal.");
 							continue;
 						}
 #endif

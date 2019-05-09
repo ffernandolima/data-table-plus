@@ -72,9 +72,9 @@ namespace DataTablePlus.DataAccess.Resources {
         /// <summary>
         ///   Looks up a localized string similar to CREATE NONCLUSTERED INDEX IX_TrackerColumn  ON {0} ([{1}]).
         /// </summary>
-        internal static string CreateNonClustedIndex {
+        internal static string CreateNonClusteredIndex {
             get {
-                return ResourceManager.GetString("CreateNonClustedIndex", resourceCulture);
+                return ResourceManager.GetString("CreateNonClusteredIndex", resourceCulture);
             }
         }
         
@@ -82,9 +82,9 @@ namespace DataTablePlus.DataAccess.Resources {
         ///   Looks up a localized string similar to IF EXISTS (SELECT name FROM sys.indexes WHERE name = N&apos;IX_TrackerColumn&apos;)   
         ///    DROP INDEX IX_TrackerColumn ON {0}.
         /// </summary>
-        internal static string DropNonClustedIndex {
+        internal static string DropNonClusteredIndex {
             get {
-                return ResourceManager.GetString("DropNonClustedIndex", resourceCulture);
+                return ResourceManager.GetString("DropNonClusteredIndex", resourceCulture);
             }
         }
         
