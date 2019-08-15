@@ -164,7 +164,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Creates a command based on the provided parameters
 		/// </summary>
-		/// <param name="commandText">Commnad text to be executed on database</param>
+		/// <param name="commandText">Command text to be executed on database</param>
 		/// <param name="commandType">Type of the provided command text</param>
 		/// <param name="parameters">command parameters</param>
 		/// <param name="useInternalTransaction">A flag that indicates if an internal transaction shall be created</param>
@@ -202,8 +202,8 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Creates a new SqlBulkCopy based on the provided parameters
 		/// </summary>
-		/// <param name="dataTable">The table that contains the data to execute the bulk insert on database</param>
-		/// <param name="batchSize">the size of batch</param>
+		/// <param name="dataTable">The data table with data to execute the bulk insert on database</param>
+		/// <param name="batchSize">the batch size</param>
 		/// <param name="options">Options to be used while ingesting the amount of data</param>
 		/// <param name="createColumnMappings">A flag that indicates if the mappings shall be created</param>
 		/// <returns></returns>

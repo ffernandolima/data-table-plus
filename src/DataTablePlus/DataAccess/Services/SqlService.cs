@@ -70,8 +70,8 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="dataTable">Data table with data</param>
+		/// <param name="batchSize">The batch number which will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
@@ -80,15 +80,15 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="dataTable">Data table with data</param>
+		/// <param name="batchSize">The batch number which will be considered while inserting</param>
 		/// <param name="options">Bulk insert options></param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
-		/// <returns>Returns a task and as a result after running the bulk insert a data table filled out with primary keys or not will be returned</returns>
-		public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null, CancellationToken cancellationToken = default(CancellationToken))
+		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
+		public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, IList<string> primaryKeyNames = null, CancellationToken cancellationToken = default)
 		{
-			if (cancellationToken == null || cancellationToken == default(CancellationToken))
+			if (cancellationToken == null || cancellationToken == default)
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -101,7 +101,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes a batch update in order to get a high performance level while updating a lot of data
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		public void BatchUpdate(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize) => this.BatchUpdateInternal(dataTable, commandText, batchSize);
@@ -109,14 +109,14 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes an async batch update in order to get a high performance level while updating a lot of data
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
 		/// <returns>Returns a task which will be processing the update</returns>
-		public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default(CancellationToken))
+		public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default)
 		{
-			if (cancellationToken == null || cancellationToken == default(CancellationToken))
+			if (cancellationToken == null || cancellationToken == default)
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -129,7 +129,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes a bulk insert in order to get a high performance level while inserting a lot of data (internal method)
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
@@ -189,7 +189,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Executes a batch update in order to get a high performance level while updating a lot of data (internal method)
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
 		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		private void BatchUpdateInternal(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize)
@@ -238,7 +238,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Validates the provided parameters to avoid some problems during the bulk insert
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		private void ValidateBulkInsertParameters(DataTable dataTable)
 		{
 			dataTable.ValidateParameters();
@@ -252,7 +252,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Validates the provided parameters to avoid some problems during the batch update
 		/// </summary>
-		/// <param name="dataTable">Data table that contains the data</param>
+		/// <param name="dataTable">Data table with data</param>
 		/// <param name="commandText">Commnad text to update the data</param>
 		private void ValidateBatchUpdateParameters(DataTable dataTable, string commandText)
 		{
@@ -356,7 +356,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Allows the primary key columns to receive some data
 		/// </summary>
-		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataTable">Table with data</param>
 		/// <param name="primaryKeyNames">The name of the primary keys</param>
 		private void SetReadOnlyFalse(DataTable dataTable, IList<string> primaryKeyNames)
 		{
@@ -371,7 +371,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Gets the primary key values back from the database
 		/// </summary>
-		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataTable">Table with data</param>
 		/// <param name="trackerColumnName">The name of the column</param>
 		/// <param name="primaryKeyNames">The name of the primary keys</param>
 		private void RetrievePrimaryKeyValues(DataTable dataTable, string trackerColumnName, IList<string> primaryKeyNames)
@@ -421,7 +421,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Creates the bulk insert parameters
 		/// </summary>
-		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataTable">Table with data</param>
 		/// <param name="trackerColumnName">The name of the column</param>
 		/// <returns></returns>
 		private SqlParameter[] BuildInsertParameters(DataTable dataTable, string trackerColumnName)
@@ -447,7 +447,7 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Drops the tracker column in the database table
+		/// Drops the tracker column from the database table
 		/// </summary>
 		/// <param name="tableName">Database table name</param>
 		/// <param name="trackerColumnName">The name of the column</param>
@@ -472,9 +472,9 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Drops the tracker column in the current data table
+		/// Drops the tracker column from the current data table
 		/// </summary>
-		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataTable">Table with data</param>
 		/// <param name="trackerColumnName">The name of the column</param>
 		private void RemoveTrackerColumn(DataTable dataTable, string trackerColumnName)
 		{
@@ -521,7 +521,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// <summary>
 		/// Sets the provided status to the current data table rows
 		/// </summary>
-		/// <param name="dataTable">Table that contains the data</param>
+		/// <param name="dataTable">Table with data</param>
 		/// <param name="dataRowState">The row state to be set</param>
 		private void SetStatus(DataTable dataTable, DataRowState dataRowState)
 		{

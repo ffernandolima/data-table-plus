@@ -124,11 +124,11 @@ namespace DataTablePlus.Extensions
 		}
 
 		/// <summary>
-		/// Tries to build a dictionary that contains a mapping between the model properties and the mapped column names
+		/// Tries to build a dictionary that contains a mapping between the model properties and the mapped database column names
 		/// </summary>
 		/// <param name="dbContext">EF DbContext</param>
 		/// <param name="entityType">Type of the entity</param>
-		/// <returns>Dictionary that contains a mapping between the model properties and the mapped column names</returns>
+		/// <returns>Dictionary that contains a mapping between the model properties and the mapped database column names</returns>
 		internal static IDictionary<PropertyInfo, string> GetMappings(this DbContext dbContext, Type entityType)
 		{
 			if (dbContext == null)
@@ -309,7 +309,7 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be inserted into the database</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
@@ -321,15 +321,15 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be inserted into the database</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
 		/// <returns>List of objects filled with the primary key values or not</returns>
-		public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+		public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
 		{
-			if (cancellationToken == null || cancellationToken == default(CancellationToken))
+			if (cancellationToken == null || cancellationToken == default)
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -344,9 +344,9 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be updated into the database</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		public static void BatchUpdate<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class => BatchUpdateInternal(dbContext, entities, commandText, batchSize);
 
 		/// <summary>
@@ -354,13 +354,13 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be updated into the database</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param> 
-		public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+		public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default) where T : class
 		{
-			if (cancellationToken == null || cancellationToken == default(CancellationToken))
+			if (cancellationToken == null || cancellationToken == default)
 			{
 				cancellationToken = CancellationTokenFactory.Token();
 			}
@@ -375,7 +375,7 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be inserted into the database</param>
 		/// <param name="batchSize">The batch number that will be considered while inserting</param>
 		/// <param name="options">Bulk insert options</param>
 		/// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
@@ -422,9 +422,9 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dbContext">EF DbContext</param>
-		/// <param name="entities">List of objects which contain the values to insert into the database</param>
+		/// <param name="entities">List of objects which contains the values to be updated into the database</param>
 		/// <param name="commandText">The sql command text that will be used to update the data</param>
-		/// <param name="batchSize">The batch number that will be considered while inserting</param>
+		/// <param name="batchSize">The batch number that will be considered while updating</param>
 		private static void BatchUpdateInternal<T>(DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class
 		{
 			if (dbContext == null)

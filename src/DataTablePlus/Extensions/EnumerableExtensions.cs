@@ -41,6 +41,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
 #endif
 
+using ITableMapping = DataTablePlus.Mappings.ITableMapping;
+
 namespace DataTablePlus.Extensions
 {
 	/// <summary>
@@ -199,7 +201,7 @@ namespace DataTablePlus.Extensions
 		/// Gets the table schema from database using DbContext mappings for getting some information as well
 		/// </summary>
 		/// <param name="derivedObjectType">Derived type of objects if there's polymorphism</param>
-		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <param name="mappings">Mappings between the model properties and the mapped database column names</param>
 		/// <param name="dbContext">EF DbContext if it hasn't been provided through the Startup class</param>
 		/// <returns>A data table</returns>
 		private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings, DbContext dbContext = null)
@@ -235,7 +237,7 @@ namespace DataTablePlus.Extensions
 		/// Gets the table schema from entity structure
 		/// </summary>
 		/// <param name="derivedObjectType">Derived type of objects if there's polymorphism</param>
-		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <param name="mappings">Mappings between the model properties and the mapped database column names</param>
 		/// <returns>A data table</returns>
 		private static DataTable GetTableSchemaFromEntityStructure(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings)
 		{
@@ -266,7 +268,7 @@ namespace DataTablePlus.Extensions
 		/// </summary>
 		/// <param name="tableMapping">Table mappings as well as its columns and so on</param>
 		/// <returns>A data table</returns>
-		private static DataTable GetTableSchemaFromTableMapping(Mappings.ITableMapping tableMapping)
+		private static DataTable GetTableSchemaFromTableMapping(ITableMapping tableMapping)
 		{
 			tableMapping.Validate();
 
@@ -289,7 +291,7 @@ namespace DataTablePlus.Extensions
 		/// <typeparam name="T">Type of the objects</typeparam>
 		/// <param name="dataTable">Data table to be filled out</param>
 		/// <param name="objects">List of objects</param>
-		/// <param name="mappings">Mappings between the model properties and the mapped column names</param>
+		/// <param name="mappings">Mappings between the model properties and the mapped database column names</param>
 		private static void Populate<T>(this DataTable dataTable, IEnumerable<T> objects, IDictionary<PropertyInfo, string> mappings) where T : class
 		{
 			var internalObjects = objects.Where(item => item != null);
@@ -353,7 +355,7 @@ namespace DataTablePlus.Extensions
 		/// <param name="dataTable">Data table to be filled out</param>
 		/// <param name="objects">List of object arrays</param>
 		/// <param name="tableMapping">Table mappings as well as its columns and so on</param>
-		private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, Mappings.ITableMapping tableMapping)
+		private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, ITableMapping tableMapping)
 		{
 			var internalObjects = objects.Where(item => item != null && item.Length > 0);
 

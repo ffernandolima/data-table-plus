@@ -81,14 +81,14 @@ namespace DataTablePlus.DataAccess.Services
 		}
 
 		/// <summary>
-		/// Gets a mapping between the model properties and the mapped column names
+		/// Gets a mapping between the model properties and the mapped database column names
 		/// </summary>
 		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
 		/// <returns>Mapping or null</returns>
 		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class => this.GetMappings(typeof(T));
 
 		/// <summary>
-		/// Gets a mapping between the model properties and the mapped column names
+		/// Gets a mapping between the model properties and the mapped database column names
 		/// </summary>
 		/// <param name="type">Type of the mapped entity on EF</param>
 		/// <returns>Mapping or null</returns>
