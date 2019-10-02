@@ -82,7 +82,7 @@ namespace DataTablePlus.DataAccess.Services
 		/// </summary>
 		/// <param name="dataTable">Data table with data</param>
 		/// <param name="batchSize">The batch number which will be considered while inserting</param>
-		/// <param name="options">Bulk insert options></param>
+		/// <param name="options">Bulk insert options</param>
 		/// <param name="primaryKeyNames">Primary key names to retrieve their values after the bulk insert</param>
 		/// <param name="cancellationToken">A token for stopping the task if needed</param>
 		/// <returns>Returns the data table filled out with primary keys or not, depends on the primaryKeyNames parameter</returns>
