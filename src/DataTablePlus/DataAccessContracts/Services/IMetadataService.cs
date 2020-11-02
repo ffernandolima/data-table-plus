@@ -31,72 +31,72 @@ using System.Reflection;
 
 namespace DataTablePlus.DataAccessContracts.Services
 {
-	/// <summary>
-	/// MetadataService interface
-	/// </summary>
-	public interface IMetadataService : IServiceBase, IDisposable
-	{
-		/// <summary>
-		/// Gets the table name from the mapped entity on EF
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
-		/// <returns>Table name or null</returns>
-		string GetTableName<T>() where T : class;
+    /// <summary>
+    /// MetadataService interface
+    /// </summary>
+    public interface IMetadataService : IServiceBase, IDisposable
+    {
+        /// <summary>
+        /// Gets the table name from the mapped entity on EF
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity</typeparam>
+        /// <returns>Table name or null</returns>
+        string GetTableName<T>() where T : class;
 
-		/// <summary>
-		/// Gets the table name from the mapped entity on EF
-		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
-		/// <returns>Table name or null</returns>
-		string GetTableName(Type type);
+        /// <summary>
+        /// Gets the table name from the mapped entity on EF
+        /// </summary>
+        /// <param name="type">Type of the mapped entity</param>
+        /// <returns>Table name or null</returns>
+        string GetTableName(Type type);
 
-		/// <summary>
-		/// Gets a mapping between the model properties and the mapped database column names
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>Mapping or null</returns>
-		IDictionary<PropertyInfo, string> GetMappings<T>() where T : class;
+        /// <summary>
+        /// Gets a mapping between the model properties and the mapped database column names
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>Mapping or null</returns>
+        IDictionary<PropertyInfo, string> GetMappings<T>() where T : class;
 
-		/// <summary>
-		/// Gets a mapping between the model properties and the mapped database column names
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>Mapping or null</returns>
-		IDictionary<PropertyInfo, string> GetMappings(Type type);
+        /// <summary>
+        /// Gets a mapping between the model properties and the mapped database column names
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>Mapping or null</returns>
+        IDictionary<PropertyInfo, string> GetMappings(Type type);
 
-		/// <summary>
-		/// Gets the entity keys from the mapped entity on EF
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>A list that contains the entity keys</returns>
-		IList<string> GetKeyNames<T>() where T : class;
+        /// <summary>
+        /// Gets the entity keys from the mapped entity on EF
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>A list that contains the entity keys</returns>
+        IList<string> GetKeyNames<T>() where T : class;
 
-		/// <summary>
-		/// Gets the entity keys from the mapped entity on EF
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>A list that contains the entity keys</returns>
-		IList<string> GetKeyNames(Type type);
+        /// <summary>
+        /// Gets the entity keys from the mapped entity on EF
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>A list that contains the entity keys</returns>
+        IList<string> GetKeyNames(Type type);
 
-		/// <summary>
-		/// Gets the database keys based on the EF mappings
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>A list that contains the database keys</returns>
-		IList<string> GetDbKeyNames<T>() where T : class;
+        /// <summary>
+        /// Gets the database keys based on the EF mappings
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>A list that contains the database keys</returns>
+        IList<string> GetDbKeyNames<T>() where T : class;
 
-		/// <summary>
-		/// Gets the database keys based on the EF mappings
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>A list that contains the database keys</returns>
-		IList<string> GetDbKeyNames(Type type);
+        /// <summary>
+        /// Gets the database keys based on the EF mappings
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>A list that contains the database keys</returns>
+        IList<string> GetDbKeyNames(Type type);
 
-		/// <summary>
-		/// Gets the database table schema
-		/// </summary>
-		/// <param name="tableName">The name of the database table</param>
-		/// <returns>A datatable that represents a mirror of the database table schema</returns>
-		DataTable GetTableSchema(string tableName);
-	}
+        /// <summary>
+        /// Gets the database table schema
+        /// </summary>
+        /// <param name="tableName">The name of the database table</param>
+        /// <returns>A datatable that represents a mirror of the database table schema</returns>
+        DataTable GetTableSchema(string tableName);
+    }
 }

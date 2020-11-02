@@ -26,19 +26,19 @@
 
 namespace DataTablePlus.Common
 {
-	/// <summary>
-	/// Class that centralizes constants
-	/// </summary>
-	internal static class Constants
-	{
-		/// <summary>
-		/// Value: ,
-		/// </summary>
-		public const string Comma = ",";
+    /// <summary>
+    /// Class that centralizes constants
+    /// </summary>
+    internal static class Constants
+    {
+        /// <summary>
+        /// Value: ,
+        /// </summary>
+        public const string Comma = ",";
 
-		/// <summary>
-		/// Value: dbo
-		/// </summary>
-		public const string DefaultSchema = "dbo";
-	}
+        /// <summary>
+        /// Value: dbo
+        /// </summary>
+        public const string DefaultSchema = "dbo";
+    }
 }

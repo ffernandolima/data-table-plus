@@ -29,93 +29,93 @@ using System.Data;
 
 namespace DataTablePlus.Mappings
 {
-	/// <summary>
-	/// Interface that represents the contract of ColumnMapping object
-	/// </summary>
-	public interface IColumnMapping
-	{
-		/// <summary>
-		/// Database table column name
-		/// </summary>
-		string Name { get; set; }
+    /// <summary>
+    /// Interface that represents the contract of ColumnMapping object
+    /// </summary>
+    public interface IColumnMapping
+    {
+        /// <summary>
+        /// Database table column name
+        /// </summary>
+        string Name { get; set; }
 
-		/// <summary>
-		/// Database table column data type
-		/// </summary>
-		Type Type { get; set; }
+        /// <summary>
+        /// Database table column data type
+        /// </summary>
+        Type Type { get; set; }
 
-		/// <summary>
-		/// Database table column order
-		/// </summary>
-		int Ordinal { get; set; }
+        /// <summary>
+        /// Database table column order
+        /// </summary>
+        int Ordinal { get; set; }
 
-		/// <summary>
-		/// A flag that indicates if it is the primary key
-		/// </summary>
-		bool IsPrimaryKey { get; set; }
+        /// <summary>
+        /// A flag that indicates if it is the primary key
+        /// </summary>
+        bool IsPrimaryKey { get; set; }
 
-		/// <summary>
-		/// A flag that indicates if it allows null values
-		/// </summary>
-		bool AllowNull { get; set; }
+        /// <summary>
+        /// A flag that indicates if it allows null values
+        /// </summary>
+        bool AllowNull { get; set; }
 
-		/// <summary>
-		/// Database table column default value
-		/// It will be used if the column doesn't allow null values
-		/// </summary>
-		object DefaultValue { get; set; }
+        /// <summary>
+        /// Database table column default value
+        /// It will be used if the column doesn't allow null values
+        /// </summary>
+        object DefaultValue { get; set; }
 
-		/// <summary>
-		/// Validates the whole column mapping object
-		/// </summary>
-		void Validate();
+        /// <summary>
+        /// Validates the whole column mapping object
+        /// </summary>
+        void Validate();
 
-		/// <summary>
-		/// Adds a column name
-		/// </summary>
-		/// <param name="name">Column name</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping AddName(string name);
+        /// <summary>
+        /// Adds a column name
+        /// </summary>
+        /// <param name="name">Column name</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping AddName(string name);
 
-		/// <summary>
-		/// Adds a column type
-		/// </summary>
-		/// <param name="type">Column type</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping AddType(Type type);
+        /// <summary>
+        /// Adds a column type
+        /// </summary>
+        /// <param name="type">Column type</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping AddType(Type type);
 
-		/// <summary>
-		/// Adds a column ordinal
-		/// </summary>
-		/// <param name="ordinal">Column ordinal</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping AddOrdinal(int ordinal);
+        /// <summary>
+        /// Adds a column ordinal
+        /// </summary>
+        /// <param name="ordinal">Column ordinal</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping AddOrdinal(int ordinal);
 
-		/// <summary>
-		/// Indicates if it is the primary key
-		/// </summary>
-		/// <param name="primaryKey">Primary key flag</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping PrimaryKey(bool primaryKey);
+        /// <summary>
+        /// Indicates if it is the primary key
+        /// </summary>
+        /// <param name="primaryKey">Primary key flag</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping PrimaryKey(bool primaryKey);
 
-		/// <summary>
-		/// Indicates if it accepts null values
-		/// </summary>
-		/// <param name="acceptNull">Accept null flag</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping AcceptNull(bool acceptNull);
+        /// <summary>
+        /// Indicates if it accepts null values
+        /// </summary>
+        /// <param name="acceptNull">Accept null flag</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping AcceptNull(bool acceptNull);
 
-		/// <summary>
-		/// Adds a column default value
-		/// </summary>
-		/// <param name="defaultValue">Column default value</param>
-		/// <returns>ColumnMapping object (Builder pattern)</returns>
-		IColumnMapping AddDefaultValue(object defaultValue);
+        /// <summary>
+        /// Adds a column default value
+        /// </summary>
+        /// <param name="defaultValue">Column default value</param>
+        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        IColumnMapping AddDefaultValue(object defaultValue);
 
-		/// <summary>
-		/// Transforms this object to a new DataColumn object
-		/// </summary>
-		/// <returns>A new DataColumn object</returns>
-		DataColumn AsDataColumn();
-	}
+        /// <summary>
+        /// Transforms this object to a new DataColumn object
+        /// </summary>
+        /// <returns>A new DataColumn object</returns>
+        DataColumn AsDataColumn();
+    }
 }

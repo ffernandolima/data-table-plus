@@ -31,50 +31,50 @@ using System.Threading;
 
 namespace DataTablePlus.Extensions
 {
-	/// <summary>
-	/// Class that contains Type extensions
-	/// </summary>
-	internal static class TypeExtensions
-	{
-		private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
+    /// <summary>
+    /// Class that contains Type extensions
+    /// </summary>
+    internal static class TypeExtensions
+    {
+        private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
 
-		/// <summary>
-		/// Gets the properties according to the BindingFlags passed as parameter
-		/// </summary>
-		/// <param name="type">Type for getting the properties</param>
-		/// <param name="bindingFlags">BindingFlags for getting the properties</param>
-		/// <returns>An array of property info</returns>
-		internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance) => type.GetProperties(bindingFlags);
+        /// <summary>
+        /// Gets the properties according to the BindingFlags passed as parameter
+        /// </summary>
+        /// <param name="type">Type for getting the properties</param>
+        /// <param name="bindingFlags">BindingFlags for getting the properties</param>
+        /// <returns>An array of property info</returns>
+        internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance) => type.GetProperties(bindingFlags);
 
-		/// <summary>
-		/// Gets the default value according to its type
-		/// </summary>
-		/// <param name="type">Type for getting the default value</param>
-		/// <returns>he default value</returns>
-		public static object GetDefaultValue(this Type type)
-		{
-			if (!type.IsValueType)
-			{
-				return null;
-			}
+        /// <summary>
+        /// Gets the default value according to its type
+        /// </summary>
+        /// <param name="type">Type for getting the default value</param>
+        /// <returns>he default value</returns>
+        public static object GetDefaultValue(this Type type)
+        {
+            if (!type.IsValueType)
+            {
+                return null;
+            }
 
-			if (DefaultValueTypes.TryGetValue(type, out var defaultValue))
-			{
-				return defaultValue;
-			}
+            if (DefaultValueTypes.TryGetValue(type, out var defaultValue))
+            {
+                return defaultValue;
+            }
 
-			defaultValue = Activator.CreateInstance(type);
+            defaultValue = Activator.CreateInstance(type);
 
-			Dictionary<Type, object> snapshot, newCache;
+            Dictionary<Type, object> snapshot, newCache;
 
-			do
-			{
-				snapshot = DefaultValueTypes;
-				newCache = new Dictionary<Type, object>(DefaultValueTypes) { [type] = defaultValue };
+            do
+            {
+                snapshot = DefaultValueTypes;
+                newCache = new Dictionary<Type, object>(DefaultValueTypes) { [type] = defaultValue };
 
-			} while (!ReferenceEquals(Interlocked.CompareExchange(ref DefaultValueTypes, newCache, snapshot), snapshot));
+            } while (!ReferenceEquals(Interlocked.CompareExchange(ref DefaultValueTypes, newCache, snapshot), snapshot));
 
-			return defaultValue;
-		}
-	}
+            return defaultValue;
+        }
+    }
 }

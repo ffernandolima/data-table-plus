@@ -26,14 +26,14 @@
 
 namespace DataTablePlus.DataAccessContracts
 {
-	/// <summary>
-	/// Class that centralizes data constants
-	/// </summary>
-	public static class DataConstants
-	{
-		/// <summary>
-		/// Value: 5000
-		/// </summary>
-		public const int BatchSize = 5000;
-	}
+    /// <summary>
+    /// Class that centralizes data constants
+    /// </summary>
+    public static class DataConstants
+    {
+        /// <summary>
+        /// Value: 5000
+        /// </summary>
+        public const int BatchSize = 5000;
+    }
 }

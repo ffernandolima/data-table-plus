@@ -43,167 +43,166 @@ using System.Data.Entity;
 
 namespace DataTablePlus.DataAccess.Services
 {
-	/// <summary>
-	/// Service that should be used to get some metadata
-	/// </summary>
-	public class MetadataService : ServiceBase, IMetadataService
-	{
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="dbContext">Db Context</param>
-		/// <param name="connectionString">Connection String</param>
-		public MetadataService(DbContext dbContext = null, string connectionString = null)
-			: base(dbContext, connectionString)
-		{
-		}
+    /// <summary>
+    /// Service that should be used to get some metadata
+    /// </summary>
+    public class MetadataService : ServiceBase, IMetadataService
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="dbContext">Db Context</param>
+        /// <param name="connectionString">Connection String</param>
+        public MetadataService(DbContext dbContext = null, string connectionString = null)
+            : base(dbContext, connectionString)
+        { }
 
-		/// <summary>
-		/// Gets the table name from the mapped entity on EF
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity</typeparam>
-		/// <returns>Table name or null</returns>
-		public string GetTableName<T>() where T : class => this.GetTableName(typeof(T));
+        /// <summary>
+        /// Gets the table name from the mapped entity on EF
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity</typeparam>
+        /// <returns>Table name or null</returns>
+        public string GetTableName<T>() where T : class => GetTableName(typeof(T));
 
-		/// <summary>
-		/// Gets the table name from the mapped entity on EF
-		/// </summary>
-		/// <param name="type">Type of the mapped entity</param>
-		/// <returns>Table name or null</returns>
-		public string GetTableName(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
-			}
+        /// <summary>
+        /// Gets the table name from the mapped entity on EF
+        /// </summary>
+        /// <param name="type">Type of the mapped entity</param>
+        /// <returns>Table name or null</returns>
+        public string GetTableName(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+            }
 
-			return this.DbContext.GetTableName(type);
-		}
+            return DbContext.GetTableName(type);
+        }
 
-		/// <summary>
-		/// Gets a mapping between the model properties and the mapped database column names
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>Mapping or null</returns>
-		public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class => this.GetMappings(typeof(T));
+        /// <summary>
+        /// Gets a mapping between the model properties and the mapped database column names
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>Mapping or null</returns>
+        public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class => GetMappings(typeof(T));
 
-		/// <summary>
-		/// Gets a mapping between the model properties and the mapped database column names
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>Mapping or null</returns>
-		public IDictionary<PropertyInfo, string> GetMappings(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
-			}
+        /// <summary>
+        /// Gets a mapping between the model properties and the mapped database column names
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>Mapping or null</returns>
+        public IDictionary<PropertyInfo, string> GetMappings(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+            }
 
-			return this.DbContext.GetMappings(type);
-		}
+            return DbContext.GetMappings(type);
+        }
 
-		/// <summary>
-		/// Gets the entity keys from the mapped entity on EF
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>A list that contains the entity keys</returns>
-		public IList<string> GetKeyNames<T>() where T : class => this.GetKeyNames(typeof(T));
+        /// <summary>
+        /// Gets the entity keys from the mapped entity on EF
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>A list that contains the entity keys</returns>
+        public IList<string> GetKeyNames<T>() where T : class => GetKeyNames(typeof(T));
 
-		/// <summary>
-		/// Gets the entity keys from the mapped entity on EF
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>A list that contains the entity keys</returns>
-		public IList<string> GetKeyNames(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
-			}
+        /// <summary>
+        /// Gets the entity keys from the mapped entity on EF
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>A list that contains the entity keys</returns>
+        public IList<string> GetKeyNames(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+            }
 
-			return this.DbContext.GetKeyNames(type);
-		}
+            return DbContext.GetKeyNames(type);
+        }
 
-		/// <summary>
-		/// Gets the database keys based on the EF mappings
-		/// </summary>
-		/// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-		/// <returns>A list that contains the database keys</returns>
-		public IList<string> GetDbKeyNames<T>() where T : class => this.GetDbKeyNames(typeof(T));
+        /// <summary>
+        /// Gets the database keys based on the EF mappings
+        /// </summary>
+        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
+        /// <returns>A list that contains the database keys</returns>
+        public IList<string> GetDbKeyNames<T>() where T : class => GetDbKeyNames(typeof(T));
 
-		/// <summary>
-		/// Gets the database keys based on the EF mappings
-		/// </summary>
-		/// <param name="type">Type of the mapped entity on EF</param>
-		/// <returns>A list that contains the database keys</returns>
-		public IList<string> GetDbKeyNames(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
-			}
+        /// <summary>
+        /// Gets the database keys based on the EF mappings
+        /// </summary>
+        /// <param name="type">Type of the mapped entity on EF</param>
+        /// <returns>A list that contains the database keys</returns>
+        public IList<string> GetDbKeyNames(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+            }
 
-			return this.DbContext.GetDbKeyNames(type);
-		}
+            return DbContext.GetDbKeyNames(type);
+        }
 
-		/// <summary>
-		/// Gets the database table schema
-		/// </summary>
-		/// <param name="tableName">The name of the database table</param>
-		/// <returns>A datatable that represents a mirror of the database table schema</returns>
-		public DataTable GetTableSchema(string tableName)
-		{
-			if (string.IsNullOrWhiteSpace(tableName))
-			{
-				throw new ArgumentException($"{nameof(tableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(tableName));
-			}
+        /// <summary>
+        /// Gets the database table schema
+        /// </summary>
+        /// <param name="tableName">The name of the database table</param>
+        /// <returns>A datatable that represents a mirror of the database table schema</returns>
+        public DataTable GetTableSchema(string tableName)
+        {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                throw new ArgumentException($"{nameof(tableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(tableName));
+            }
 
-			DataTable dataTable;
+            DataTable dataTable;
 
-			try
-			{
-				this.OpenConnection();
+            try
+            {
+                OpenConnection();
 
-				var commandText = string.Format(DataResources.GetSchemaTable, tableName);
+                var commandText = string.Format(DataResources.GetSchemaTable, tableName);
 
-				using (var command = this.CreateCommand(commandText: commandText))
-				using (var reader = command.ExecuteReader())
-				{
-					dataTable = new DataTable
-					{
-						TableName = tableName
-					};
+                using (var command = CreateCommand(commandText: commandText))
+                using (var reader = command.ExecuteReader())
+                {
+                    dataTable = new DataTable
+                    {
+                        TableName = tableName
+                    };
 
-					dataTable.BeginLoadData();
-					dataTable.Load(reader);
-					dataTable.EndLoadData();
-				}
-			}
-			finally
-			{
-				this.CloseConnection();
-			}
+                    dataTable.BeginLoadData();
+                    dataTable.Load(reader);
+                    dataTable.EndLoadData();
+                }
+            }
+            finally
+            {
+                CloseConnection();
+            }
 
-			return dataTable;
-		}
+            return dataTable;
+        }
 
-		#region IDisposable Members
+        #region IDisposable Members
 
-		private bool _disposed;
+        private bool _disposed;
 
-		protected override void Dispose(bool disposing)
-		{
-			if (!this._disposed)
-			{
-				if (disposing)
-				{
-					base.Dispose(true);
-				}
-			}
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    base.Dispose(true);
+                }
+            }
 
-			this._disposed = true;
-		}
+            _disposed = true;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

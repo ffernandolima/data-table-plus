@@ -37,43 +37,43 @@ using System.Data.Entity;
 
 namespace DataTablePlus.Configuration
 {
-	/// <summary>
-	/// Startup class that should be used in order to initialize the application and provide some required configurations
-	/// </summary>
-	public static class Startup
-	{
-		/// <summary>
-		/// Provided EF DbContext
-		/// </summary>
-		public static DbContext DbContext { get; private set; }
+    /// <summary>
+    /// Startup class that should be used in order to initialize the application and provide some required configurations
+    /// </summary>
+    public static class Startup
+    {
+        /// <summary>
+        /// Provided EF DbContext
+        /// </summary>
+        public static DbContext DbContext { get; private set; }
 
-		/// <summary>
-		/// Provided ConnectionString
-		/// </summary>
-		public static string ConnectionString { get; private set; }
+        /// <summary>
+        /// Provided ConnectionString
+        /// </summary>
+        public static string ConnectionString { get; private set; }
 
-		/// <summary>
-		/// Initializes the application providing a DbContext
-		/// </summary>
-		/// <typeparam name="T">Should be a DbContext</typeparam>
-		/// <param name="dbContext">EF DbContext</param>
-		public static void AddDbContext<T>(T dbContext) where T : DbContext
-		{
-			DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+        /// <summary>
+        /// Initializes the application providing a DbContext
+        /// </summary>
+        /// <typeparam name="T">Should be a DbContext</typeparam>
+        /// <param name="dbContext">EF DbContext</param>
+        public static void AddDbContext<T>(T dbContext) where T : DbContext
+        {
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
 
 #if NETSTANDARD20
-			AddConnectionString(DbContext.Database?.GetDbConnection()?.ConnectionString);
+            AddConnectionString(DbContext.Database?.GetDbConnection()?.ConnectionString);
 #endif
 
 #if NETFULL
-			AddConnectionString(DbContext.Database?.Connection?.ConnectionString);
+            AddConnectionString(DbContext.Database?.Connection?.ConnectionString);
 #endif
-		}
+        }
 
-		/// <summary>
-		/// Initializes the application providing a connectionString
-		/// </summary>
-		/// <param name="connectionString">ConnectionString</param>
-		public static void AddConnectionString(string connectionString) => ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
-	}
+        /// <summary>
+        /// Initializes the application providing a connectionString
+        /// </summary>
+        /// <param name="connectionString">ConnectionString</param>
+        public static void AddConnectionString(string connectionString) => ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
+    }
 }

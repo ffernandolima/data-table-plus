@@ -32,104 +32,104 @@ using System.Linq;
 
 namespace DataTablePlus.Extensions
 {
-	/// <summary>
-	/// Class that contains DataTable extensions
-	/// </summary>
-	public static class DataTableExtensions
-	{
-		/// <summary>
-		/// Generic method that validates the provided parameters to avoid any kind of problem during the execution
-		/// </summary>
-		/// <param name="dataTable">Current data table to be validated</param>
-		internal static void ValidateParameters(this DataTable dataTable)
-		{
-			if (dataTable == null)
-			{
-				throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
-			}
+    /// <summary>
+    /// Class that contains DataTable extensions
+    /// </summary>
+    public static class DataTableExtensions
+    {
+        /// <summary>
+        /// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+        /// </summary>
+        /// <param name="dataTable">Current data table to be validated</param>
+        internal static void ValidateParameters(this DataTable dataTable)
+        {
+            if (dataTable == null)
+            {
+                throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
+            }
 
-			if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
-			}
+            if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
+            {
+                throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+            }
 
-			if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
-			{
-				throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
-			}
-		}
+            if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
+            {
+                throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
+            }
+        }
 
-		/// <summary>
-		/// Transforms a data table into a list of objects
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dataTable">Current data table to be transformed</param>
-		/// <returns>A new list of objects</returns>
-		public static IList<T> ToList<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToList();
+        /// <summary>
+        /// Transforms a data table into a list of objects
+        /// </summary>
+        /// <typeparam name="T">Type of the objects</typeparam>
+        /// <param name="dataTable">Current data table to be transformed</param>
+        /// <returns>A new list of objects</returns>
+        public static IList<T> ToList<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToList();
 
-		/// <summary>
-		/// Transforms a data table into an array of objects 
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dataTable">Current data table to be transformed</param>
-		/// <returns>A new array of objects</returns>
-		public static T[] ToArray<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToArray();
+        /// <summary>
+        /// Transforms a data table into an array of objects 
+        /// </summary>
+        /// <typeparam name="T">Type of the objects</typeparam>
+        /// <param name="dataTable">Current data table to be transformed</param>
+        /// <returns>A new array of objects</returns>
+        public static T[] ToArray<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToArray();
 
-		/// <summary>
-		/// Transforms a data table into an enumerable of objects
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dataTable">Current data table to be transformed</param>
-		/// <returns>A new enumerable of objects</returns>
-		private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class
-		{
-			dataTable.ValidateParameters();
+        /// <summary>
+        /// Transforms a data table into an enumerable of objects
+        /// </summary>
+        /// <typeparam name="T">Type of the objects</typeparam>
+        /// <param name="dataTable">Current data table to be transformed</param>
+        /// <returns>A new enumerable of objects</returns>
+        private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class
+        {
+            dataTable.ValidateParameters();
 
-			return TransformInternal<T>(dataTable);
-		}
+            return TransformInternal<T>(dataTable);
+        }
 
-		/// <summary>
-		/// Transforms a data table into an enumerable of objects (internal)
-		/// </summary>
-		/// <typeparam name="T">Type of the objects</typeparam>
-		/// <param name="dataTable">Current data table to be transformed</param>
-		/// <returns>A new enumerable of objects</returns>
-		private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class
-		{
-			var entities = new List<T>();
+        /// <summary>
+        /// Transforms a data table into an enumerable of objects (internal)
+        /// </summary>
+        /// <typeparam name="T">Type of the objects</typeparam>
+        /// <param name="dataTable">Current data table to be transformed</param>
+        /// <returns>A new enumerable of objects</returns>
+        private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class
+        {
+            var entities = new List<T>();
 
-			var entityType = typeof(T);
+            var entityType = typeof(T);
 
-			var dataColumnNames = dataTable.Columns.Cast<DataColumn>().Select(dataColumn => dataColumn.ColumnName);
+            var dataColumnNames = dataTable.Columns.Cast<DataColumn>().Select(dataColumn => dataColumn.ColumnName);
 
-			var properties = entityType.GetPropertiesFromBindingFlags();
+            var properties = entityType.GetPropertiesFromBindingFlags();
 
-			foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
-			{
-				var entity = (T)Activator.CreateInstance(entityType);
+            foreach (var dataRow in dataTable.Rows.Cast<DataRow>())
+            {
+                var entity = (T)Activator.CreateInstance(entityType);
 
-				foreach (var property in properties.Where(property => dataColumnNames.Contains(property.Name)))
-				{
-					var dataRowValue = dataRow[property.Name];
+                foreach (var property in properties.Where(property => dataColumnNames.Contains(property.Name)))
+                {
+                    var dataRowValue = dataRow[property.Name];
 
-					if (dataRowValue == null || dataRowValue == DBNull.Value)
-					{
-						property.SetValue(entity, null, null);
-					}
-					else
-					{
-						var underlyingType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                    if (dataRowValue == null || dataRowValue == DBNull.Value)
+                    {
+                        property.SetValue(entity, null, null);
+                    }
+                    else
+                    {
+                        var underlyingType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 
-						var value = Convert.ChangeType(dataRowValue, underlyingType);
+                        var value = Convert.ChangeType(dataRowValue, underlyingType);
 
-						property.SetValue(entity, value, null);
-					}
-				}
+                        property.SetValue(entity, value, null);
+                    }
+                }
 
-				entities.Add(entity);
-			}
+                entities.Add(entity);
+            }
 
-			return entities;
-		}
-	}
+            return entities;
+        }
+    }
 }

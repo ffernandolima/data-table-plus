@@ -28,14 +28,14 @@ using System;
 
 namespace DataTablePlus.DataAccessContracts.Services
 {
-	/// <summary>
-	/// ServiceBase interface
-	/// </summary>
-	public interface IServiceBase : IDisposable
-	{
-		/// <summary>
-		/// Command Timeout
-		/// </summary>
-		TimeSpan Timeout { get; set; }
-	}
+    /// <summary>
+    /// ServiceBase interface
+    /// </summary>
+    public interface IServiceBase : IDisposable
+    {
+        /// <summary>
+        /// Command Timeout
+        /// </summary>
+        TimeSpan Timeout { get; set; }
+    }
 }

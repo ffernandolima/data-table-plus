@@ -44,305 +44,305 @@ using System.Data.Entity;
 
 namespace DataTablePlus.DataAccess.Services
 {
-	/// <summary>
-	/// Service base that controls database objects
-	/// </summary>
-	public class ServiceBase : IServiceBase
-	{
-		/// <summary>
-		/// EF DbContext
-		/// </summary>
-		protected DbContext DbContext { get; private set; }
+    /// <summary>
+    /// Service base that controls database objects
+    /// </summary>
+    public class ServiceBase : IServiceBase
+    {
+        /// <summary>
+        /// EF DbContext
+        /// </summary>
+        protected DbContext DbContext { get; private set; }
 
-		/// <summary>
-		/// Sql Connection
-		/// </summary>
-		protected SqlConnection SqlConnection { get; private set; }
+        /// <summary>
+        /// Sql Connection
+        /// </summary>
+        protected SqlConnection SqlConnection { get; private set; }
 
-		/// <summary>
-		/// Sql Transaction
-		/// </summary>
-		protected SqlTransaction SqlTransaction { get; private set; }
+        /// <summary>
+        /// Sql Transaction
+        /// </summary>
+        protected SqlTransaction SqlTransaction { get; private set; }
 
-		/// <summary>
-		/// Sql command Timeout
-		/// </summary>
-		public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
+        /// <summary>
+        /// Sql command Timeout
+        /// </summary>
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
 
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="dbContext">Db Context</param>
-		/// <param name="connectionString">Connection String</param>
-		public ServiceBase(DbContext dbContext = null, string connectionString = null) => this.Construct(dbContext, connectionString);
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="dbContext">Db Context</param>
+        /// <param name="connectionString">Connection String</param>
+        public ServiceBase(DbContext dbContext = null, string connectionString = null) => Construct(dbContext, connectionString);
 
-		/// <summary>
-		/// Opens the current connection
-		/// </summary>
-		protected void OpenConnection()
-		{
-			if (this.SqlConnection.State != ConnectionState.Open)
-			{
-				this.SqlConnection.Open();
-			}
-		}
+        /// <summary>
+        /// Opens the current connection
+        /// </summary>
+        protected void OpenConnection()
+        {
+            if (SqlConnection.State != ConnectionState.Open)
+            {
+                SqlConnection.Open();
+            }
+        }
 
-		/// <summary>
-		/// Closes the current connection
-		/// </summary>
-		protected void CloseConnection()
-		{
-			if (this.SqlConnection.State != ConnectionState.Closed)
-			{
-				this.SqlConnection.Close();
-			}
-		}
+        /// <summary>
+        /// Closes the current connection
+        /// </summary>
+        protected void CloseConnection()
+        {
+            if (SqlConnection.State != ConnectionState.Closed)
+            {
+                SqlConnection.Close();
+            }
+        }
 
-		/// <summary>
-		/// Creates a new transaction from the current connection
-		/// </summary>
-		/// <param name="isolationLevel">Kind of isolation level to create the transaction</param>
-		/// <returns>An active transaction</returns>
-		protected SqlTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
-		{
-			if (this.SqlTransaction != null)
-			{
-				throw new InvalidOperationException(DataResources.MoreThanOneTransaction);
-			}
+        /// <summary>
+        /// Creates a new transaction from the current connection
+        /// </summary>
+        /// <param name="isolationLevel">Kind of isolation level to create the transaction</param>
+        /// <returns>An active transaction</returns>
+        protected SqlTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        {
+            if (SqlTransaction != null)
+            {
+                throw new InvalidOperationException(DataResources.MoreThanOneTransaction);
+            }
 
-			return (this.SqlTransaction = this.SqlConnection.BeginTransaction(isolationLevel));
-		}
+            return (SqlTransaction = SqlConnection.BeginTransaction(isolationLevel));
+        }
 
-		/// <summary>
-		/// Commits the current transaction if there's an active one
-		/// </summary>
-		protected void Commit()
-		{
-			try
-			{
-				if (this.SqlTransaction == null)
-				{
-					throw new InvalidOperationException(DataResources.TransactionIsNull);
-				}
+        /// <summary>
+        /// Commits the current transaction if there's an active one
+        /// </summary>
+        protected void Commit()
+        {
+            try
+            {
+                if (SqlTransaction == null)
+                {
+                    throw new InvalidOperationException(DataResources.TransactionIsNull);
+                }
 
-				this.SqlTransaction.Commit();
-			}
-			catch
-			{
-				this.Rollback();
+                SqlTransaction.Commit();
+            }
+            catch
+            {
+                Rollback();
 
-				throw;
-			}
-			finally
-			{
-				this.DisposeTransaction();
-			}
-		}
+                throw;
+            }
+            finally
+            {
+                DisposeTransaction();
+            }
+        }
 
-		/// <summary>
-		/// Rollbacks the current transaction if there's an active one
-		/// </summary>
-		protected void Rollback()
-		{
-			try
-			{
-				if (this.SqlTransaction != null)
-				{
-					this.SqlTransaction.Rollback();
-				}
-			}
-			catch
-			{
-				// ignored
-			}
-			finally
-			{
-				this.DisposeTransaction();
-			}
-		}
+        /// <summary>
+        /// Rollbacks the current transaction if there's an active one
+        /// </summary>
+        protected void Rollback()
+        {
+            try
+            {
+                if (SqlTransaction != null)
+                {
+                    SqlTransaction.Rollback();
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+            finally
+            {
+                DisposeTransaction();
+            }
+        }
 
-		/// <summary>
-		/// Creates a command based on the provided parameters
-		/// </summary>
-		/// <param name="commandText">Command text to be executed on database</param>
-		/// <param name="commandType">Type of the provided command text</param>
-		/// <param name="parameters">command parameters</param>
-		/// <param name="useInternalTransaction">A flag that indicates if an internal transaction shall be created</param>
-		/// <returns>A new command</returns>
-		protected SqlCommand CreateCommand(string commandText = null, CommandType? commandType = null, SqlParameter[] parameters = null, bool? useInternalTransaction = null)
-		{
-			SqlTransaction transaction = null;
+        /// <summary>
+        /// Creates a command based on the provided parameters
+        /// </summary>
+        /// <param name="commandText">Command text to be executed on database</param>
+        /// <param name="commandType">Type of the provided command text</param>
+        /// <param name="parameters">command parameters</param>
+        /// <param name="useInternalTransaction">A flag that indicates if an internal transaction shall be created</param>
+        /// <returns>A new command</returns>
+        protected SqlCommand CreateCommand(string commandText = null, CommandType? commandType = null, SqlParameter[] parameters = null, bool? useInternalTransaction = null)
+        {
+            SqlTransaction transaction = null;
 
-			if (useInternalTransaction.GetValueOrDefault())
-			{
-				transaction = this.BeginTransaction();
-			}
+            if (useInternalTransaction.GetValueOrDefault())
+            {
+                transaction = BeginTransaction();
+            }
 
-			var sqlCommand = this.SqlConnection.CreateCommand();
+            var sqlCommand = SqlConnection.CreateCommand();
 
-			sqlCommand.CommandTimeout = Convert.ToInt32(this.Timeout.TotalSeconds);
+            sqlCommand.CommandTimeout = Convert.ToInt32(Timeout.TotalSeconds);
 
-			sqlCommand.CommandText = commandText;
+            sqlCommand.CommandText = commandText;
 
-			sqlCommand.CommandType = commandType ?? CommandType.Text;
+            sqlCommand.CommandType = commandType ?? CommandType.Text;
 
-			if (parameters != null && parameters.Any())
-			{
-				sqlCommand.Parameters.AddRange(parameters);
-			}
+            if (parameters != null && parameters.Any())
+            {
+                sqlCommand.Parameters.AddRange(parameters);
+            }
 
-			if (transaction != null)
-			{
-				sqlCommand.Transaction = transaction;
-			}
+            if (transaction != null)
+            {
+                sqlCommand.Transaction = transaction;
+            }
 
-			return sqlCommand;
-		}
+            return sqlCommand;
+        }
 
-		/// <summary>
-		/// Creates a new SqlBulkCopy based on the provided parameters
-		/// </summary>
-		/// <param name="dataTable">The data table with data to execute the bulk insert on database</param>
-		/// <param name="batchSize">the batch size</param>
-		/// <param name="options">Options to be used while ingesting the amount of data</param>
-		/// <param name="createColumnMappings">A flag that indicates if the mappings shall be created</param>
-		/// <returns></returns>
-		protected SqlBulkCopy CreateSqlBulkCopy(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? createColumnMappings = true)
-		{
-			#region SqlBulkCopyOptions
+        /// <summary>
+        /// Creates a new SqlBulkCopy based on the provided parameters
+        /// </summary>
+        /// <param name="dataTable">The data table with data to execute the bulk insert on database</param>
+        /// <param name="batchSize">the batch size</param>
+        /// <param name="options">Options to be used while ingesting the amount of data</param>
+        /// <param name="createColumnMappings">A flag that indicates if the mappings shall be created</param>
+        /// <returns></returns>
+        protected SqlBulkCopy CreateSqlBulkCopy(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? createColumnMappings = true)
+        {
+            #region SqlBulkCopyOptions
 
-			// src: https://msdn.microsoft.com/pt-br/library/system.data.sqlclient.sqlbulkcopyoptions(v=vs.110).aspx
-			//
-			// CheckConstraints: Check constraints while data is being inserted. By default, constraints are not checked.
-			// KeepNulls: Preserve null values in the destination table regardless of the settings for default values. When not specified, null values are replaced by default values where applicable.
-			// TableLock: Obtain a bulk update lock for the duration of the bulk copy operation. When not specified, row locks are used.
-			// UseInternalTransaction: When specified, each batch of the bulk-copy operation will occur within a transaction. If you indicate this option and also provide a SqlTransaction object to the constructor, an ArgumentException occurs.
+            // src: https://msdn.microsoft.com/pt-br/library/system.data.sqlclient.sqlbulkcopyoptions(v=vs.110).aspx
+            //
+            // CheckConstraints: Check constraints while data is being inserted. By default, constraints are not checked.
+            // KeepNulls: Preserve null values in the destination table regardless of the settings for default values. When not specified, null values are replaced by default values where applicable.
+            // TableLock: Obtain a bulk update lock for the duration of the bulk copy operation. When not specified, row locks are used.
+            // UseInternalTransaction: When specified, each batch of the bulk-copy operation will occur within a transaction. If you indicate this option and also provide a SqlTransaction object to the constructor, an ArgumentException occurs.
 
-			#endregion
+            #endregion SqlBulkCopyOptions
 
-			const SqlBulkCopyOptions SqlBulkCopyOptions = SqlBulkCopyOptions.CheckConstraints | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction;
+            const SqlBulkCopyOptions SqlBulkCopyOptions = SqlBulkCopyOptions.CheckConstraints | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction;
 
-			var sqlBulkCopy = new SqlBulkCopy(this.SqlConnection, options ?? SqlBulkCopyOptions, null)
-			{
-				BatchSize = batchSize,
-				DestinationTableName = dataTable.TableName,
-				BulkCopyTimeout = Convert.ToInt32(this.Timeout.TotalSeconds)
-			};
+            var sqlBulkCopy = new SqlBulkCopy(SqlConnection, options ?? SqlBulkCopyOptions, null)
+            {
+                BatchSize = batchSize,
+                DestinationTableName = dataTable.TableName,
+                BulkCopyTimeout = Convert.ToInt32(Timeout.TotalSeconds)
+            };
 
-			if (createColumnMappings.GetValueOrDefault())
-			{
-				foreach (var dataColumn in dataTable.Columns.Cast<DataColumn>())
-				{
-					sqlBulkCopy.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
-				}
-			}
+            if (createColumnMappings.GetValueOrDefault())
+            {
+                foreach (var dataColumn in dataTable.Columns.Cast<DataColumn>())
+                {
+                    sqlBulkCopy.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
+                }
+            }
 
-			return sqlBulkCopy;
-		}
+            return sqlBulkCopy;
+        }
 
-		/// <summary>
-		/// Disposes the current transaction
-		/// </summary>
-		private void DisposeTransaction()
-		{
-			if (this.SqlTransaction != null)
-			{
-				this.SqlTransaction.Dispose();
-				this.SqlTransaction = null;
-			}
-		}
+        /// <summary>
+        /// Disposes the current transaction
+        /// </summary>
+        private void DisposeTransaction()
+        {
+            if (SqlTransaction != null)
+            {
+                SqlTransaction.Dispose();
+                SqlTransaction = null;
+            }
+        }
 
-		/// <summary>
-		/// Fill the properties out using the values from the Ctor or from the Startup class
-		/// </summary>
-		/// <param name="dbContext">Db Context</param>
-		/// <param name="connectionString">Connection string</param>
-		private void Construct(DbContext dbContext = null, string connectionString = null)
-		{
-			dbContext = dbContext ?? Startup.DbContext;
-			connectionString = connectionString ?? Startup.ConnectionString;
+        /// <summary>
+        /// Fill the properties out using the values from the Ctor or from the Startup class
+        /// </summary>
+        /// <param name="dbContext">Db Context</param>
+        /// <param name="connectionString">Connection string</param>
+        private void Construct(DbContext dbContext = null, string connectionString = null)
+        {
+            dbContext ??= Startup.DbContext;
+            connectionString ??= Startup.ConnectionString;
 
-			if (dbContext != null)
-			{
-				this.DbContext = dbContext;
+            if (dbContext != null)
+            {
+                DbContext = dbContext;
 
 #if NETSTANDARD20
-				ValidateConnectionString(this.DbContext.Database.GetDbConnection().ConnectionString);
-				this.SqlConnection = this.DbContext.Database.GetDbConnection() as SqlConnection;
+                ValidateConnectionString(DbContext.Database.GetDbConnection().ConnectionString);
+                SqlConnection = DbContext.Database.GetDbConnection() as SqlConnection;
 #endif
 
 #if NETFULL
-				ValidateConnectionString(this.DbContext.Database.Connection.ConnectionString);
-				this.SqlConnection = this.DbContext.Database.Connection as SqlConnection;
+                ValidateConnectionString(DbContext.Database.Connection.ConnectionString);
+                SqlConnection = DbContext.Database.Connection as SqlConnection;
 #endif
-			}
+            }
 
-			if (!string.IsNullOrWhiteSpace(connectionString))
-			{
-				ValidateConnectionString(connectionString);
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                ValidateConnectionString(connectionString);
 
-				this.SqlConnection = new SqlConnection(connectionString);
-			}
+                SqlConnection = new SqlConnection(connectionString);
+            }
 
-			if (this.DbContext == null && this.SqlConnection == null)
-			{
-				throw new ArgumentNullException($"{CommonResources.MissingConfiguration}");
-			}
-		}
+            if (DbContext == null && SqlConnection == null)
+            {
+                throw new ArgumentNullException($"{CommonResources.MissingConfiguration}");
+            }
+        }
 
-		/// <summary>
-		/// Validates the connection string which has been provided
-		/// </summary>
-		/// <param name="connectionString">ConnectionString to be tested</param>
-		private static void ValidateConnectionString(string connectionString)
-		{
-			try
-			{
-				using (var sqlconnection = new SqlConnection(connectionString))
-				{
-					sqlconnection.Open();
-				}
-			}
-			catch
-			{
-				throw new Exception($"{CommonResources.InvalidConnectionString}");
-			}
-		}
+        /// <summary>
+        /// Validates the connection string which has been provided
+        /// </summary>
+        /// <param name="connectionString">ConnectionString to be tested</param>
+        private static void ValidateConnectionString(string connectionString)
+        {
+            try
+            {
+                using (var sqlconnection = new SqlConnection(connectionString))
+                {
+                    sqlconnection.Open();
+                }
+            }
+            catch
+            {
+                throw new Exception($"{CommonResources.InvalidConnectionString}");
+            }
+        }
 
-		#region IDisposable Members
+        #region IDisposable Members
 
-		private bool _disposed;
+        private bool _disposed;
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!this._disposed)
-			{
-				if (disposing)
-				{
-					this.DisposeTransaction();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    DisposeTransaction();
 
-					if (this.DbContext != null)
-					{
-						this.DbContext = null;
-					}
+                    if (DbContext != null)
+                    {
+                        DbContext = null;
+                    }
 
-					if (this.SqlConnection != null)
-					{
-						this.SqlConnection.Dispose();
-						this.SqlConnection = null;
-					}
-				}
-			}
+                    if (SqlConnection != null)
+                    {
+                        SqlConnection.Dispose();
+                        SqlConnection = null;
+                    }
+                }
+            }
 
-			this._disposed = true;
-		}
+            _disposed = true;
+        }
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
