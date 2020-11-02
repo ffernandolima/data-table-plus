@@ -10,10 +10,7 @@ This application is focused on solving performance issues while ingesting or upd
 # Dependencies .NETSTANDARD2.0
 
 - System.Data.SqlClient >= 4.8.2
-- Microsoft.EntityFrameworkCore >= 2.2.6
-- Microsoft.EntityFrameworkCore.Design >= 2.2.6
-- Microsoft.EntityFrameworkCore.SqlServer >= 2.2.6
-- Microsoft.EntityFrameworkCore.Tools >= 2.2.6
+- Microsoft.EntityFrameworkCore.Relational >= 2.2.6
 
 # Status
 
