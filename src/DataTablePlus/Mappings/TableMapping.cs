@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,6 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,37 +31,36 @@ using System.Linq;
 namespace DataTablePlus.Mappings
 {
     /// <summary>
-    /// Class that allows creating some mappings which represent a database table
+    /// Class TableMapping.
+    /// Implements the <see cref="DataTablePlus.Mappings.ITableMapping" />
     /// </summary>
+    /// <seealso cref="DataTablePlus.Mappings.ITableMapping" />
     public class TableMapping : ITableMapping
     {
         /// <summary>
-        /// Database schema field
+        /// The schema
         /// </summary>
         private string _schema;
 
         /// <summary>
-        /// Datatabase table name field
+        /// The name of the table
         /// </summary>
         private string _tableName;
 
         /// <summary>
-        /// Database table column mappings field
+        /// The column mappings
         /// </summary>
         private readonly IList<IColumnMapping> _columnMappings;
 
         /// <summary>
-        /// Ctor
+        /// Initializes a new instance of the <see cref="TableMapping"/> class.
         /// </summary>
         public TableMapping()
         {
-            Schema = Constants.DefaultSchema;
             _columnMappings = new List<IColumnMapping>();
         }
 
-        /// <summary>
-        /// Database schema
-        /// </summary>
+        /// <inheritdoc />
         public string Schema
         {
             get => _schema;
@@ -73,9 +71,7 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// Datatabase table name
-        /// </summary>
+        /// <inheritdoc />
         public string TableName
         {
             get => _tableName;
@@ -86,27 +82,21 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// Datatabase table primary key names
-        /// </summary>
-        public IList<string> PrimaryKeyNames => ColumnMappings.Where(mapping => mapping != null && mapping.IsPrimaryKey).Select(mapping => mapping.Name).ToList();
+        /// <inheritdoc />
+        public IList<string> PrimaryKeyNames { get => ColumnMappings.Where(mapping => mapping != null && mapping.IsPrimaryKey).Select(mapping => mapping.Name).ToList(); }
 
-        /// <summary>
-        /// Database table column mappings ordered by ordinal property
-        /// </summary>
-        public IReadOnlyList<IColumnMapping> ColumnMappings => _columnMappings.Where(mapping => mapping != null).OrderBy(mapping => mapping.Ordinal).ToList().AsReadOnly();
+        /// <inheritdoc />
+        public IReadOnlyList<IColumnMapping> ColumnMappings { get => _columnMappings.Where(mapping => mapping != null).OrderBy(mapping => mapping.Ordinal).ToList().AsReadOnly(); }
 
-        /// <summary>
-        /// Validates the whole table mapping object including the column mappings
-        /// </summary>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentException">_columnMappings</exception>
         public void Validate()
         {
             ValidateTableName();
-            ValidateSchema();
 
             if (!_columnMappings.Any())
             {
-                throw new ArgumentException($"{nameof(_columnMappings)} {CommonResources.CannotBeEmpty}", nameof(_columnMappings));
+                throw new ArgumentException(nameof(_columnMappings));
             }
 
             foreach (var columnMapping in _columnMappings)
@@ -116,16 +106,15 @@ namespace DataTablePlus.Mappings
         }
 
         /// <summary>
-        /// Creates a new TableMapping object
+        /// Creates this instance.
         /// </summary>
-        /// <returns>TableMapping object (Builder pattern)</returns>
-        public static ITableMapping Create() => new TableMapping();
+        /// <returns>ITableMapping.</returns>
+        public static ITableMapping Create()
+        {
+            return new TableMapping();
+        }
 
-        /// <summary>
-        /// Adds a schema 
-        /// </summary>
-        /// <param name="schema">Schema</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public ITableMapping AddSchema(string schema)
         {
             Schema = schema;
@@ -133,11 +122,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Adds a table name
-        /// </summary>
-        /// <param name="tableName">Table name</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public ITableMapping AddTableName(string tableName)
         {
             TableName = tableName;
@@ -145,16 +130,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Allows adding a new column mapping
-        /// </summary>
-        /// <param name="columnName">Column name</param>
-        /// <param name="columnType">Column type</param>
-        /// <param name="ordinal">Ordinal</param>
-        /// <param name="isPrimaryKey">Is primary key</param>
-        /// <param name="allowNull">Allows null</param>
-        /// <param name="defaultValue">Default value</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public ITableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null)
         {
             IColumnMapping mapping = new ColumnMapping
@@ -170,16 +146,13 @@ namespace DataTablePlus.Mappings
             return AddColumnMapping(mapping);
         }
 
-        /// <summary>
-        /// Allows adding a new column mapping
-        /// </summary>
-        /// <param name="columnMapping">Column mapping object</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">columnMapping</exception>
         public ITableMapping AddColumnMapping(IColumnMapping columnMapping)
         {
             if (columnMapping == null)
             {
-                throw new ArgumentNullException(nameof(columnMapping), $"{nameof(columnMapping)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(columnMapping));
             }
 
             if (!_columnMappings.Any())
@@ -200,36 +173,36 @@ namespace DataTablePlus.Mappings
         }
 
         /// <summary>
-        /// Validates the provided schema
+        /// Validates the schema.
         /// </summary>
-        private void ValidateSchema() => ValidateSchema(Schema);
-
-        /// <summary>
-        /// Validates the provided schema
-        /// </summary>
-        /// <param name="schema">Schema name</param>
+        /// <param name="schema">The schema.</param>
+        /// <exception cref="ArgumentException">schema</exception>
         private void ValidateSchema(string schema)
         {
             if (string.IsNullOrWhiteSpace(schema))
             {
-                throw new ArgumentException($"{nameof(schema)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(schema));
+                throw new ArgumentException(nameof(schema));
             }
         }
 
         /// <summary>
-        /// Validates the provided table name
+        /// Validates the name of the table.
         /// </summary>
-        private void ValidateTableName() => ValidateTableName(TableName);
+        private void ValidateTableName()
+        {
+            ValidateTableName(TableName);
+        }
 
         /// <summary>
-        /// Validates the provided table name
+        /// Validates the name of the table.
         /// </summary>
-        /// <param name="tableName">Table name</param>
+        /// <param name="tableName">Name of the table.</param>
+        /// <exception cref="ArgumentException">tableName</exception>
         private void ValidateTableName(string tableName)
         {
             if (string.IsNullOrWhiteSpace(tableName))
             {
-                throw new ArgumentException($"{nameof(tableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(tableName));
+                throw new ArgumentException(nameof(tableName));
             }
         }
     }

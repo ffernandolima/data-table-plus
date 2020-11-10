@@ -24,63 +24,68 @@
  * 
  ****************************************************************************************************************/
 
-using System;
+using DataTablePlus.DataAccess.Enums;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
+using System.Collections.ObjectModel;
 
-namespace DataTablePlus.Extensions
+#if NETSTANDARD20
+using Microsoft.EntityFrameworkCore;
+#endif
+
+#if NETFULL
+using System.Data.Entity;
+#endif
+
+namespace DataTablePlus.DataAccess.Services
 {
     /// <summary>
-    /// Class TypeExtensions.
+    /// Class MySqlMetadataService.
+    /// Implements the <see cref="DataTablePlus.DataAccess.Services.MetadataService" />
     /// </summary>
-    internal static class TypeExtensions
+    /// <seealso cref="DataTablePlus.DataAccess.Services.MetadataService" />
+    public class MySqlMetadataService : MetadataService
     {
         /// <summary>
-        /// The default value types
+        /// Initializes a new instance of the <see cref="MySqlMetadataService"/> class.
         /// </summary>
-        private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        public MySqlMetadataService(DbContext dbContext = null, string connectionString = null)
+            : base(DbProvider.MySQL, dbContext, connectionString)
+        { }
 
-        /// <summary>
-        /// Gets the properties from binding flags.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="bindingFlags">The binding flags.</param>
-        /// <returns>PropertyInfo[].</returns>
-        internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+        /// <inheritdoc />
+        protected override IDictionary<string, string> BuildCommands()
         {
-            return type.GetProperties(bindingFlags);
+            var commands = new Dictionary<string, string>
+            {
+                ["GetSchemaTable"] = "SELECT * FROM {0} LIMIT 0;"
+            };
+
+            return new ReadOnlyDictionary<string, string>(commands);
         }
 
+        #region IDisposable Members
+
         /// <summary>
-        /// Gets the default value.
+        /// The disposed
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>System.Object.</returns>
-        public static object GetDefaultValue(this Type type)
+        private bool _disposed;
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            if (!type.IsValueType)
+            if (!_disposed)
             {
-                return null;
+                if (disposing)
+                {
+                    base.Dispose(true);
+                }
             }
 
-            if (DefaultValueTypes.TryGetValue(type, out var defaultValue))
-            {
-                return defaultValue;
-            }
-
-            defaultValue = Activator.CreateInstance(type);
-
-            Dictionary<Type, object> snapshot, newCache;
-
-            do
-            {
-                snapshot = DefaultValueTypes;
-                newCache = new Dictionary<Type, object>(DefaultValueTypes) { [type] = defaultValue };
-
-            } while (!ReferenceEquals(Interlocked.CompareExchange(ref DefaultValueTypes, newCache, snapshot), snapshot));
-
-            return defaultValue;
+            _disposed = true;
         }
+
+        #endregion IDisposable Members
     }
 }

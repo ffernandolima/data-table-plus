@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,7 +26,7 @@
 
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
-using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.DataAccess.Services.Contracts;
 using DataTablePlus.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -41,11 +41,18 @@ using System.Threading;
 
 namespace DataTablePlus.NetFull.Tests.IntegrationTests
 {
+    /// <summary>
+    /// Class DataTablePlusTests.
+    /// </summary>
     [TestClass]
     public class DataTablePlusTests
     {
+        /// <summary>
+        /// Initializes the test class.
+        /// </summary>
+        /// <param name="testContext">The test context.</param>
         [ClassInitialize()]
-        public static void MyClassInitialize(TestContext testContext)
+        public static void Initialize(TestContext testContext)
         {
             // Sets the culture to invariant in order to avoid some exception details in another language
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -66,6 +73,9 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
             Startup.AddConnectionString(connectionString);
         }
 
+        /// <summary>
+        /// Defines the test method GeneralTestMethod.
+        /// </summary>
         [TestMethod]
         public void GeneralTestMethod()
         {
@@ -110,8 +120,8 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
 
             // Creates the services
             // ps.: The MetadataService is needed only to get the primary key names, if you do not want to get them automatically, do not need to create this instance
-            using (IMetadataService metadataService = new MetadataService())
-            using (ISqlService sqlService = new SqlService())
+            using (IMetadataService metadataService = new SqlServerMetadataService())
+            using (ISqlService sqlService = new SqlServerService())
             {
                 // Overrides the default timeout setting 2 minutes to ensure that the data will be inserted successfully
                 // ps.: Default timeout is 1 minute
@@ -143,7 +153,7 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
                 // You can do something here while waiting for the task completion
 
                 // Waits for the task completion
-                // dataTable = bulkInsertTask.Result;
+                // dataTable = bulkInsertTask.GetAwaiter().GetResult();
 
                 dataTable = sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
@@ -186,19 +196,31 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
 
     /// <summary>
     /// Sample DbContext class
+    /// Implements the <see cref="System.Data.Entity.DbContext" />
     /// </summary>
+    /// <seealso cref="System.Data.Entity.DbContext" />
     internal class Context : DbContext
     {
+        /// <summary>
+        /// Initializes static members of the <see cref="Context"/> class.
+        /// </summary>
         static Context()
         {
             Database.SetInitializer<Context>(null);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Context"/> class.
+        /// </summary>
         public Context()
             : this("Name=Context")
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Context"/> class.
+        /// </summary>
+        /// <param name="connectionStringName">Name of the connection string.</param>
         protected Context(string connectionStringName)
             : base(connectionStringName)
         {
@@ -208,6 +230,10 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
             Configuration.ValidateOnSaveEnabled = false;
         }
 
+        /// <summary>
+        /// Called when [model creating].
+        /// </summary>
+        /// <param name="modelBuilder">The builder.</param>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Add the configurations here like this:
@@ -220,20 +246,47 @@ namespace DataTablePlus.NetFull.Tests.IntegrationTests
     /// </summary>
     public partial class User
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="User"/> class.
+        /// </summary>
         public User()
         { }
 
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>The identifier.</value>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>The name.</value>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email.
+        /// </summary>
+        /// <value>The email.</value>
         public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password.
+        /// </summary>
+        /// <value>The password.</value>
         public string Password { get; set; }
     }
 
     /// <summary>
     /// Sample POCO class EF mapping
+    /// Implements the <see cref="System.Data.Entity.ModelConfiguration.EntityTypeConfiguration{DataTablePlus.NetFull.Tests.IntegrationTests.User}" />
     /// </summary>
+    /// <seealso cref="System.Data.Entity.ModelConfiguration.EntityTypeConfiguration{DataTablePlus.NetFull.Tests.IntegrationTests.User}" />
     public class UserMap : EntityTypeConfiguration<User>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserMap"/> class.
+        /// </summary>
         public UserMap()
         {
             // Primary Key

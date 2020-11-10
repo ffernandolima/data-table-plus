@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,6 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
 using DataTablePlus.Extensions;
 using System;
 using System.Data;
@@ -32,39 +31,41 @@ using System.Data;
 namespace DataTablePlus.Mappings
 {
     /// <summary>
-    /// Class that allows creating some mappings which represent a database table column
+    /// Class ColumnMapping.
+    /// Implements the <see cref="DataTablePlus.Mappings.IColumnMapping" />
     /// </summary>
+    /// <seealso cref="DataTablePlus.Mappings.IColumnMapping" />
     public class ColumnMapping : IColumnMapping
     {
         /// <summary>
-        /// Database table column name field
+        /// The name
         /// </summary>
         private string _name;
 
         /// <summary>
-        /// Database table column data type field
+        /// The type
         /// </summary>
         private Type _type;
 
         /// <summary>
-        /// Database table column order field
+        /// The ordinal
         /// </summary>
         private int _ordinal;
 
         /// <summary>
-        /// Database table column default value field
-        /// It will be used if the column doesn't allow null values
+        /// The default value
         /// </summary>
         private object _defaultValue;
 
         /// <summary>
-        /// Ctor
+        /// Initializes a new instance of the <see cref="ColumnMapping"/> class.
         /// </summary>
-        public ColumnMapping() => EnsureDefaultValue();
+        public ColumnMapping()
+        {
+            EnsureDefaultValue();
+        }
 
-        /// <summary>
-        /// Database table column name
-        /// </summary>
+        /// <inheritdoc />
         public string Name
         {
             get => _name;
@@ -75,9 +76,7 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// Database table column data type
-        /// </summary>
+        /// <inheritdoc />
         public Type Type
         {
             get => _type;
@@ -88,9 +87,7 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// Database table column order
-        /// </summary>
+        /// <inheritdoc />
         public int Ordinal
         {
             get => _ordinal;
@@ -101,20 +98,13 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// A flag that indicates if it is the primary key
-        /// </summary>
+        /// <inheritdoc />
         public bool IsPrimaryKey { get; set; }
 
-        /// <summary>
-        /// A flag that indicates if it allows null values
-        /// </summary>
+        /// <inheritdoc />
         public bool AllowNull { get; set; }
 
-        /// <summary>
-        /// Database table column default value
-        /// It will be used if the column doesn't allow null values
-        /// </summary>
+        /// <inheritdoc />
         public object DefaultValue
         {
             get => _defaultValue;
@@ -125,9 +115,7 @@ namespace DataTablePlus.Mappings
             }
         }
 
-        /// <summary>
-        /// Validates the whole column mapping object
-        /// </summary>
+        /// <inheritdoc />
         public void Validate()
         {
             ValidateName();
@@ -141,16 +129,15 @@ namespace DataTablePlus.Mappings
         }
 
         /// <summary>
-        /// Creates a new ColumnMapping object
+        /// Creates this instance.
         /// </summary>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
-        public static IColumnMapping Create() => new ColumnMapping();
+        /// <returns>IColumnMapping.</returns>
+        public static IColumnMapping Create()
+        {
+            return new ColumnMapping();
+        }
 
-        /// <summary>
-        /// Adds a column name
-        /// </summary>
-        /// <param name="name">Column name</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping AddName(string name)
         {
             Name = name;
@@ -158,11 +145,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Adds a column type
-        /// </summary>
-        /// <param name="type">Column type</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping AddType(Type type)
         {
             Type = type;
@@ -170,11 +153,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Adds a column ordinal
-        /// </summary>
-        /// <param name="ordinal">Column ordinal</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping AddOrdinal(int ordinal)
         {
             Ordinal = ordinal;
@@ -182,11 +161,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Indicates if it is the primary key
-        /// </summary>
-        /// <param name="primaryKey">Primary key flag</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping PrimaryKey(bool primaryKey)
         {
             IsPrimaryKey = primaryKey;
@@ -194,11 +169,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Indicates if it accepts null values
-        /// </summary>
-        /// <param name="acceptNull">Accept null flag</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping AcceptNull(bool acceptNull)
         {
             AllowNull = acceptNull;
@@ -206,11 +177,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Adds a column default value
-        /// </summary>
-        /// <param name="defaultValue">Column default value</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <inheritdoc />
         public IColumnMapping AddDefaultValue(object defaultValue)
         {
             DefaultValue = defaultValue;
@@ -218,10 +185,7 @@ namespace DataTablePlus.Mappings
             return this;
         }
 
-        /// <summary>
-        /// Transforms this object to a new DataColumn object
-        /// </summary>
-        /// <returns>A new DataColumn object</returns>
+        /// <inheritdoc />
         public DataColumn AsDataColumn()
         {
             var dataColumn = new DataColumn
@@ -236,7 +200,7 @@ namespace DataTablePlus.Mappings
         }
 
         /// <summary>
-        /// Tries to set a default value to DefaultValue property based on the data type
+        /// Ensures the default value.
         /// </summary>
         private void EnsureDefaultValue()
         {
@@ -254,81 +218,98 @@ namespace DataTablePlus.Mappings
         }
 
         /// <summary>
-        /// Validates the provided column name
+        /// Validates the name.
         /// </summary>
-        private void ValidateName() => ValidateName(Name);
+        private void ValidateName()
+        {
+            ValidateName(Name);
+        }
 
         /// <summary>
-        /// Validates the provided column name
+        /// Validates the name.
         /// </summary>
-        /// <param name="name">Column name</param>
+        /// <param name="name">The name.</param>
+        /// <exception cref="ArgumentException">name</exception>
         private void ValidateName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException($"{nameof(name)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(name));
+                throw new ArgumentException(nameof(name));
             }
         }
 
         /// <summary>
-        /// Validates the provided data type
+        /// Validates the type.
         /// </summary>
-        private void ValidateType() => ValidateType(Type);
+        private void ValidateType()
+        {
+            ValidateType(Type);
+        }
 
         /// <summary>
-        /// Validates the provided data type
+        /// Validates the type.
         /// </summary>
-        /// <param name="type">Data type</param>
+        /// <param name="type">The type.</param>
+        /// <exception cref="ArgumentException">type</exception>
         private void ValidateType(Type type)
         {
             if (type == null)
             {
-                throw new ArgumentException($"{nameof(type)} {CommonResources.CannotBeNull}", nameof(type));
+                throw new ArgumentException(nameof(type));
             }
         }
 
         /// <summary>
-        /// Validates the provided ordinal value
+        /// Validates the ordinal.
         /// </summary>
-        private void ValidateOrdinal() => ValidateOrdinal(Ordinal);
+        private void ValidateOrdinal()
+        {
+            ValidateOrdinal(Ordinal);
+        }
 
         /// <summary>
-        /// Validates the provided ordinal value
+        /// Validates the ordinal.
         /// </summary>
-        /// <param name="ordinal">Ordinal value</param>
+        /// <param name="ordinal">The ordinal.</param>
+        /// <exception cref="ArgumentException">ordinal</exception>
         private void ValidateOrdinal(int ordinal)
         {
             if (ordinal < 0)
             {
-                throw new ArgumentException($"{nameof(ordinal)} {CommonResources.CannotBeLessThanZero}", nameof(ordinal));
+                throw new ArgumentException(nameof(ordinal));
             }
         }
 
         /// <summary>
-        /// Validates if it doesn't allow null values and also doesn't have a default value
+        /// Validates the allow null flag and the default value.
         /// </summary>
+        /// <exception cref="ArgumentException">Null value is not allowed.</exception>
         private void ValidateAllowNull()
         {
             if (!AllowNull && DefaultValue == null)
             {
-                throw new ArgumentException(CommonResources.NullValueIsNotAllowed);
+                throw new ArgumentException("Null value is not allowed.");
             }
         }
 
         /// <summary>
-        /// Validates if the default value type has the same type of the property data type
+        /// Validates the type of the data.
         /// </summary>
-        private void ValidateDataType() => ValidateDataType(DefaultValue);
+        private void ValidateDataType()
+        {
+            ValidateDataType(DefaultValue);
+        }
 
         /// <summary>
-        /// Validates if the default value type has the same type of the property data type
+        /// Validates the type of the data.
         /// </summary>
-        /// <param name="value">Default value</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentException">Data types do not match.</exception>
         private void ValidateDataType(object value)
         {
             if (value != null && Type != null && value.GetType() != Type)
             {
-                throw new ArgumentException(CommonResources.DataTypesDoNotMatch);
+                throw new ArgumentException("Data types do not match.");
             }
         }
     }

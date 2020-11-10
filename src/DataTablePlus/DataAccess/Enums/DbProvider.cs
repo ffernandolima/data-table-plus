@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,18 +24,26 @@
  * 
  ****************************************************************************************************************/
 
-using System;
-
-namespace DataTablePlus.DataAccessContracts.Services
+namespace DataTablePlus.DataAccess.Enums
 {
     /// <summary>
-    /// ServiceBase interface
+    /// Enum DbProvider
     /// </summary>
-    public interface IServiceBase : IDisposable
+    public enum DbProvider : int
     {
         /// <summary>
-        /// Command Timeout
+        /// The none
         /// </summary>
-        TimeSpan Timeout { get; set; }
+        None,
+
+        /// <summary>
+        /// The SQL server
+        /// </summary>
+        SQLServer,
+
+        /// <summary>
+        /// The My SQL
+        /// </summary>
+        MySQL
     }
 }

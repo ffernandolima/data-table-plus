@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -29,74 +29,76 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
-namespace DataTablePlus.DataAccessContracts.Services
+namespace DataTablePlus.DataAccess.Services.Contracts
 {
     /// <summary>
-    /// MetadataService interface
+    /// Interface IMetadataService
+    /// Implements the <see cref="DataTablePlus.DataAccess.Services.Contracts.IServiceBase" />
     /// </summary>
-    public interface IMetadataService : IServiceBase, IDisposable
+    /// <seealso cref="DataTablePlus.DataAccess.Services.Contracts.IServiceBase" />
+    public interface IMetadataService : IServiceBase
     {
         /// <summary>
-        /// Gets the table name from the mapped entity on EF
+        /// Gets the name of the table.
         /// </summary>
-        /// <typeparam name="T">Type of the mapped entity</typeparam>
-        /// <returns>Table name or null</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <returns>System.String.</returns>
         string GetTableName<T>() where T : class;
 
         /// <summary>
-        /// Gets the table name from the mapped entity on EF
+        /// Gets the name of the table.
         /// </summary>
-        /// <param name="type">Type of the mapped entity</param>
-        /// <returns>Table name or null</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>System.String.</returns>
         string GetTableName(Type type);
 
         /// <summary>
-        /// Gets a mapping between the model properties and the mapped database column names
+        /// Gets the mappings.
         /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>Mapping or null</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <returns>IDictionary&lt;PropertyInfo, System.String&gt;.</returns>
         IDictionary<PropertyInfo, string> GetMappings<T>() where T : class;
 
         /// <summary>
-        /// Gets a mapping between the model properties and the mapped database column names
+        /// Gets the mappings.
         /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>Mapping or null</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>IDictionary&lt;PropertyInfo, System.String&gt;.</returns>
         IDictionary<PropertyInfo, string> GetMappings(Type type);
 
         /// <summary>
-        /// Gets the entity keys from the mapped entity on EF
+        /// Gets the key names.
         /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>A list that contains the entity keys</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <returns>IList&lt;System.String&gt;.</returns>
         IList<string> GetKeyNames<T>() where T : class;
 
         /// <summary>
-        /// Gets the entity keys from the mapped entity on EF
+        /// Gets the key names.
         /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>A list that contains the entity keys</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>IList&lt;System.String&gt;.</returns>
         IList<string> GetKeyNames(Type type);
 
         /// <summary>
-        /// Gets the database keys based on the EF mappings
+        /// Gets the database key names.
         /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>A list that contains the database keys</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <returns>IList&lt;System.String&gt;.</returns>
         IList<string> GetDbKeyNames<T>() where T : class;
 
         /// <summary>
-        /// Gets the database keys based on the EF mappings
+        /// Gets the database key names.
         /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>A list that contains the database keys</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>IList&lt;System.String&gt;.</returns>
         IList<string> GetDbKeyNames(Type type);
 
         /// <summary>
-        /// Gets the database table schema
+        /// Gets the table schema.
         /// </summary>
-        /// <param name="tableName">The name of the database table</param>
-        /// <returns>A datatable that represents a mirror of the database table schema</returns>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>DataTable.</returns>
         DataTable GetTableSchema(string tableName);
     }
 }

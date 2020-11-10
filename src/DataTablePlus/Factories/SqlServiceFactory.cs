@@ -24,63 +24,68 @@
  * 
  ****************************************************************************************************************/
 
+using DataTablePlus.Configuration;
+using DataTablePlus.DataAccess.Enums;
+using DataTablePlus.DataAccess.Services;
+using DataTablePlus.DataAccess.Services.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
 
-namespace DataTablePlus.Extensions
+#if NETSTANDARD20
+using Microsoft.EntityFrameworkCore;
+#endif
+
+#if NETFULL
+using System.Data.Entity;
+#endif
+
+namespace DataTablePlus.Factories
 {
     /// <summary>
-    /// Class TypeExtensions.
+    /// Class SqlServiceFactory.
     /// </summary>
-    internal static class TypeExtensions
+    public class SqlServiceFactory
     {
         /// <summary>
-        /// The default value types
+        /// The factory
         /// </summary>
-        private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
+        private static readonly Lazy<SqlServiceFactory> Factory = new Lazy<SqlServiceFactory>(() => new SqlServiceFactory(), isThreadSafe: true);
 
         /// <summary>
-        /// Gets the properties from binding flags.
+        /// Gets the instance.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="bindingFlags">The binding flags.</param>
-        /// <returns>PropertyInfo[].</returns>
-        internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
-        {
-            return type.GetProperties(bindingFlags);
-        }
+        /// <value>The instance.</value>
+        public static SqlServiceFactory Instance { get => Factory.Value; }
 
         /// <summary>
-        /// Gets the default value.
+        /// Prevents a default instance of the <see cref="SqlServiceFactory"/> class from being created.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>System.Object.</returns>
-        public static object GetDefaultValue(this Type type)
+        private SqlServiceFactory()
+        { }
+
+        /// <summary>
+        /// Gets the SQL service.
+        /// </summary>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <returns>ISqlService.</returns>
+        public ISqlService GetSqlService(DbContext dbContext = null, string connectionString = null)
         {
-            if (!type.IsValueType)
+            ISqlService sqlService = null;
+
+            switch (Startup.DbProvider)
             {
-                return null;
+                case DbProvider.SQLServer:
+                    sqlService = new SqlServerService(dbContext, connectionString);
+                    break;
+                case DbProvider.MySQL:
+                    sqlService = new MySqlService(dbContext, connectionString);
+                    break;
+                case DbProvider.None:
+                default:
+                    break;
             }
 
-            if (DefaultValueTypes.TryGetValue(type, out var defaultValue))
-            {
-                return defaultValue;
-            }
-
-            defaultValue = Activator.CreateInstance(type);
-
-            Dictionary<Type, object> snapshot, newCache;
-
-            do
-            {
-                snapshot = DefaultValueTypes;
-                newCache = new Dictionary<Type, object>(DefaultValueTypes) { [type] = defaultValue };
-
-            } while (!ReferenceEquals(Interlocked.CompareExchange(ref DefaultValueTypes, newCache, snapshot), snapshot));
-
-            return defaultValue;
+            return sqlService;
         }
     }
 }

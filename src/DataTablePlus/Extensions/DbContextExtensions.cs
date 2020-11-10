@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,13 +24,11 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
-using DataTablePlus.DataAccess.Services;
-using DataTablePlus.DataAccessContracts;
-using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.DataAccess;
+using DataTablePlus.DataAccess.Enums;
+using DataTablePlus.Factories;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -50,7 +48,7 @@ using System.Data.Entity.Infrastructure;
 namespace DataTablePlus.Extensions
 {
     /// <summary>
-    /// Class that contains DbContext extensions
+    /// Class DbContextExtensions.
     /// </summary>
     public static class DbContextExtensions
     {
@@ -65,21 +63,28 @@ namespace DataTablePlus.Extensions
         #endregion EF6 DataSpace Enum Explanation
 
         /// <summary>
-        /// Tries to get a table name from a mapped entity
+        /// Gets the name of the table.
         /// </summary>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entityType">Type of the entity</param>
-        /// <returns>Table name or null</returns>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>System.String.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// dbContext
+        /// or
+        /// entityType
+        /// or
+        /// entityTypeObject
+        /// </exception>
         internal static string GetTableName(this DbContext dbContext, Type entityType)
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entityType == null)
             {
-                throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityType));
             }
 
             string tableName = null;
@@ -102,7 +107,18 @@ namespace DataTablePlus.Extensions
 
                     var tableMetadataProperty = entitySetBase.MetadataProperties["Table"];
 
-                    tableName = $"[{schemaMetadataProperty.Value ?? Constants.DefaultSchema}].[{tableMetadataProperty.Value}]";
+                    var schema = schemaMetadataProperty.Value.ToString();
+
+                    var table = tableMetadataProperty.Value.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(schema))
+                    {
+                        tableName = $"{schema}.{table}";
+                    }
+                    else
+                    {
+                        tableName = table;
+                    }
                 }
             }
 #endif
@@ -112,32 +128,44 @@ namespace DataTablePlus.Extensions
 
             if (entityTypeObject == null)
             {
-                throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityTypeObject));
             }
 
-            var relationalEntityTypeAnnotations = entityTypeObject.Relational();
-
-            tableName = $"[{relationalEntityTypeAnnotations.Schema ?? Constants.DefaultSchema}].[{relationalEntityTypeAnnotations.TableName}]";
+            if (!string.IsNullOrWhiteSpace(entityTypeObject.GetSchema()))
+            {
+                tableName = $"{entityTypeObject.GetSchema()}.{entityTypeObject.GetTableName()}";
+            }
+            else
+            {
+                tableName = entityTypeObject.GetTableName();
+            }
 #endif
             return tableName;
         }
 
         /// <summary>
-        /// Tries to build a dictionary that contains a mapping between the model properties and the mapped database column names
+        /// Gets the mappings.
         /// </summary>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entityType">Type of the entity</param>
-        /// <returns>Dictionary that contains a mapping between the model properties and the mapped database column names</returns>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>IDictionary&lt;PropertyInfo, System.String&gt;.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// dbContext
+        /// or
+        /// entityType
+        /// or
+        /// entityTypeObject
+        /// </exception>
         internal static IDictionary<PropertyInfo, string> GetMappings(this DbContext dbContext, Type entityType)
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entityType == null)
             {
-                throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityType));
             }
 
             IDictionary<PropertyInfo, string> mappings = null;
@@ -198,30 +226,37 @@ namespace DataTablePlus.Extensions
 
             if (entityTypeObject == null)
             {
-                throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityTypeObject));
             }
 
-            mappings = entityTypeObject.GetProperties().Where(property => !property.IsShadowProperty).ToDictionary(property => property.PropertyInfo, property => property.Relational().ColumnName);
+            mappings = entityTypeObject.GetProperties().Where(property => !property.IsShadowProperty()).ToDictionary(property => property.PropertyInfo, property => property.GetColumnName());
 #endif
             return mappings;
         }
 
         /// <summary>
-        /// Tries to create a string array containing the entity keys
+        /// Gets the key names.
         /// </summary>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entityType">Type of the entity</param>
-        /// <returns>String array that contains the entity keys</returns>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>IList&lt;System.String&gt;.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// dbContext
+        /// or
+        /// entityType
+        /// or
+        /// entityTypeObject
+        /// </exception>
         internal static IList<string> GetKeyNames(this DbContext dbContext, Type entityType)
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entityType == null)
             {
-                throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityType));
             }
 
 #if NETFULL
@@ -247,33 +282,40 @@ namespace DataTablePlus.Extensions
 
             if (entityTypeObject == null)
             {
-                throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityTypeObject));
             }
 
             var key = entityTypeObject.FindPrimaryKey();
 
-            var keyNames = key.Properties.Where(property => !property.IsShadowProperty).Select(property => property.Name).ToList();
+            var keyNames = key.Properties.Where(property => !property.IsShadowProperty()).Select(property => property.Name).ToList();
 
             return keyNames;
 #endif
         }
 
         /// <summary>
-        /// Tries to create a string array containing the db entity keys
+        /// Gets the database key names.
         /// </summary>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entityType">Type of the entity</param>
-        /// <returns>String array that contains the db entity keys</returns>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>IList&lt;System.String&gt;.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// dbContext
+        /// or
+        /// entityType
+        /// or
+        /// entityTypeObject
+        /// </exception>
         internal static IList<string> GetDbKeyNames(this DbContext dbContext, Type entityType)
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entityType == null)
             {
-                throw new ArgumentNullException(nameof(entityType), $"{nameof(entityType)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityType));
             }
 
             IList<string> dbKeyNames = null;
@@ -293,109 +335,129 @@ namespace DataTablePlus.Extensions
 
             if (entityTypeObject == null)
             {
-                throw new ArgumentNullException(nameof(entityTypeObject), $"{nameof(entityTypeObject)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(entityTypeObject));
             }
 
             var key = entityTypeObject.FindPrimaryKey();
 
-            dbKeyNames = key.Properties.Where(property => !property.IsShadowProperty).Select(property => property.Relational().ColumnName).ToList();
+            dbKeyNames = key.Properties.Where(property => !property.IsShadowProperty()).Select(property => property.GetColumnName()).ToList();
 #endif
             return dbKeyNames;
         }
 
         /// <summary>
-        /// Executes a bulk insert in order to get a high performance level while inserting a lot of data
+        /// Executes the bulk insert.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be inserted into the database</param>
-        /// <param name="batchSize">The batch number that will be considered while inserting</param>
-        /// <param name="options">Bulk insert options</param>
-        /// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
-        /// <returns>List of objects filled with the primary key values or not</returns>
-        public static IList<T> BulkInsert<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class => BulkInsertInternal(dbContext, entities, batchSize, options, retrievePrimaryKeyValues);
-
-        /// <summary>
-        /// Executes an async bulk insert in order to get a high performance level while inserting a lot of data
-        /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be inserted into the database</param>
-        /// <param name="batchSize">The batch number that will be considered while inserting</param>
-        /// <param name="options">Bulk insert options</param>
-        /// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
-        /// <param name="cancellationToken">A token for stopping the task if needed</param>
-        /// <returns>List of objects filled with the primary key values or not</returns>
-        public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <returns>IList&lt;T&gt;.</returns>
+        public static IList<T> BulkInsert<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
         {
-            var task = Task.Factory.StartNew(() => BulkInsert(dbContext, entities, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
-
-            return task;
+            return BulkInsertInternal(dbContext, entities, batchSize, options, retrievePrimaryKeyValues);
         }
 
         /// <summary>
-        /// Executes a batch update in order to get a high performance level while updating a lot of data
+        /// Executes the bulks insert asynchronous.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be updated into the database</param>
-        /// <param name="commandText">The sql command text that will be used to update the data</param>
-        /// <param name="batchSize">The batch number that will be considered while updating</param>
-        public static void BatchUpdate<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class => BatchUpdateInternal(dbContext, entities, commandText, batchSize);
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;IList&lt;T&gt;&gt;.</returns>
+        public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
+        {
+            return Task.Factory.StartNew(() => BulkInsert(dbContext, entities, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
+        }
 
         /// <summary>
-        /// Executes an async batch update in order to get a high performance level while updating a lot of data
+        /// Executes the batche update.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be updated into the database</param>
-        /// <param name="commandText">The sql command text that will be used to update the data</param>
-        /// <param name="batchSize">The batch number that will be considered while updating</param>
-        /// <param name="cancellationToken">A token for stopping the task if needed</param> 
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        public static void BatchUpdate<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class
+        {
+            BatchUpdateInternal(dbContext, entities, commandText, batchSize);
+        }
+
+        /// <summary>
+        /// Executes the batch update asynchronous.
+        /// </summary>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
         public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default) where T : class
         {
-            var task = Task.Factory.StartNew(() => BatchUpdate(dbContext, entities, commandText, batchSize), cancellationToken);
-
-            return task;
+            return Task.Factory.StartNew(() => BatchUpdate(dbContext, entities, commandText, batchSize), cancellationToken);
         }
 
         /// <summary>
-        /// Executes a bulk insert in order to get a high performance level while inserting a lot of data (internal method)
+        /// Executes the bulk insert internally.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be inserted into the database</param>
-        /// <param name="batchSize">The batch number that will be considered while inserting</param>
-        /// <param name="options">Bulk insert options</param>
-        /// <param name="retrievePrimaryKeyValues">A flag that indicates if the primary key values should be retrieved after the bulk insert</param>
-        /// <returns>List of objects filled with the primary key values or not</returns>
-        private static IList<T> BulkInsertInternal<T>(DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <returns>IList&lt;T&gt;.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// dbContext
+        /// or
+        /// entities
+        /// </exception>
+        private static IList<T> BulkInsertInternal<T>(DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entities == null || !entities.Any())
             {
-                throw new ArgumentNullException(nameof(entities), $"{nameof(entities)} {CommonResources.CannotBeNullOrEmpty}");
+                throw new ArgumentNullException(nameof(entities));
             }
 
             IList<string> primaryKeyNames = null;
 
             if (retrievePrimaryKeyValues.GetValueOrDefault())
             {
-                using (IMetadataService metadataService = new MetadataService(dbContext))
+                var metadataService = MetadataServiceFactory.Instance.GetMetadataService(dbContext);
+
+                try
                 {
-                    primaryKeyNames = metadataService.GetDbKeyNames(entities.GetTypeFromEnumerable());
+                    primaryKeyNames = metadataService?.GetDbKeyNames(entities.GetTypeFromEnumerable());
+                }
+                finally
+                {
+                    metadataService?.Dispose();
                 }
             }
 
             var dataTable = entities.AsStronglyTypedDataTable(dbContext);
 
-            using (ISqlService sqlService = new SqlService(dbContext))
+            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbContext);
+
+            try
             {
-                dataTable = sqlService.BulkInsert(dataTable, batchSize, options, primaryKeyNames);
+                dataTable = sqlService?.BulkInsert(dataTable, batchSize, options, primaryKeyNames);
+            }
+            finally
+            {
+                sqlService?.Dispose();
             }
 
             if (retrievePrimaryKeyValues.GetValueOrDefault())
@@ -407,58 +469,75 @@ namespace DataTablePlus.Extensions
         }
 
         /// <summary>
-        /// Executes a batch update in order to get a high performance level while updating a lot of data (internal method)
+        /// Executes the batch update internally.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <param name="entities">List of objects which contains the values to be updated into the database</param>
-        /// <param name="commandText">The sql command text that will be used to update the data</param>
-        /// <param name="batchSize">The batch number that will be considered while updating</param>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="entities">The entities.</param>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="batchSize">Size of the batch.</param>
+        /// <exception cref="ArgumentNullException">dbContext</exception>
+        /// <exception cref="ArgumentException">
+        /// entities
+        /// or
+        /// commandText
+        /// </exception>
         private static void BatchUpdateInternal<T>(DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class
         {
             if (dbContext == null)
             {
-                throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dbContext));
             }
 
             if (entities == null || !entities.Any())
             {
-                throw new ArgumentException($"{nameof(entities)} {CommonResources.CannotBeNullOrEmpty}", nameof(entities));
+                throw new ArgumentException(nameof(entities));
             }
 
             if (string.IsNullOrWhiteSpace(commandText))
             {
-                throw new ArgumentException($"{nameof(commandText)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(commandText));
+                throw new ArgumentException(nameof(commandText));
             }
 
             var dataTable = entities.AsStronglyTypedDataTable(dbContext);
 
-            using (ISqlService sqlService = new SqlService(dbContext))
+            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbContext);
+
+            try
             {
-                sqlService.BatchUpdate(dataTable, commandText, batchSize);
+                sqlService?.BatchUpdate(dataTable, commandText, batchSize);
+            }
+            finally
+            {
+                sqlService?.Dispose();
             }
         }
 
-#if NETFULL
+#if NETFULL                
         /// <summary>
-        /// Gets the ObjectContext from EF DbContext
+        /// Gets the object context.
         /// </summary>
-        /// <param name="dbContext">EF DbContext</param>
-        /// <returns>ObjectContext from EF DbContext</returns>
+        /// <param name="dbContext">The database context.</param>
+        /// <returns>ObjectContext.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// objectContextAdapter
+        /// or
+        /// objectContext
+        /// </exception>
         private static ObjectContext GetObjectContext(this DbContext dbContext)
         {
             var objectContextAdapter = (dbContext as IObjectContextAdapter);
 
             if (objectContextAdapter == null)
             {
-                throw new ArgumentNullException(nameof(objectContextAdapter), $"{nameof(objectContextAdapter)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(objectContextAdapter));
             }
 
             var objectContext = objectContextAdapter.ObjectContext;
 
             if (objectContext == null)
             {
-                throw new ArgumentNullException(nameof(objectContext), $"{nameof(objectContext)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(objectContext));
             }
 
             return objectContext;

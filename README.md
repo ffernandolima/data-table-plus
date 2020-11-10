@@ -1,16 +1,18 @@
 # DataTablePlus for .NET
 
-DataTablePlus provides some helpful extensions in order to transform object lists into data tables (it's able to use the object definitions and/or Entity Framework mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before.
+DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before.
 This application is focused on solving performance issues while ingesting or updating a lot of data.
 
-# Dependencies between .NET 4.5 and .NET 4.7.2
+# Dependencies between .NET 4.5 and .NET 4.8
 
 - EntityFramework >= 6.4.4
 
 # Dependencies .NETSTANDARD2.0
 
+- Microsoft.EntityFrameworkCore.Relational >= 3.1.10
+- Microsoft.CSharp >= 4.7.0
+- MySqlConnector >= 0.69.10
 - System.Data.SqlClient >= 4.8.2
-- Microsoft.EntityFrameworkCore.Relational >= 2.2.6
 
 # Status
 
@@ -208,8 +210,8 @@ This application is focused on solving performance issues while ingesting or upd
 
         // Creates the services
         // ps.: The MetadataService is needed only to get the primary key names, if you do not want to get them automatically, do not need to create this instance
-        using (var metadataService = new MetadataService())
-        using (var sqlService = new SqlService())
+        using (var metadataService = new SqlServerMetadataService())
+        using (var sqlService = new SqlServerSqlService())
         {
             // Overrides the default timeout setting 2 minutes to ensure that the data will be inserted successfully
             // ps.: Default timeout is 1 minute

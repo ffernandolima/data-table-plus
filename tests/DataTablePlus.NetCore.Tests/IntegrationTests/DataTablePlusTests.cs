@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,7 +26,7 @@
 
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Services;
-using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.DataAccess.Services.Contracts;
 using DataTablePlus.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -41,8 +41,14 @@ using Xunit;
 
 namespace DataTablePlus.NetCore.Tests.IntegrationTests
 {
+    /// <summary>
+    /// Class DataTablePlusTests.
+    /// </summary>
     public class DataTablePlusTests
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataTablePlusTests"/> class.
+        /// </summary>
         public DataTablePlusTests()
         {
             // Sets the culture to invariant in order to avoid some exception details in another language
@@ -72,6 +78,9 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
             Startup.AddConnectionString(connectionString);
         }
 
+        /// <summary>
+        /// Defines the test method GeneralTestMethod.
+        /// </summary>
         [Fact]
         public void GeneralTestMethod()
         {
@@ -116,8 +125,8 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
 
             // Creates the services
             // ps.: The MetadataService is needed only to get the primary key names, if you do not want to get them automatically, do not need to create this instance
-            using (IMetadataService metadataService = new MetadataService())
-            using (ISqlService sqlService = new SqlService())
+            using (IMetadataService metadataService = new SqlServerMetadataService())
+            using (ISqlService sqlService = new SqlServerService())
             {
                 // Overrides the default timeout setting 2 minutes to ensure that the data will be inserted successfully
                 // ps.: Default timeout is 1 minute
@@ -149,7 +158,7 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
                 // You can do something here while waiting for the task completion
 
                 // Waits for the task completion
-                // dataTable = bulkInsertTask.Result;
+                // dataTable = bulkInsertTask.GetAwaiter().GetResult();
 
                 dataTable = sqlService.BulkInsert(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
@@ -192,16 +201,27 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
 
     /// <summary>
     /// Sample DbContext class
+    /// Implements the <see cref="Microsoft.EntityFrameworkCore.DbContext" />
     /// </summary>
+    /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
     internal class Context : DbContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Context"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
         public Context(DbContextOptions<Context> options)
-        : base(options)
+            : base(options)
         {
-            Database.AutoTransactionsEnabled = false;
+            ChangeTracker.LazyLoadingEnabled = false;
             ChangeTracker.AutoDetectChangesEnabled = false;
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
+        /// <summary>
+        /// Called when [model creating].
+        /// </summary>
+        /// <param name="builder">The builder.</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserMap());
@@ -213,20 +233,48 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
     /// </summary>
     public partial class User
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="User"/> class.
+        /// </summary>
         public User()
         { }
 
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>The identifier.</value>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>The name.</value>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email.
+        /// </summary>
+        /// <value>The email.</value>
         public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password.
+        /// </summary>
+        /// <value>The password.</value>
         public string Password { get; set; }
     }
 
     /// <summary>
     /// Sample POCO class EF mapping
+    /// Implements the <see cref="Microsoft.EntityFrameworkCore.IEntityTypeConfiguration{DataTablePlus.NetCore.Tests.IntegrationTests.User}" />
     /// </summary>
+    /// <seealso cref="Microsoft.EntityFrameworkCore.IEntityTypeConfiguration{DataTablePlus.NetCore.Tests.IntegrationTests.User}" />
     public class UserMap : IEntityTypeConfiguration<User>
     {
+        /// <summary>
+        /// Configures the entity of type <typeparamref name="TEntity" />.
+        /// </summary>
+        /// <param name="builder">The builder to be used to configure the entity type.</param>
         public void Configure(EntityTypeBuilder<User> builder)
         {
             // Primary Key

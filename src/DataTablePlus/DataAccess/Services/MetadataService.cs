@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,9 +24,8 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
-using DataTablePlus.DataAccess.Resources;
-using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.DataAccess.Enums;
+using DataTablePlus.DataAccess.Services.Contracts;
 using DataTablePlus.Extensions;
 using System;
 using System.Collections.Generic;
@@ -44,117 +43,117 @@ using System.Data.Entity;
 namespace DataTablePlus.DataAccess.Services
 {
     /// <summary>
-    /// Service that should be used to get some metadata
+    /// Class MetadataService.
+    /// Implements the <see cref="DataTablePlus.DataAccess.Services.ServiceBase" />
+    /// Implements the <see cref="DataTablePlus.DataAccess.Services.Contracts.IMetadataService" />
     /// </summary>
-    public class MetadataService : ServiceBase, IMetadataService
+    /// <seealso cref="DataTablePlus.DataAccess.Services.ServiceBase" />
+    /// <seealso cref="DataTablePlus.DataAccess.Services.Contracts.IMetadataService" />
+    public abstract class MetadataService : ServiceBase, IMetadataService
     {
         /// <summary>
-        /// Ctor
+        /// Gets the commands.
         /// </summary>
-        /// <param name="dbContext">Db Context</param>
-        /// <param name="connectionString">Connection String</param>
-        public MetadataService(DbContext dbContext = null, string connectionString = null)
-            : base(dbContext, connectionString)
-        { }
+        /// <value>The commands.</value>
+        protected IDictionary<string, string> Commands { get; private set; }
 
         /// <summary>
-        /// Gets the table name from the mapped entity on EF
+        /// Initializes a new instance of the <see cref="MetadataService"/> class.
         /// </summary>
-        /// <typeparam name="T">Type of the mapped entity</typeparam>
-        /// <returns>Table name or null</returns>
-        public string GetTableName<T>() where T : class => GetTableName(typeof(T));
+        /// <param name="dbProvider">The database provider.</param>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        public MetadataService(DbProvider dbProvider, DbContext dbContext = null, string connectionString = null)
+            : base(dbProvider, dbContext, connectionString)
+        {
+            Commands = BuildCommands();
+        }
 
         /// <summary>
-        /// Gets the table name from the mapped entity on EF
+        /// Builds the commands.
         /// </summary>
-        /// <param name="type">Type of the mapped entity</param>
-        /// <returns>Table name or null</returns>
+        /// <returns>IDictionary&lt;System.String, System.String&gt;.</returns>
+        protected abstract IDictionary<string, string> BuildCommands();
+
+        /// <inheritdoc />
+        public string GetTableName<T>() where T : class
+        {
+            return GetTableName(typeof(T));
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">type</exception>
         public string GetTableName(Type type)
         {
             if (type == null)
             {
-                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return DbContext.GetTableName(type);
         }
 
-        /// <summary>
-        /// Gets a mapping between the model properties and the mapped database column names
-        /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>Mapping or null</returns>
-        public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class => GetMappings(typeof(T));
+        /// <inheritdoc />
+        public IDictionary<PropertyInfo, string> GetMappings<T>() where T : class
+        {
+            return GetMappings(typeof(T));
+        }
 
-        /// <summary>
-        /// Gets a mapping between the model properties and the mapped database column names
-        /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>Mapping or null</returns>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">type</exception>
         public IDictionary<PropertyInfo, string> GetMappings(Type type)
         {
             if (type == null)
             {
-                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return DbContext.GetMappings(type);
         }
 
-        /// <summary>
-        /// Gets the entity keys from the mapped entity on EF
-        /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>A list that contains the entity keys</returns>
-        public IList<string> GetKeyNames<T>() where T : class => GetKeyNames(typeof(T));
+        /// <inheritdoc />
+        public IList<string> GetKeyNames<T>() where T : class
+        {
+            return GetKeyNames(typeof(T));
+        }
 
-        /// <summary>
-        /// Gets the entity keys from the mapped entity on EF
-        /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>A list that contains the entity keys</returns>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">type</exception>
         public IList<string> GetKeyNames(Type type)
         {
             if (type == null)
             {
-                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return DbContext.GetKeyNames(type);
         }
 
-        /// <summary>
-        /// Gets the database keys based on the EF mappings
-        /// </summary>
-        /// <typeparam name="T">Type of the mapped entity on EF</typeparam>
-        /// <returns>A list that contains the database keys</returns>
-        public IList<string> GetDbKeyNames<T>() where T : class => GetDbKeyNames(typeof(T));
+        /// <inheritdoc />
+        public IList<string> GetDbKeyNames<T>() where T : class
+        {
+            return GetDbKeyNames(typeof(T));
+        }
 
-        /// <summary>
-        /// Gets the database keys based on the EF mappings
-        /// </summary>
-        /// <param name="type">Type of the mapped entity on EF</param>
-        /// <returns>A list that contains the database keys</returns>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">type</exception>
         public IList<string> GetDbKeyNames(Type type)
         {
             if (type == null)
             {
-                throw new ArgumentNullException(nameof(type), $"{nameof(type)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return DbContext.GetDbKeyNames(type);
         }
 
-        /// <summary>
-        /// Gets the database table schema
-        /// </summary>
-        /// <param name="tableName">The name of the database table</param>
-        /// <returns>A datatable that represents a mirror of the database table schema</returns>
+        /// <inheritdoc />
+        /// <exception cref="ArgumentException">tableName</exception>
         public DataTable GetTableSchema(string tableName)
         {
             if (string.IsNullOrWhiteSpace(tableName))
             {
-                throw new ArgumentException($"{nameof(tableName)} {CommonResources.CannotBeNullOrWhiteSpace}", nameof(tableName));
+                throw new ArgumentException(nameof(tableName));
             }
 
             DataTable dataTable;
@@ -163,15 +162,13 @@ namespace DataTablePlus.DataAccess.Services
             {
                 OpenConnection();
 
-                var commandText = string.Format(DataResources.GetSchemaTable, tableName);
+                var commandFormat = TryGetCommand("GetSchemaTable");
+                var commandText = string.Format(commandFormat, tableName);
 
                 using (var command = CreateCommand(commandText: commandText))
                 using (var reader = command.ExecuteReader())
                 {
-                    dataTable = new DataTable
-                    {
-                        TableName = tableName
-                    };
+                    dataTable = new DataTable(tableName);
 
                     dataTable.BeginLoadData();
                     dataTable.Load(reader);
@@ -186,10 +183,41 @@ namespace DataTablePlus.DataAccess.Services
             return dataTable;
         }
 
+        /// <summary>
+        /// Tries to get a command by key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>System.String.</returns>
+        /// <exception cref="ArgumentException">
+        /// key
+        /// or
+        /// Commands
+        /// </exception>
+        private string TryGetCommand(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            string command = null;
+
+            if (!Commands?.TryGetValue(key, out command) ?? false)
+            {
+                throw new ArgumentException(nameof(Commands));
+            }
+
+            return command;
+        }
+
         #region IDisposable Members
 
+        /// <summary>
+        /// The disposed
+        /// </summary>
         private bool _disposed;
 
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -203,6 +231,6 @@ namespace DataTablePlus.DataAccess.Services
             _disposed = true;
         }
 
-        #endregion
+        #endregion IDisposable Members
     }
 }

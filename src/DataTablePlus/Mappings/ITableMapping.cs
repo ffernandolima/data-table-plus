@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -30,65 +30,69 @@ using System.Collections.Generic;
 namespace DataTablePlus.Mappings
 {
     /// <summary>
-    /// Interface that represents the contract of TableMapping object
+    /// Interface ITableMapping
     /// </summary>
     public interface ITableMapping
     {
         /// <summary>
-        /// Database schema
+        /// Gets or sets the schema.
         /// </summary>
+        /// <value>The schema.</value>
         string Schema { get; set; }
 
         /// <summary>
-        /// Datatabase table name
+        /// Gets or sets the name of the table.
         /// </summary>
+        /// <value>The name of the table.</value>
         string TableName { get; set; }
 
         /// <summary>
-        /// Datatabase table primary key names
+        /// Gets the primary key names.
         /// </summary>
+        /// <value>The primary key names.</value>
         IList<string> PrimaryKeyNames { get; }
 
         /// <summary>
-        /// Database table column mappings ordered by ordinal property
+        /// Gets the column mappings.
         /// </summary>
+        /// <value>The column mappings.</value>
         IReadOnlyList<IColumnMapping> ColumnMappings { get; }
 
         /// <summary>
-        /// Adds a schema 
+        /// Adds the schema.
         /// </summary>
-        /// <param name="schema">Schema</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <param name="schema">The schema.</param>
+        /// <returns>ITableMapping.</returns>
         ITableMapping AddSchema(string schema);
 
         /// <summary>
-        /// Adds a table name
+        /// Adds the name of the table.
         /// </summary>
-        /// <param name="tableName">Table name</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>ITableMapping.</returns>
         ITableMapping AddTableName(string tableName);
 
         /// <summary>
-        /// Allows adding a new column mapping
+        /// Adds the column mapping.
         /// </summary>
-        /// <param name="columnName">Column name</param>
-        /// <param name="columnType">Column type</param>
-        /// <param name="ordinal">Ordinal</param>
-        /// <param name="isPrimaryKey">Is primary key</param>
-        /// <param name="allowNull">Allows null</param>
-        /// <param name="defaultValue">Default value</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="columnType">Type of the column.</param>
+        /// <param name="ordinal">The ordinal.</param>
+        /// <param name="isPrimaryKey">if set to <c>true</c> it's primary key.</param>
+        /// <param name="allowNull">if set to <c>true</c> it allows null.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>ITableMapping.</returns>
         ITableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null);
 
         /// <summary>
-        /// Allows adding a new column mapping
+        /// Adds the column mapping.
         /// </summary>
-        /// <param name="columnMapping">Column mapping object</param>
-        /// <returns>TableMapping object (Builder pattern)</returns>
+        /// <param name="columnMapping">The column mapping.</param>
+        /// <returns>ITableMapping.</returns>
         ITableMapping AddColumnMapping(IColumnMapping columnMapping);
 
         /// <summary>
-        /// Validates the whole table mapping object including the column mappings
+        /// Validates this instance.
         /// </summary>
         void Validate();
     }

@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,13 +24,13 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
 using DataTablePlus.Configuration;
-using DataTablePlus.DataAccess.Resources;
-using DataTablePlus.DataAccessContracts;
-using DataTablePlus.DataAccessContracts.Services;
+using DataTablePlus.DataAccess.Enums;
+using DataTablePlus.DataAccess.Services.Contracts;
+using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -45,87 +45,114 @@ using System.Data.Entity;
 namespace DataTablePlus.DataAccess.Services
 {
     /// <summary>
-    /// Service base that controls database objects
+    /// Class ServiceBase.
+    /// Implements the <see cref="DataTablePlus.DataAccess.Services.Contracts.IServiceBase" />
     /// </summary>
-    public class ServiceBase : IServiceBase
+    /// <seealso cref="DataTablePlus.DataAccess.Services.Contracts.IServiceBase" />
+    public abstract class ServiceBase : IServiceBase
     {
         /// <summary>
-        /// EF DbContext
+        /// Gets the database context.
         /// </summary>
+        /// <value>The database context.</value>
         protected DbContext DbContext { get; private set; }
 
         /// <summary>
-        /// Sql Connection
+        /// Gets the database connection.
         /// </summary>
-        protected SqlConnection SqlConnection { get; private set; }
+        /// <value>The database connection.</value>
+        protected DbConnection DbConnection { get; private set; }
 
         /// <summary>
-        /// Sql Transaction
+        /// Gets the database transaction.
         /// </summary>
-        protected SqlTransaction SqlTransaction { get; private set; }
+        /// <value>The database transaction.</value>
+        protected DbTransaction DbTransaction { get; private set; }
 
-        /// <summary>
-        /// Sql command Timeout
-        /// </summary>
+        /// <inheritdoc />
         public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <summary>
-        /// Ctor
+        /// Initializes a new instance of the <see cref="ServiceBase"/> class.
         /// </summary>
-        /// <param name="dbContext">Db Context</param>
-        /// <param name="connectionString">Connection String</param>
-        public ServiceBase(DbContext dbContext = null, string connectionString = null) => Construct(dbContext, connectionString);
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        public ServiceBase(DbContext dbContext = null, string connectionString = null)
+            : this(Startup.DbProvider, dbContext, connectionString)
+        { }
 
         /// <summary>
-        /// Opens the current connection
+        /// Initializes a new instance of the <see cref="ServiceBase"/> class.
+        /// </summary>
+        /// <param name="dbProvider">The database provider.</param>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        public ServiceBase(DbProvider dbProvider, DbContext dbContext = null, string connectionString = null)
+        {
+            Construct(dbProvider, dbContext, connectionString);
+        }
+
+        /// <summary>
+        /// Opens the connection.
         /// </summary>
         protected void OpenConnection()
         {
-            if (SqlConnection.State != ConnectionState.Open)
+            if (DbConnection.State != ConnectionState.Open)
             {
-                SqlConnection.Open();
+                DbConnection.Open();
             }
         }
 
         /// <summary>
-        /// Closes the current connection
+        /// Closes the connection.
         /// </summary>
         protected void CloseConnection()
         {
-            if (SqlConnection.State != ConnectionState.Closed)
+            if (DbConnection.State != ConnectionState.Closed)
             {
-                SqlConnection.Close();
+                DbConnection.Close();
             }
         }
 
         /// <summary>
-        /// Creates a new transaction from the current connection
+        /// Determines whether this instance has a transaction.
         /// </summary>
-        /// <param name="isolationLevel">Kind of isolation level to create the transaction</param>
-        /// <returns>An active transaction</returns>
-        protected SqlTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        /// <returns><c>true</c> if this instance has a transaction; otherwise, <c>false</c>.</returns>
+        public bool HasTransaction() 
         {
-            if (SqlTransaction != null)
-            {
-                throw new InvalidOperationException(DataResources.MoreThanOneTransaction);
-            }
-
-            return (SqlTransaction = SqlConnection.BeginTransaction(isolationLevel));
+            return DbTransaction != null; 
         }
 
         /// <summary>
-        /// Commits the current transaction if there's an active one
+        /// Begins the transaction.
         /// </summary>
+        /// <param name="isolationLevel">The isolation level.</param>
+        /// <returns>DbTransaction.</returns>
+        /// <exception cref="InvalidOperationException">Cannot create more than one transaction.</exception>
+        protected DbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        {
+            if (DbTransaction != null)
+            {
+                throw new InvalidOperationException("Cannot create more than one transaction.");
+            }
+
+            return (DbTransaction = DbConnection.BeginTransaction(isolationLevel));
+        }
+
+        /// <summary>
+        /// Commits the current transaction.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Cannot commit a null transaction.</exception>
         protected void Commit()
         {
             try
             {
-                if (SqlTransaction == null)
+                if (DbTransaction == null)
                 {
-                    throw new InvalidOperationException(DataResources.TransactionIsNull);
+                    throw new InvalidOperationException("Cannot commit a null transaction.");
                 }
 
-                SqlTransaction.Commit();
+                DbTransaction.Commit();
             }
             catch
             {
@@ -140,15 +167,15 @@ namespace DataTablePlus.DataAccess.Services
         }
 
         /// <summary>
-        /// Rollbacks the current transaction if there's an active one
+        /// Rollbacks the current transaction.
         /// </summary>
         protected void Rollback()
         {
             try
             {
-                if (SqlTransaction != null)
+                if (DbTransaction != null)
                 {
-                    SqlTransaction.Rollback();
+                    DbTransaction.Rollback();
                 }
             }
             catch
@@ -162,157 +189,181 @@ namespace DataTablePlus.DataAccess.Services
         }
 
         /// <summary>
-        /// Creates a command based on the provided parameters
+        /// Creates the command.
         /// </summary>
-        /// <param name="commandText">Command text to be executed on database</param>
-        /// <param name="commandType">Type of the provided command text</param>
-        /// <param name="parameters">command parameters</param>
-        /// <param name="useInternalTransaction">A flag that indicates if an internal transaction shall be created</param>
-        /// <returns>A new command</returns>
-        protected SqlCommand CreateCommand(string commandText = null, CommandType? commandType = null, SqlParameter[] parameters = null, bool? useInternalTransaction = null)
+        /// <param name="commandText">The command text.</param>
+        /// <param name="commandType">Type of the command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="useInternalTransaction">if set to <c>true</c> it uses an internal transaction.</param>
+        /// <returns>DbCommand.</returns>
+        protected DbCommand CreateCommand(string commandText = null, CommandType? commandType = null, DbParameter[] parameters = null, bool? useInternalTransaction = null)
         {
-            SqlTransaction transaction = null;
+            DbTransaction transaction = null;
 
             if (useInternalTransaction.GetValueOrDefault())
             {
                 transaction = BeginTransaction();
             }
 
-            var sqlCommand = SqlConnection.CreateCommand();
+            var dbCommand = DbConnection.CreateCommand();
 
-            sqlCommand.CommandTimeout = Convert.ToInt32(Timeout.TotalSeconds);
-
-            sqlCommand.CommandText = commandText;
-
-            sqlCommand.CommandType = commandType ?? CommandType.Text;
+            dbCommand.CommandTimeout = Convert.ToInt32(Timeout.TotalSeconds);
+            dbCommand.CommandText = commandText;
+            dbCommand.CommandType = commandType ?? CommandType.Text;
 
             if (parameters != null && parameters.Any())
             {
-                sqlCommand.Parameters.AddRange(parameters);
+                dbCommand.Parameters.AddRange(parameters);
             }
 
             if (transaction != null)
             {
-                sqlCommand.Transaction = transaction;
+                dbCommand.Transaction = transaction;
             }
 
-            return sqlCommand;
+            return dbCommand;
         }
 
         /// <summary>
-        /// Creates a new SqlBulkCopy based on the provided parameters
-        /// </summary>
-        /// <param name="dataTable">The data table with data to execute the bulk insert on database</param>
-        /// <param name="batchSize">the batch size</param>
-        /// <param name="options">Options to be used while ingesting the amount of data</param>
-        /// <param name="createColumnMappings">A flag that indicates if the mappings shall be created</param>
-        /// <returns></returns>
-        protected SqlBulkCopy CreateSqlBulkCopy(DataTable dataTable, int batchSize = DataConstants.BatchSize, SqlBulkCopyOptions? options = null, bool? createColumnMappings = true)
-        {
-            #region SqlBulkCopyOptions
-
-            // src: https://msdn.microsoft.com/pt-br/library/system.data.sqlclient.sqlbulkcopyoptions(v=vs.110).aspx
-            //
-            // CheckConstraints: Check constraints while data is being inserted. By default, constraints are not checked.
-            // KeepNulls: Preserve null values in the destination table regardless of the settings for default values. When not specified, null values are replaced by default values where applicable.
-            // TableLock: Obtain a bulk update lock for the duration of the bulk copy operation. When not specified, row locks are used.
-            // UseInternalTransaction: When specified, each batch of the bulk-copy operation will occur within a transaction. If you indicate this option and also provide a SqlTransaction object to the constructor, an ArgumentException occurs.
-
-            #endregion SqlBulkCopyOptions
-
-            const SqlBulkCopyOptions SqlBulkCopyOptions = SqlBulkCopyOptions.CheckConstraints | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction;
-
-            var sqlBulkCopy = new SqlBulkCopy(SqlConnection, options ?? SqlBulkCopyOptions, null)
-            {
-                BatchSize = batchSize,
-                DestinationTableName = dataTable.TableName,
-                BulkCopyTimeout = Convert.ToInt32(Timeout.TotalSeconds)
-            };
-
-            if (createColumnMappings.GetValueOrDefault())
-            {
-                foreach (var dataColumn in dataTable.Columns.Cast<DataColumn>())
-                {
-                    sqlBulkCopy.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
-                }
-            }
-
-            return sqlBulkCopy;
-        }
-
-        /// <summary>
-        /// Disposes the current transaction
+        /// Disposes the current transaction.
         /// </summary>
         private void DisposeTransaction()
         {
-            if (SqlTransaction != null)
+            if (DbTransaction != null)
             {
-                SqlTransaction.Dispose();
-                SqlTransaction = null;
+                DbTransaction.Dispose();
+                DbTransaction = null;
             }
         }
 
         /// <summary>
-        /// Fill the properties out using the values from the Ctor or from the Startup class
+        /// Constructs this instance.
         /// </summary>
-        /// <param name="dbContext">Db Context</param>
-        /// <param name="connectionString">Connection string</param>
-        private void Construct(DbContext dbContext = null, string connectionString = null)
+        /// <param name="dbProvider">The database provider.</param>
+        /// <param name="dbContext">The database context.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <exception cref="ArgumentNullException">Please configure this application through DataTablePlus.Configuration.Startup class.</exception>
+        private void Construct(DbProvider dbProvider, DbContext dbContext = null, string connectionString = null)
         {
             dbContext ??= Startup.DbContext;
             connectionString ??= Startup.ConnectionString;
 
             if (dbContext != null)
             {
-                DbContext = dbContext;
-
 #if NETSTANDARD20
-                ValidateConnectionString(DbContext.Database.GetDbConnection().ConnectionString);
-                SqlConnection = DbContext.Database.GetDbConnection() as SqlConnection;
+                var dbConnection = dbContext.Database.GetDbConnection();
+
+                ValidateConnection(dbConnection);
+
+                DbContext = dbContext;
+                DbConnection = dbConnection;
 #endif
 
 #if NETFULL
-                ValidateConnectionString(DbContext.Database.Connection.ConnectionString);
-                SqlConnection = DbContext.Database.Connection as SqlConnection;
+                var dbConnection = dbContext.Database.Connection;
+
+                ValidateConnection(dbConnection);
+
+                DbContext = dbContext;
+                DbConnection = dbConnection;
 #endif
             }
 
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
-                ValidateConnectionString(connectionString);
-
-                SqlConnection = new SqlConnection(connectionString);
+                ValidateConnection(connectionString, dbProvider);
+                DbConnection = GetConnection(connectionString, dbProvider);
             }
 
-            if (DbContext == null && SqlConnection == null)
+            if (DbContext == null && DbConnection == null)
             {
-                throw new ArgumentNullException($"{CommonResources.MissingConfiguration}");
+                throw new ArgumentNullException("Please configure this application through DataTablePlus.Configuration.Startup class.");
             }
         }
 
         /// <summary>
-        /// Validates the connection string which has been provided
+        /// Validates the connection.
         /// </summary>
-        /// <param name="connectionString">ConnectionString to be tested</param>
-        private static void ValidateConnectionString(string connectionString)
+        /// <param name="dbConnection">The database connection.</param>
+        /// <exception cref="Exception">Invalid database connection.</exception>
+        private static void ValidateConnection(DbConnection dbConnection)
         {
             try
             {
-                using (var sqlconnection = new SqlConnection(connectionString))
+                if (dbConnection.State != ConnectionState.Open)
                 {
-                    sqlconnection.Open();
+                    dbConnection.Open();
+                }
+
+                if (dbConnection.State != ConnectionState.Closed)
+                {
+                    dbConnection.Close();
                 }
             }
             catch
             {
-                throw new Exception($"{CommonResources.InvalidConnectionString}");
+                throw new Exception("Invalid database connection.");
             }
+        }
+
+        /// <summary>
+        /// Validates the connection string.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="dbProvider">The database provider.</param>
+        /// <exception cref="Exception">Invalid database connection string.</exception>
+        private static void ValidateConnection(string connectionString, DbProvider dbProvider)
+        {
+            try
+            {
+                using (var dbConnection = GetConnection(connectionString, dbProvider))
+                {
+                    dbConnection.Open();
+                }
+            }
+            catch
+            {
+                throw new Exception("Invalid database connection string.");
+            }
+        }
+
+        /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="dbProvider">The database provider.</param>
+        /// <returns>DbConnection.</returns>
+        private static DbConnection GetConnection(string connectionString, DbProvider dbProvider)
+        {
+            DbConnection dbConnection = null;
+
+            switch (dbProvider)
+            {
+                case DbProvider.SQLServer:
+                    dbConnection = new SqlConnection(connectionString);
+                    break;
+                case DbProvider.MySQL:
+                    dbConnection = new MySqlConnection(connectionString);
+                    break;
+                case DbProvider.None:
+                default:
+                    break;
+            }
+
+            return dbConnection;
         }
 
         #region IDisposable Members
 
+        /// <summary>
+        /// The disposed
+        /// </summary>
         private bool _disposed;
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -326,10 +377,10 @@ namespace DataTablePlus.DataAccess.Services
                         DbContext = null;
                     }
 
-                    if (SqlConnection != null)
+                    if (DbConnection != null)
                     {
-                        SqlConnection.Dispose();
-                        SqlConnection = null;
+                        DbConnection.Dispose();
+                        DbConnection = null;
                     }
                 }
             }
@@ -337,12 +388,15 @@ namespace DataTablePlus.DataAccess.Services
             _disposed = true;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        #endregion IDisposable Members
     }
 }

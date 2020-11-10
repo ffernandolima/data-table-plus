@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,7 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
+using DataTablePlus.DataAccess.Enums;
 using System;
 
 #if NETSTANDARD20
@@ -38,42 +38,77 @@ using System.Data.Entity;
 namespace DataTablePlus.Configuration
 {
     /// <summary>
-    /// Startup class that should be used in order to initialize the application and provide some required configurations
+    /// Class Startup.
     /// </summary>
     public static class Startup
     {
         /// <summary>
-        /// Provided EF DbContext
+        /// Gets the database context.
         /// </summary>
+        /// <value>The database context.</value>
         public static DbContext DbContext { get; private set; }
 
         /// <summary>
-        /// Provided ConnectionString
+        /// Gets the connection string.
         /// </summary>
+        /// <value>The connection string.</value>
         public static string ConnectionString { get; private set; }
 
         /// <summary>
-        /// Initializes the application providing a DbContext
+        /// Gets the database provider.
         /// </summary>
-        /// <typeparam name="T">Should be a DbContext</typeparam>
-        /// <param name="dbContext">EF DbContext</param>
+        /// <value>The database provider.</value>
+        public static DbProvider DbProvider { get; private set; }
+
+        /// <summary>
+        /// Adds the database context.
+        /// </summary>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dbContext">The database context.</param>
+        /// <exception cref="ArgumentNullException">dbContext</exception>
         public static void AddDbContext<T>(T dbContext) where T : DbContext
         {
-            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext), $"{nameof(dbContext)} {CommonResources.CannotBeNull}");
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
 #if NETSTANDARD20
-            AddConnectionString(DbContext.Database?.GetDbConnection()?.ConnectionString);
+            var connection = DbContext.Database.GetDbConnection();
+            AddConnectionString(connection.ConnectionString);
 #endif
 
 #if NETFULL
-            AddConnectionString(DbContext.Database?.Connection?.ConnectionString);
+            var connection = DbContext.Database.Connection;
+            AddConnectionString(connection.ConnectionString);
 #endif
         }
 
         /// <summary>
-        /// Initializes the application providing a connectionString
+        /// Adds the connection string.
         /// </summary>
-        /// <param name="connectionString">ConnectionString</param>
-        public static void AddConnectionString(string connectionString) => ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString), $"{nameof(connectionString)} {CommonResources.CannotBeNull}");
+        /// <param name="connectionString">The connection string.</param>
+        /// <exception cref="ArgumentException">connectionString</exception>
+        public static void AddConnectionString(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException(nameof(connectionString));
+            }
+
+            ConnectionString = connectionString;
+        }
+
+        /// <summary>
+        /// Adds the database provider.
+        /// </summary>
+        /// <param name="dbProvider">The database provider.</param>
+        /// <exception cref="ArgumentException">dbProvider</exception>
+        public static void AddDbProvider(DbProvider dbProvider)
+        {
+            if (dbProvider == DbProvider.None)
+            {
+                throw new ArgumentException(nameof(dbProvider));
+            }
+
+            DbProvider = dbProvider;
+        }
     }
 }
