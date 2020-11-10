@@ -68,6 +68,7 @@ namespace DataTablePlus.DataAccess.Services
                 ["DropNonClusteredIndex"] = "IF (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = DATABASE() AND index_name = 'IX_TrackerColumn') = 1 THEN DROP INDEX IX_TrackerColumn ON {0};",
                 ["CreateNonClusteredIndex"] = "CREATE INDEX IX_TrackerColumn ON {0} ({1});",
                 ["AddTrackerColumnStatement"] = "ALTER TABLE {0} ADD COLUMN {1} INT NULL;",
+                ["SelectPrimaryKeysStatement"] = "SELECT {0} FROM {1} WHERE {2} >= {3} AND {2} <= {4} ORDER BY {2};",
                 ["DropTrackerColumnStatement"] = "ALTER TABLE {0} DROP COLUMN {1};",
             };
 
@@ -93,7 +94,7 @@ namespace DataTablePlus.DataAccess.Services
 
             var bulkCopy = new MySqlBulkCopy(connection, transaction)
             {
-                DestinationTableName = dataTable.TableName,
+                DestinationTableName = Escape(dataTable.TableName),
                 BulkCopyTimeout = Convert.ToInt32(Timeout.TotalSeconds)
             };
 
@@ -134,6 +135,19 @@ namespace DataTablePlus.DataAccess.Services
             var parameter = DbParameterFactory.Instance.CreateDbParameter<MySqlParameter>(parameterName, sourceColumn);
 
             return parameter;
+        }
+
+        /// <inheritdoc />
+        protected override string Escape(string source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return source;
+            }
+
+            const string Separator = ".";
+
+            return string.Join(Separator, source.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Select(value => $"`{value}`"));
         }
 
         #region IDisposable Members

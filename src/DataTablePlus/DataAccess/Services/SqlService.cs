@@ -118,6 +118,13 @@ namespace DataTablePlus.DataAccess.Services
         /// <returns>DbParameter.</returns>
         protected abstract DbParameter CreateDbParameter(string parameterName, string sourceColumn);
 
+        /// <summary>
+        /// Escapes the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>System.String.</returns>
+        protected abstract string Escape(string source);
+
         /// <inheritdoc />
         public DataTable BulkInsert(DataTable dataTable, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, IList<string> primaryKeyNames = null)
         {
@@ -317,7 +324,7 @@ namespace DataTablePlus.DataAccess.Services
             try
             {
                 var commandFormat = TryGetCommand("DropNonClusteredIndex");
-                var commandText = string.Format(commandFormat, tableName);
+                var commandText = string.Format(commandFormat, Escape(tableName));
 
                 using (var command = CreateCommand(commandText: commandText))
                 {
@@ -340,7 +347,7 @@ namespace DataTablePlus.DataAccess.Services
             try
             {
                 var commandFormat = TryGetCommand("CreateNonClusteredIndex");
-                var commandText = string.Format(commandFormat, tableName, trackerColumnName);
+                var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
                 using (var command = CreateCommand(commandText: commandText))
                 {
@@ -392,7 +399,7 @@ namespace DataTablePlus.DataAccess.Services
         private void CreateDbTrackerColumn(string tableName, string trackerColumnName)
         {
             var commandFormat = TryGetCommand("AddTrackerColumnStatement");
-            var commandText = string.Format(commandFormat, tableName, trackerColumnName);
+            var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
             using (var command = CreateCommand(commandText: commandText))
             {
@@ -428,15 +435,15 @@ namespace DataTablePlus.DataAccess.Services
                 trackerColumnName
             };
 
-            var fieldNames = fields.Select(primaryKey => $"{primaryKey}");
+            var fieldNames = fields.Select(primaryKey => $"{Escape(primaryKey)}");
 
             var selectClause = string.Join(",", fieldNames);
 
             var parameters = BuildInsertParameters(dataTable, trackerColumnName);
 
-            const string SelectPrimaryKeysStatement = "SELECT {0} FROM {1} WHERE {2} >= {3} AND {2} <= {4} ORDER BY {2};";
+            var commandFormat = TryGetCommand("SelectPrimaryKeysStatement");
 
-            var commandText = string.Format(SelectPrimaryKeysStatement, selectClause, dataTable.TableName, trackerColumnName, "@MinParam", "@MaxParam");
+            var commandText = string.Format(commandFormat, selectClause, Escape(dataTable.TableName), Escape(trackerColumnName), "@MinParam", "@MaxParam");
 
             using (var command = CreateCommand(commandText: commandText, parameters: parameters))
             {
@@ -501,7 +508,7 @@ namespace DataTablePlus.DataAccess.Services
             try
             {
                 var commandFormat = TryGetCommand("DropTrackerColumnStatement");
-                var commandText = string.Format(commandFormat, tableName, trackerColumnName);
+                var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
                 using (var command = CreateCommand(commandText: commandText))
                 {

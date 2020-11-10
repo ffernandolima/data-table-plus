@@ -25,8 +25,10 @@
  ****************************************************************************************************************/
 
 using DataTablePlus.DataAccess.Enums;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 #if NETSTANDARD20
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +65,19 @@ namespace DataTablePlus.DataAccess.Services
             };
 
             return new ReadOnlyDictionary<string, string>(commands);
+        }
+
+        /// <inheritdoc />
+        protected override string Escape(string source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return source;
+            }
+
+            const string Separator = ".";
+
+            return string.Join(Separator, source.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Select(value => $"`{value}`"));
         }
 
         #region IDisposable Members

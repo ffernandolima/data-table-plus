@@ -75,6 +75,13 @@ namespace DataTablePlus.DataAccess.Services
         /// <returns>IDictionary&lt;System.String, System.String&gt;.</returns>
         protected abstract IDictionary<string, string> BuildCommands();
 
+        /// <summary>
+        /// Escapes the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>System.String.</returns>
+        protected abstract string Escape(string source);
+
         /// <inheritdoc />
         public string GetTableName<T>() where T : class
         {
@@ -163,7 +170,7 @@ namespace DataTablePlus.DataAccess.Services
                 OpenConnection();
 
                 var commandFormat = TryGetCommand("GetSchemaTable");
-                var commandText = string.Format(commandFormat, tableName);
+                var commandText = string.Format(commandFormat, Escape(tableName));
 
                 using (var command = CreateCommand(commandText: commandText))
                 using (var reader = command.ExecuteReader())

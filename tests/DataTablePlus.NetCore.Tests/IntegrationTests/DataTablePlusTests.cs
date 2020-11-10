@@ -25,6 +25,7 @@
  ****************************************************************************************************************/
 
 using DataTablePlus.Configuration;
+using DataTablePlus.DataAccess.Enums;
 using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccess.Services.Contracts;
 using DataTablePlus.Extensions;
@@ -67,6 +68,9 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
 
             // Creates the DbContext
             var context = new Context(dbContextOptionsBuilder.Options);
+
+            // Adds the DbProvider to DataTablePlus configurations
+            Startup.AddDbProvider(DbProvider.SQLServer);
 
             // Adds the DbContext to DataTablePlus configurations
             Startup.AddDbContext(context);
