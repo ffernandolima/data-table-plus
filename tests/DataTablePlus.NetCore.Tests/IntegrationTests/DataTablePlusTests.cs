@@ -106,7 +106,7 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
             //	- About 50 seconds updating 1 000 000 of rows
 
             // The measurement was taken while running some tests in Debug mode, so in Release mode it should be faster
-            // To sum up, although it was taken in Debug mode, it is still faster than Entity Framework (much faster)
+            // To sum up, although it was taken in Debug mode, it is still faster than EntityFramework/EntityFrameworkCore (much faster)
 
             // Creates a list of Users
             IList<User> entities = new List<User>();
@@ -152,10 +152,10 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
                 var stopwatch = Stopwatch.StartNew();
 
                 // Invokes the BulkInsert method
-                // You can also pass the BatchSize and the SqlBulkCopyOptions parameters to this method
+                // You can also pass the BatchSize and the BulkCopyOptions parameters to this method
 
                 // BatchSize will be used to flush the values against the database table
-                // SqlBulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
+                // BulkCopyOptions can be mixed up to get a lot of advantages, by default some options will be set
 
                 // var bulkInsertTask = sqlService.BulkInsertAsync(dataTable: dataTable, primaryKeyNames: databaseKeyNames);
 
