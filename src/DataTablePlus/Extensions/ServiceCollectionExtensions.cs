@@ -24,22 +24,16 @@
  * 
  ****************************************************************************************************************/
 
+#if NETSTANDARD20
+
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Enums;
-using System;
-
-#if NETSTANDARD20
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-#endif
-
-#if NETFULL
-using System.Data.Entity;
-#endif
+using System;
 
 namespace DataTablePlus.Extensions
 {
-#if NETSTANDARD20
     /// <summary>
     /// Class ServiceCollectionExtensions.
     /// </summary>
@@ -190,5 +184,5 @@ namespace DataTablePlus.Extensions
             return services;
         }
     }
-#endif
 }
+#endif
