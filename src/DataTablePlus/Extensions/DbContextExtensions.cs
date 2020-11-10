@@ -351,13 +351,14 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="dbContext">The database context.</param>
         /// <param name="entities">The entities.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
         /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
         /// <returns>IList&lt;T&gt;.</returns>
-        public static IList<T> BulkInsert<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
+        public static IList<T> BulkInsert<T>(this DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
         {
-            return BulkInsertInternal(dbContext, entities, batchSize, options, retrievePrimaryKeyValues);
+            return BulkInsertInternal(dbContext, entities, dbProvider, batchSize, options, retrievePrimaryKeyValues);
         }
 
         /// <summary>
@@ -366,14 +367,15 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="dbContext">The database context.</param>
         /// <param name="entities">The entities.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
         /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;IList&lt;T&gt;&gt;.</returns>
-        public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
+        public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
         {
-            return Task.Factory.StartNew(() => BulkInsert(dbContext, entities, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
+            return Task.Factory.StartNew(() => BulkInsert(dbContext, entities, dbProvider, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
         }
 
         /// <summary>
@@ -383,10 +385,11 @@ namespace DataTablePlus.Extensions
         /// <param name="dbContext">The database context.</param>
         /// <param name="entities">The entities.</param>
         /// <param name="commandText">The command text.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
-        public static void BatchUpdate<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class
+        public static void BatchUpdate<T>(this DbContext dbContext, IList<T> entities, string commandText, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize) where T : class
         {
-            BatchUpdateInternal(dbContext, entities, commandText, batchSize);
+            BatchUpdateInternal(dbContext, entities, commandText, dbProvider, batchSize);
         }
 
         /// <summary>
@@ -397,11 +400,12 @@ namespace DataTablePlus.Extensions
         /// <param name="entities">The entities.</param>
         /// <param name="commandText">The command text.</param>
         /// <param name="batchSize">Size of the batch.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default) where T : class
+        public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default) where T : class
         {
-            return Task.Factory.StartNew(() => BatchUpdate(dbContext, entities, commandText, batchSize), cancellationToken);
+            return Task.Factory.StartNew(() => BatchUpdate(dbContext, entities, commandText, dbProvider, batchSize), cancellationToken);
         }
 
         /// <summary>
@@ -410,6 +414,7 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="dbContext">The database context.</param>
         /// <param name="entities">The entities.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
         /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
@@ -419,7 +424,7 @@ namespace DataTablePlus.Extensions
         /// or
         /// entities
         /// </exception>
-        private static IList<T> BulkInsertInternal<T>(DbContext dbContext, IList<T> entities, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
+        private static IList<T> BulkInsertInternal<T>(DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
         {
             if (dbContext == null)
             {
@@ -435,7 +440,7 @@ namespace DataTablePlus.Extensions
 
             if (retrievePrimaryKeyValues.GetValueOrDefault())
             {
-                var metadataService = MetadataServiceFactory.Instance.GetMetadataService(dbContext);
+                var metadataService = MetadataServiceFactory.Instance.GetMetadataService(dbProvider, dbContext);
 
                 try
                 {
@@ -447,9 +452,9 @@ namespace DataTablePlus.Extensions
                 }
             }
 
-            var dataTable = entities.AsStronglyTypedDataTable(dbContext);
+            var dataTable = entities.AsStronglyTypedDataTable(dbProvider, dbContext);
 
-            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbContext);
+            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbProvider, dbContext);
 
             try
             {
@@ -475,6 +480,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dbContext">The database context.</param>
         /// <param name="entities">The entities.</param>
         /// <param name="commandText">The command text.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <exception cref="ArgumentNullException">dbContext</exception>
         /// <exception cref="ArgumentException">
@@ -482,7 +488,7 @@ namespace DataTablePlus.Extensions
         /// or
         /// commandText
         /// </exception>
-        private static void BatchUpdateInternal<T>(DbContext dbContext, IList<T> entities, string commandText, int batchSize = DataConstants.BatchSize) where T : class
+        private static void BatchUpdateInternal<T>(DbContext dbContext, IList<T> entities, string commandText, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize) where T : class
         {
             if (dbContext == null)
             {
@@ -499,9 +505,9 @@ namespace DataTablePlus.Extensions
                 throw new ArgumentException(nameof(commandText));
             }
 
-            var dataTable = entities.AsStronglyTypedDataTable(dbContext);
+            var dataTable = entities.AsStronglyTypedDataTable(dbProvider, dbContext);
 
-            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbContext);
+            var sqlService = SqlServiceFactory.Instance.GetSqlService(dbProvider, dbContext);
 
             try
             {
@@ -513,7 +519,7 @@ namespace DataTablePlus.Extensions
             }
         }
 
-#if NETFULL                
+#if NETFULL
         /// <summary>
         /// Gets the object context.
         /// </summary>

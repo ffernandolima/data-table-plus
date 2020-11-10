@@ -65,14 +65,15 @@ namespace DataTablePlus.Factories
         /// <summary>
         /// Gets the metadata service.
         /// </summary>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <param name="connectionString">The connection string.</param>
         /// <returns>IMetadataService.</returns>
-        public IMetadataService GetMetadataService(DbContext dbContext = null, string connectionString = null)
+        public IMetadataService GetMetadataService(DbProvider? dbProvider = null, DbContext dbContext = null, string connectionString = null)
         {
             IMetadataService metadataService = null;
 
-            switch (Startup.DbProvider)
+            switch (dbProvider ?? Startup.DbProvider)
             {
                 case DbProvider.SQLServer:
                     metadataService = new SqlServerMetadataService(dbContext, connectionString);

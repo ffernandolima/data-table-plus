@@ -24,6 +24,7 @@
  * 
  ****************************************************************************************************************/
 
+using DataTablePlus.DataAccess.Enums;
 using DataTablePlus.Factories;
 using System;
 using System.Collections.Generic;
@@ -53,11 +54,12 @@ namespace DataTablePlus.Extensions
         /// </summary>
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="objects">The objects.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <returns>DataTable.</returns>
-        internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, DbContext dbContext) where T : class
+        internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, DbProvider? dbProvider, DbContext dbContext) where T : class
         {
-            return AsStronglyTypedDataTable(objects, typeof(T), dbContext); 
+            return AsStronglyTypedDataTable(objects, typeof(T), dbProvider, dbContext);
         }
 
         /// <summary>
@@ -66,6 +68,7 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="objects">The objects.</param>
         /// <param name="derivedObjectType">Type of the derived object.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <returns>DataTable.</returns>
         /// <exception cref="ArgumentNullException">
@@ -76,7 +79,7 @@ namespace DataTablePlus.Extensions
         /// dbContext
         /// </exception>
         /// <exception cref="ArgumentException">Columns</exception>
-        internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, DbContext dbContext) where T : class
+        internal static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, DbProvider? dbProvider, DbContext dbContext) where T : class
         {
             if (objects == null)
             {
@@ -93,7 +96,7 @@ namespace DataTablePlus.Extensions
                 throw new ArgumentNullException(nameof(dbContext));
             }
 
-            var dataTable = GetTableSchemaFromDatabase(derivedObjectType, out IDictionary<PropertyInfo, string> mappings, dbContext);
+            var dataTable = GetTableSchemaFromDatabase(derivedObjectType, out IDictionary<PropertyInfo, string> mappings, dbProvider, dbContext);
 
             if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
             {
@@ -112,11 +115,12 @@ namespace DataTablePlus.Extensions
         /// </summary>
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="objects">The objects.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="useDbContextMappings">if set to <c>true</c> it uses the database context mappings.</param>
         /// <returns>DataTable.</returns>
-        public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, bool? useDbContextMappings = true) where T : class
+        public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, DbProvider? dbProvider = null, bool? useDbContextMappings = true) where T : class
         {
-            return AsStronglyTypedDataTable(objects, typeof(T), useDbContextMappings); 
+            return AsStronglyTypedDataTable(objects, typeof(T), dbProvider, useDbContextMappings);
         }
 
         /// <summary>
@@ -125,6 +129,7 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="objects">The objects.</param>
         /// <param name="derivedObjectType">Type of the derived object.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="useDbContextMappings">if set to <c>true</c> it uses the database context mappings.</param>
         /// <returns>DataTable.</returns>
         /// <exception cref="ArgumentNullException">
@@ -133,7 +138,7 @@ namespace DataTablePlus.Extensions
         /// derivedObjectType
         /// </exception>
         /// <exception cref="ArgumentException">Columns</exception>
-        public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, bool? useDbContextMappings = true) where T : class
+        public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, Type derivedObjectType, DbProvider? dbProvider = null, bool? useDbContextMappings = true) where T : class
         {
             if (objects == null)
             {
@@ -151,7 +156,7 @@ namespace DataTablePlus.Extensions
 
             if (useDbContextMappings.GetValueOrDefault())
             {
-                dataTable = GetTableSchemaFromDatabase(derivedObjectType, out mappings);
+                dataTable = GetTableSchemaFromDatabase(derivedObjectType, out mappings, dbProvider);
             }
             else
             {
@@ -186,7 +191,7 @@ namespace DataTablePlus.Extensions
         /// or
         /// Columns
         /// </exception>
-        public static DataTable AsStronglyTypedDataTable(this IEnumerable<object[]> objects, Mappings.ITableMapping tableMapping)
+        public static DataTable AsStronglyTypedDataTable(this IEnumerable<object[]> objects, ITableMapping tableMapping)
         {
             if (objects == null)
             {
@@ -232,7 +237,9 @@ namespace DataTablePlus.Extensions
         /// Gets the table schema from database.
         /// </summary>
         /// <param name="derivedObjectType">Type of the derived object.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="mappings">The mappings.</param>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <returns>DataTable.</returns>
         /// <exception cref="ArgumentNullException">
@@ -242,9 +249,9 @@ namespace DataTablePlus.Extensions
         /// or
         /// dataTable
         /// </exception>
-        private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings, DbContext dbContext = null)
+        private static DataTable GetTableSchemaFromDatabase(Type derivedObjectType, out IDictionary<PropertyInfo, string> mappings, DbProvider? dbProvider = null, DbContext dbContext = null)
         {
-            var metadataService = MetadataServiceFactory.Instance.GetMetadataService(dbContext);
+            var metadataService = MetadataServiceFactory.Instance.GetMetadataService(dbProvider, dbContext);
 
             try
             {

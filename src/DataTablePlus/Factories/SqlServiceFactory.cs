@@ -65,14 +65,15 @@ namespace DataTablePlus.Factories
         /// <summary>
         /// Gets the SQL service.
         /// </summary>
+        /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <param name="connectionString">The connection string.</param>
         /// <returns>ISqlService.</returns>
-        public ISqlService GetSqlService(DbContext dbContext = null, string connectionString = null)
+        public ISqlService GetSqlService(DbProvider? dbProvider = null, DbContext dbContext = null, string connectionString = null)
         {
             ISqlService sqlService = null;
 
-            switch (Startup.DbProvider)
+            switch (dbProvider ?? Startup.DbProvider)
             {
                 case DbProvider.SQLServer:
                     sqlService = new SqlServerService(dbContext, connectionString);
