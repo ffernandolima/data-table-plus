@@ -64,11 +64,7 @@ namespace DataTablePlus.Mappings
         public string Schema
         {
             get => _schema;
-            set
-            {
-                ValidateSchema(value);
-                _schema = value;
-            }
+            set => _schema = value;
         }
 
         /// <inheritdoc />
@@ -170,19 +166,6 @@ namespace DataTablePlus.Mappings
             _columnMappings.Add(columnMapping);
 
             return this;
-        }
-
-        /// <summary>
-        /// Validates the schema.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <exception cref="ArgumentException">schema</exception>
-        private void ValidateSchema(string schema)
-        {
-            if (string.IsNullOrWhiteSpace(schema))
-            {
-                throw new ArgumentException(nameof(schema));
-            }
         }
 
         /// <summary>
