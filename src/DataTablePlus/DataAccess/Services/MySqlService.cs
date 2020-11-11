@@ -65,7 +65,7 @@ namespace DataTablePlus.DataAccess.Services
         {
             var commands = new Dictionary<string, string>
             {
-                ["DropNonClusteredIndex"] = "IF (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = DATABASE() AND index_name = 'IX_TrackerColumn') = 1 THEN DROP INDEX IX_TrackerColumn ON {0};",
+                ["DropNonClusteredIndex"] = "DROP INDEX IX_TrackerColumn ON {0};",
                 ["CreateNonClusteredIndex"] = "CREATE INDEX IX_TrackerColumn ON {0} ({1});",
                 ["AddTrackerColumnStatement"] = "ALTER TABLE {0} ADD COLUMN {1} INT NULL;",
                 ["SelectPrimaryKeysStatement"] = "SELECT {0} FROM {1} WHERE {2} >= {3} AND {2} <= {4} ORDER BY {2};",
