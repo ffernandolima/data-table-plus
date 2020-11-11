@@ -9,8 +9,8 @@ This application is focused on solving performance issues while ingesting or upd
 
 # Dependencies .NETSTANDARD2.0
 
-- Microsoft.EntityFrameworkCore.Relational >= 3.1.10
 - Microsoft.CSharp >= 4.7.0
+- Microsoft.EntityFrameworkCore.Relational >= 3.1.10
 - MySqlConnector >= 0.69.10
 - System.Data.SqlClient >= 4.8.2
 
@@ -162,7 +162,7 @@ This application is focused on solving performance issues while ingesting or upd
 
         // Bulk Insert time spent: 
         //	- About 1 minute retrieving the primary key values
-        //	- About 5 seconds whitout retrieving the primary key values
+        //	- About 5 seconds without retrieving the primary key values
 
         // Batch Update time spent: 
         //	- About 50 seconds updating 1 000 000 of rows
@@ -248,7 +248,7 @@ This application is focused on solving performance issues while ingesting or upd
 
             if (databaseKeyNames != null && databaseKeyNames.Any())
             {
-                // Reestarts the Stopwatch
+                // Restarts the Stopwatch
                 stopwatch.Restart();
 
                 // Invokes the BatchUpdate method
