@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,6 @@
  * 
  ****************************************************************************************************************/
 
-using DataTablePlus.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,54 +32,66 @@ using System.Linq;
 namespace DataTablePlus.Extensions
 {
     /// <summary>
-    /// Class that contains DataTable extensions
+    /// Class DataTableExtensions.
     /// </summary>
     public static class DataTableExtensions
     {
         /// <summary>
-        /// Generic method that validates the provided parameters to avoid any kind of problem during the execution
+        /// Validates the parameters.
         /// </summary>
-        /// <param name="dataTable">Current data table to be validated</param>
+        /// <param name="dataTable">The data table.</param>
+        /// <exception cref="ArgumentNullException">dataTable</exception>
+        /// <exception cref="ArgumentException">
+        /// Columns
+        /// or
+        /// Rows
+        /// </exception>
         internal static void ValidateParameters(this DataTable dataTable)
         {
             if (dataTable == null)
             {
-                throw new ArgumentNullException(nameof(dataTable), $"{nameof(dataTable)} {CommonResources.CannotBeNull}");
+                throw new ArgumentNullException(nameof(dataTable));
             }
 
             if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
             {
-                throw new ArgumentException($"{nameof(dataTable.Columns)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Columns));
+                throw new ArgumentException(nameof(dataTable.Columns));
             }
 
             if (dataTable.Rows == null || dataTable.Rows.Count <= 0)
             {
-                throw new ArgumentException($"{nameof(dataTable.Rows)} {CommonResources.CannotBeNullOrEmpty}", nameof(dataTable.Rows));
+                throw new ArgumentException(nameof(dataTable.Rows));
             }
         }
 
         /// <summary>
-        /// Transforms a data table into a list of objects
+        /// Converts to list.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dataTable">Current data table to be transformed</param>
-        /// <returns>A new list of objects</returns>
-        public static IList<T> ToList<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToList();
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dataTable">The data table.</param>
+        /// <returns>IList&lt;T&gt;.</returns>
+        public static IList<T> ToList<T>(this DataTable dataTable) where T : class 
+        {
+            return Transform<T>(dataTable).ToList(); 
+        }
 
         /// <summary>
-        /// Transforms a data table into an array of objects 
+        /// Converts to array.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dataTable">Current data table to be transformed</param>
-        /// <returns>A new array of objects</returns>
-        public static T[] ToArray<T>(this DataTable dataTable) where T : class => Transform<T>(dataTable).ToArray();
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dataTable">The data table.</param>
+        /// <returns>T[].</returns>
+        public static T[] ToArray<T>(this DataTable dataTable) where T : class 
+        {
+            return Transform<T>(dataTable).ToArray(); 
+        }
 
         /// <summary>
-        /// Transforms a data table into an enumerable of objects
+        /// Transforms the specified data table.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dataTable">Current data table to be transformed</param>
-        /// <returns>A new enumerable of objects</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dataTable">The data table.</param>
+        /// <returns>IEnumerable&lt;T&gt;.</returns>
         private static IEnumerable<T> Transform<T>(DataTable dataTable) where T : class
         {
             dataTable.ValidateParameters();
@@ -89,11 +100,11 @@ namespace DataTablePlus.Extensions
         }
 
         /// <summary>
-        /// Transforms a data table into an enumerable of objects (internal)
+        /// Transforms the specified data table.
         /// </summary>
-        /// <typeparam name="T">Type of the objects</typeparam>
-        /// <param name="dataTable">Current data table to be transformed</param>
-        /// <returns>A new enumerable of objects</returns>
+        /// <typeparam name="T">The type of the T parameter.</typeparam>
+        /// <param name="dataTable">The data table.</param>
+        /// <returns>IEnumerable&lt;T&gt;.</returns>
         private static IEnumerable<T> TransformInternal<T>(DataTable dataTable) where T : class
         {
             var entities = new List<T>();

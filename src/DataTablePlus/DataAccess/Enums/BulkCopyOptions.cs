@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,21 +24,49 @@
  * 
  ****************************************************************************************************************/
 
-namespace DataTablePlus.Common
+using System;
+
+namespace DataTablePlus.DataAccess.Enums
 {
     /// <summary>
-    /// Class that centralizes constants
+    /// Enum BulkCopyOptions
     /// </summary>
-    internal static class Constants
+    [Flags]
+    public enum BulkCopyOptions : int
     {
         /// <summary>
-        /// Value: ,
+        /// The default
         /// </summary>
-        public const string Comma = ",";
+        Default = 0,
 
         /// <summary>
-        /// Value: dbo
+        /// The keep identity
         /// </summary>
-        public const string DefaultSchema = "dbo";
+        KeepIdentity = 1,
+
+        /// <summary>
+        /// The check constraints
+        /// </summary>
+        CheckConstraints = 2,
+
+        /// <summary>
+        /// The table lock
+        /// </summary>
+        TableLock = 4,
+
+        /// <summary>
+        /// The keep nulls
+        /// </summary>
+        KeepNulls = 8,
+
+        /// <summary>
+        /// The fire triggers
+        /// </summary>
+        FireTriggers = 16,
+
+        /// <summary>
+        /// The use internal transaction
+        /// </summary>
+        UseInternalTransaction = 32
     }
 }

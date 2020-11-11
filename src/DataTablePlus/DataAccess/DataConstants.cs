@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,15 +24,15 @@
  * 
  ****************************************************************************************************************/
 
-namespace DataTablePlus.DataAccessContracts
+namespace DataTablePlus.DataAccess
 {
     /// <summary>
-    /// Class that centralizes data constants
+    /// Class DataConstants.
     /// </summary>
     public static class DataConstants
     {
         /// <summary>
-        /// Value: 5000
+        /// The batch size
         /// </summary>
         public const int BatchSize = 5000;
     }

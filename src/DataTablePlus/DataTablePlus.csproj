@@ -1,74 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
-        <Version>2.0.5</Version>
+        <Version>3.0.0</Version>
         <Authors>Lima Technology Services</Authors>
-        <Description>DataTablePlus provides some helpful extensions in order to transform object lists into data tables (it's able to use the object definitions and/or Entity Framework mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before. This application is focused on solving performance issues while ingesting or updating a lot of data.</Description>
+        <Description>DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before. This application is focused on solving performance issues while ingesting or updating a lot of data.</Description>
         <Copyright>Copyright © Lima Technology Services</Copyright>
         <PackageProjectUrl>https://github.com/ffernandolima/data-table-plus</PackageProjectUrl>
-        <PackageTags>Data Table DataTable Plus DataTablePlus EF EntityFramework EFExtensions EntityFrameworkExtensions Extensions Bulk Batch Operations BulkInsert BatchUpdate BatchOperations SQLBulkCopy SQL Copy SQLServer Database ADO.NET</PackageTags>
-        <PackageReleaseNotes>
-            - 2.0.5
-            - Reviewed and upgraded dependencies;
-            - Fixed AppVeyor config;
-            - Code enhancements.
-
-            - 2.0.4
-            - Code documentation enhancements.
-
-            - 2.0.3
-            - DbContext extensions enhancements.
-
-            - 2.0.2
-            - Db Transactions enhancements.
-
-            - 2.0.1
-            - Solution organization;
-            - Code enhancements (Better way to handle async methods).
-
-            - 2.0.0
-            - Started using Semantic Versioning 2.0.0 (https://semver.org/);
-            - Added supporting for .netstandard2.0 and .netcore2.0/2.1;
-            - Created some DbContext extensions;
-            - Code enhancements.
-
-            - 1.0.0.6
-            - Created a new structure that allows creating the database table and columns mappings manually. It also has a builder pattern to make the action of mapping these values easier;
-            - Changed EntityFramework dependency version. Now it accepts any version 6.0.0 and above;
-            - Code improvements.
-
-            - 1.0.0.5
-            - Created some data table extensions in order to transform data tables into list of objects;
-            - Removed ServiceStack.Text dependency (It's not needed anymore);
-            - Added the ability of transforming list of objects into data tables without using DbContext mappings;
-            - Code improvements.
-
-            - 1.0.0.4
-            - Finished .NET Framework Multi-Targeting supporting (Now it supports the following .NET Framework versions: 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1, 4.6.2, 4.7, 4.7.1, 4.7.2);
-            - Added supporting for async methods (BulkInsertAsync and BatchUpdateAsync).
-
-            - 1.0.0.3
-            - Added the ability of retrieving primary key values after ingesting a lot of data;
-            - .NET Framework Multi-Targeting support;
-            - Code enhancements.
-
-            - 1.0.0.2
-            - Added some additional information when exceptions are thrown;
-            - Added some additional validations when needed;
-            - Updated some dependencies;
-            - Code enhancements.
-
-            - 1.0.0.1
-            - Created DataTablePlus library (Initial Package).
-        </PackageReleaseNotes>
+        <PackageTags>DataTable DataTablePlus EF EFCore EntityFramework EntityFrameworkCore EFExtensions EFCoreExtensions EntityFrameworkExtensions EntityFrameworkCoreExtensions Extensions Bulk Batch BulkInsert BatchUpdate BatchOperations BulkCopy SQLServer MySQL ADO.NET</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>2.0.5.0</AssemblyVersion>
-        <FileVersion>2.0.5.0</FileVersion>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <FileVersion>3.0.0.0</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MySqlConnector" Version="0.69.10" />
+    </ItemGroup>
 
     <!-- .NET Standard 2.0 references, compilation flags and build options -->
     <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
@@ -85,8 +35,9 @@
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.10" />
     </ItemGroup>
 
     <!-- .NET 4.5 references, compilation flags and build options -->
@@ -359,28 +310,34 @@
         <PackageReference Include="EntityFramework" Version="6.4.4" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Compile Update="Common\CommonResources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>CommonResources.resx</DependentUpon>
-        </Compile>
-        <Compile Update="DataAccess\Resources\DataResources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DataResources.resx</DependentUpon>
-        </Compile>
+    <!-- .NET 4.8 references, compilation flags and build options -->
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net48'">
+        <DefineConstants>DEBUG;NET48;NETFULL</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+        <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+        <NoWarn>1701;1702;1591</NoWarn>
+        <DocumentationFile>bin\Release\net48\DataTablePlus.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System" />
+        <Reference Include="System.ComponentModel.DataAnnotations" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
     </ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Update="Common\CommonResources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>CommonResources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="DataAccess\Resources\DataResources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>DataResources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
+        <PackageReference Include="EntityFramework" Version="6.4.4" />
     </ItemGroup>
 
 </Project>

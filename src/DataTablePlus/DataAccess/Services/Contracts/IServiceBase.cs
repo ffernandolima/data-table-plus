@@ -24,25 +24,21 @@
  * 
  ****************************************************************************************************************/
 
-using System.Reflection;
+using System;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyDescription("DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before. This application is focused on solving performance issues while ingesting or updating a lot of data.")]
-[assembly: AssemblyCompany("Lima Technology Services")]
-[assembly: AssemblyProduct("DataTablePlus")]
-[assembly: AssemblyCopyright("Copyright © Lima Technology Services")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.0.0")]
-[assembly: AssemblyFileVersion("3.0.0")]
+namespace DataTablePlus.DataAccess.Services.Contracts
+{
+    /// <summary>
+    /// Interface IServiceBase
+    /// Implements the <see cref="System.IDisposable" />
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
+    public interface IServiceBase : IDisposable
+    {
+        /// <summary>
+        /// Gets or sets the timeout.
+        /// </summary>
+        /// <value>The timeout.</value>
+        TimeSpan Timeout { get; set; }
+    }
+}

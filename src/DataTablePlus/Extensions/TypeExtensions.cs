@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -32,25 +32,31 @@ using System.Threading;
 namespace DataTablePlus.Extensions
 {
     /// <summary>
-    /// Class that contains Type extensions
+    /// Class TypeExtensions.
     /// </summary>
     internal static class TypeExtensions
     {
+        /// <summary>
+        /// The default value types
+        /// </summary>
         private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
 
         /// <summary>
-        /// Gets the properties according to the BindingFlags passed as parameter
+        /// Gets the properties from binding flags.
         /// </summary>
-        /// <param name="type">Type for getting the properties</param>
-        /// <param name="bindingFlags">BindingFlags for getting the properties</param>
-        /// <returns>An array of property info</returns>
-        internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance) => type.GetProperties(bindingFlags);
+        /// <param name="type">The type.</param>
+        /// <param name="bindingFlags">The binding flags.</param>
+        /// <returns>PropertyInfo[].</returns>
+        internal static PropertyInfo[] GetPropertiesFromBindingFlags(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+        {
+            return type.GetProperties(bindingFlags);
+        }
 
         /// <summary>
-        /// Gets the default value according to its type
+        /// Gets the default value.
         /// </summary>
-        /// <param name="type">Type for getting the default value</param>
-        /// <returns>he default value</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>System.Object.</returns>
         public static object GetDefaultValue(this Type type)
         {
             if (!type.IsValueType)

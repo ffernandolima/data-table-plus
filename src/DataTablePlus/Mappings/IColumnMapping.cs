@@ -5,7 +5,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2018 Fernando Luiz de Lima
+ * Copyright (c) 2020 Fernando Luiz de Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -30,92 +30,97 @@ using System.Data;
 namespace DataTablePlus.Mappings
 {
     /// <summary>
-    /// Interface that represents the contract of ColumnMapping object
+    /// Interface IColumnMapping
     /// </summary>
     public interface IColumnMapping
     {
         /// <summary>
-        /// Database table column name
+        /// Gets or sets the name.
         /// </summary>
+        /// <value>The name.</value>
         string Name { get; set; }
 
         /// <summary>
-        /// Database table column data type
+        /// Gets or sets the type.
         /// </summary>
+        /// <value>The type.</value>
         Type Type { get; set; }
 
         /// <summary>
-        /// Database table column order
+        /// Gets or sets the ordinal.
         /// </summary>
+        /// <value>The ordinal.</value>
         int Ordinal { get; set; }
 
         /// <summary>
-        /// A flag that indicates if it is the primary key
+        /// Gets or sets a value indicating whether it's primary key.
         /// </summary>
+        /// <value><c>true</c> if it's primary key; otherwise, <c>false</c>.</value>
         bool IsPrimaryKey { get; set; }
 
         /// <summary>
-        /// A flag that indicates if it allows null values
+        /// Gets or sets a value indicating whether it allows null.
         /// </summary>
+        /// <value><c>true</c> if it allows null; otherwise, <c>false</c>.</value>
         bool AllowNull { get; set; }
 
         /// <summary>
-        /// Database table column default value
-        /// It will be used if the column doesn't allow null values
+        /// Gets or sets the default value.
         /// </summary>
+        /// <value>The default value.</value>
         object DefaultValue { get; set; }
 
         /// <summary>
-        /// Validates the whole column mapping object
+        /// Validates this instance.
         /// </summary>
         void Validate();
 
         /// <summary>
-        /// Adds a column name
+        /// Adds the name.
         /// </summary>
-        /// <param name="name">Column name</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="name">The name.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping AddName(string name);
 
         /// <summary>
-        /// Adds a column type
+        /// Adds the type.
         /// </summary>
-        /// <param name="type">Column type</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="type">The type.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping AddType(Type type);
 
         /// <summary>
-        /// Adds a column ordinal
+        /// Adds the ordinal.
         /// </summary>
-        /// <param name="ordinal">Column ordinal</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="ordinal">The ordinal.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping AddOrdinal(int ordinal);
 
         /// <summary>
-        /// Indicates if it is the primary key
+        /// Sets the flag indicating whether it's the primary key.
         /// </summary>
-        /// <param name="primaryKey">Primary key flag</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="primaryKey">if set to <c>true</c> it's primary key.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping PrimaryKey(bool primaryKey);
 
         /// <summary>
-        /// Indicates if it accepts null values
+        /// Sets the flag indicating whether it accepts null.
         /// </summary>
-        /// <param name="acceptNull">Accept null flag</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="acceptNull">if set to <c>true</c> it accepts null.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping AcceptNull(bool acceptNull);
 
         /// <summary>
-        /// Adds a column default value
+        /// Adds the default value.
         /// </summary>
-        /// <param name="defaultValue">Column default value</param>
-        /// <returns>ColumnMapping object (Builder pattern)</returns>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>IColumnMapping.</returns>
         IColumnMapping AddDefaultValue(object defaultValue);
 
         /// <summary>
-        /// Transforms this object to a new DataColumn object
+        /// Converts the instance to DataColumn type.
         /// </summary>
-        /// <returns>A new DataColumn object</returns>
+        /// <returns>DataColumn.</returns>
         DataColumn AsDataColumn();
     }
 }
