@@ -323,7 +323,7 @@ namespace DataTablePlus.DataAccess.Services
         {
             try
             {
-                var commandFormat = TryGetCommand("DropNonClusteredIndex");
+                var commandFormat = TryGetCommand("DropIndex");
                 var commandText = string.Format(commandFormat, Escape(tableName));
 
                 using (var command = CreateCommand(commandText: commandText))
@@ -346,7 +346,7 @@ namespace DataTablePlus.DataAccess.Services
         {
             try
             {
-                var commandFormat = TryGetCommand("CreateNonClusteredIndex");
+                var commandFormat = TryGetCommand("CreateIndex");
                 var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
                 using (var command = CreateCommand(commandText: commandText))
@@ -398,7 +398,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <param name="trackerColumnName">Name of the tracker column.</param>
         private void CreateDbTrackerColumn(string tableName, string trackerColumnName)
         {
-            var commandFormat = TryGetCommand("AddTrackerColumnStatement");
+            var commandFormat = TryGetCommand("AddTrackerColumn");
             var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
             using (var command = CreateCommand(commandText: commandText))
@@ -441,7 +441,7 @@ namespace DataTablePlus.DataAccess.Services
 
             var parameters = BuildInsertParameters(dataTable, trackerColumnName);
 
-            var commandFormat = TryGetCommand("SelectPrimaryKeysStatement");
+            var commandFormat = TryGetCommand("SelectPrimaryKeys");
 
             var commandText = string.Format(commandFormat, selectClause, Escape(dataTable.TableName), Escape(trackerColumnName), "@MinParam", "@MaxParam");
 
@@ -507,7 +507,7 @@ namespace DataTablePlus.DataAccess.Services
 
             try
             {
-                var commandFormat = TryGetCommand("DropTrackerColumnStatement");
+                var commandFormat = TryGetCommand("DropTrackerColumn");
                 var commandText = string.Format(commandFormat, Escape(tableName), Escape(trackerColumnName));
 
                 using (var command = CreateCommand(commandText: commandText))

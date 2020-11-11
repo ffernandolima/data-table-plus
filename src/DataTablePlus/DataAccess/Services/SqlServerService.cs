@@ -65,11 +65,11 @@ namespace DataTablePlus.DataAccess.Services
         {
             var commands = new Dictionary<string, string>
             {
-                ["DropNonClusteredIndex"] = "IF EXISTS (SELECT name FROM sys.indexes WHERE name = N'IX_TrackerColumn') DROP INDEX IX_TrackerColumn ON {0}",
-                ["CreateNonClusteredIndex"] = "CREATE NONCLUSTERED INDEX IX_TrackerColumn ON {0} ({1})",
-                ["AddTrackerColumnStatement"] = "ALTER TABLE {0} ADD {1} INT NULL",
-                ["SelectPrimaryKeysStatement"] = "SELECT {0} FROM {1} WHERE {2} >= {3} AND {2} <= {4} ORDER BY {2};",
-                ["DropTrackerColumnStatement"] = "ALTER TABLE {0} DROP COLUMN {1}",
+                ["DropIndex"] = "IF EXISTS (SELECT name FROM sys.indexes WHERE name = N'IX_TrackerColumn') DROP INDEX IX_TrackerColumn ON {0}",
+                ["CreateIndex"] = "CREATE NONCLUSTERED INDEX IX_TrackerColumn ON {0} ({1})",
+                ["AddTrackerColumn"] = "ALTER TABLE {0} ADD {1} INT NULL",
+                ["SelectPrimaryKeys"] = "SELECT {0} FROM {1} WHERE {2} >= {3} AND {2} <= {4} ORDER BY {2};",
+                ["DropTrackerColumn"] = "ALTER TABLE {0} DROP COLUMN {1}",
             };
 
             return new ReadOnlyDictionary<string, string>(commands);
