@@ -300,9 +300,9 @@ namespace DataTablePlus.DataAccess.Services
                     dbConnection.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("Invalid database connection.");
+                throw new Exception("Invalid database connection.", ex);
             }
         }
 
@@ -321,9 +321,9 @@ namespace DataTablePlus.DataAccess.Services
                     dbConnection.Open();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("Invalid database connection string.");
+                throw new Exception("Invalid database connection string.", ex);
             }
         }
 
