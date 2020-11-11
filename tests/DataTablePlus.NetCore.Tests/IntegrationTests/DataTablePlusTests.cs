@@ -100,7 +100,7 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
 
             // Bulk Insert time spent: 
             //	- About 1 minute retrieving the primary key values
-            //	- About 5 seconds whitout retrieving the primary key values
+            //	- About 5 seconds without retrieving the primary key values
 
             // Batch Update time spent: 
             //	- About 50 seconds updating 1 000 000 of rows
@@ -174,7 +174,7 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
 
                 if (databaseKeyNames != null && databaseKeyNames.Any())
                 {
-                    // Reestarts the Stopwatch
+                    // Restarts the Stopwatch
                     stopwatch.Restart();
 
                     // Invokes the BatchUpdate method
