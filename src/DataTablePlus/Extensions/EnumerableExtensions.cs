@@ -346,7 +346,7 @@ namespace DataTablePlus.Extensions
 
             return dataTable;
         }
-
+        
         /// <summary>
         /// Populates the specified data table.
         /// </summary>
@@ -354,8 +354,14 @@ namespace DataTablePlus.Extensions
         /// <param name="dataTable">The data table.</param>
         /// <param name="objects">The objects.</param>
         /// <param name="mappings">The mappings.</param>
-        private static void Populate<T>(this DataTable dataTable, IEnumerable<T> objects, IDictionary<PropertyInfo, string> mappings) where T : class
+        /// <param name="enforceConstraints">if set to <c>true</c>, it enforces constraints.</param>
+        private static void Populate<T>(this DataTable dataTable, IEnumerable<T> objects, IDictionary<PropertyInfo, string> mappings, bool enforceConstraints = false) where T : class
         {
+            if (!enforceConstraints)
+            {
+                dataTable.Constraints.Clear();
+            }
+
             var internalObjects = objects.Where(item => item != null);
 
             foreach (var item in internalObjects)
@@ -417,8 +423,14 @@ namespace DataTablePlus.Extensions
         /// <param name="dataTable">The data table.</param>
         /// <param name="objects">The objects.</param>
         /// <param name="tableMapping">The table mapping.</param>
-        private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, ITableMapping tableMapping)
+        /// <param name="enforceConstraints">if set to <c>true</c>, it enforces constraints.</param>
+        private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, ITableMapping tableMapping, bool enforceConstraints = false)
         {
+            if (!enforceConstraints)
+            {
+                dataTable.Constraints.Clear();
+            }
+
             var internalObjects = objects.Where(item => item != null && item.Length > 0);
 
             foreach (var objectArray in internalObjects)
