@@ -237,7 +237,6 @@ namespace DataTablePlus.Extensions
         /// Gets the table schema from database.
         /// </summary>
         /// <param name="derivedObjectType">Type of the derived object.</param>
-        /// <param name="dbProvider">The database provider.</param>
         /// <param name="mappings">The mappings.</param>
         /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
@@ -346,7 +345,7 @@ namespace DataTablePlus.Extensions
 
             return dataTable;
         }
-        
+
         /// <summary>
         /// Populates the specified data table.
         /// </summary>
