@@ -177,7 +177,7 @@ EntityFramework 6:
 - EntityFramework 6:
 
 ```C#
-  	internal class Context : DbContext
+    internal class Context : DbContext
     {
         static Context()
         {
