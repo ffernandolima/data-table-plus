@@ -10,8 +10,8 @@
         <PackageProjectUrl>https://github.com/ffernandolima/data-table-plus</PackageProjectUrl>
         <PackageTags>DataTable DataTablePlus EF EFCore EntityFramework EntityFrameworkCore EFExtensions EFCoreExtensions EntityFrameworkExtensions EntityFrameworkCoreExtensions Extensions Bulk Batch BulkInsert BatchUpdate BatchOperations BulkCopy SQLServer MySQL ADO.NET</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>3.0.0.0</AssemblyVersion>
-        <FileVersion>3.0.0.0</FileVersion>
+        <AssemblyVersion>3.0.1.0</AssemblyVersion>
+        <FileVersion>3.0.1.0</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
