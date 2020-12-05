@@ -118,9 +118,9 @@ namespace DataTablePlus.DataAccess.Services
         /// Determines whether this instance has a transaction.
         /// </summary>
         /// <returns><c>true</c> if this instance has a transaction; otherwise, <c>false</c>.</returns>
-        public bool HasTransaction() 
+        public bool HasTransaction()
         {
-            return DbTransaction != null; 
+            return DbTransaction != null;
         }
 
         /// <summary>
@@ -372,16 +372,8 @@ namespace DataTablePlus.DataAccess.Services
                 {
                     DisposeTransaction();
 
-                    if (DbContext != null)
-                    {
-                        DbContext = null;
-                    }
-
-                    if (DbConnection != null)
-                    {
-                        DbConnection.Dispose();
-                        DbConnection = null;
-                    }
+                    DbContext = null;
+                    DbConnection = null;
                 }
             }
 
