@@ -3,15 +3,15 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
-        <Version>3.0.1</Version>
+        <Version>3.0.2</Version>
         <Authors>Lima Technology Services</Authors>
         <Description>DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before. This application is focused on solving performance issues while ingesting or updating a lot of data.</Description>
         <Copyright>Copyright © Lima Technology Services</Copyright>
         <PackageProjectUrl>https://github.com/ffernandolima/data-table-plus</PackageProjectUrl>
         <PackageTags>DataTable DataTablePlus EF EFCore EntityFramework EntityFrameworkCore EFExtensions EFCoreExtensions EntityFrameworkExtensions EntityFrameworkCoreExtensions Extensions Bulk Batch BulkInsert BatchUpdate BatchOperations BulkCopy SQLServer MySQL ADO.NET</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>3.0.1.0</AssemblyVersion>
-        <FileVersion>3.0.1.0</FileVersion>
+        <AssemblyVersion>3.0.2.0</AssemblyVersion>
+        <FileVersion>3.0.2.0</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -36,8 +36,8 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.10" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>
 
     <!-- .NET 4.5 references, compilation flags and build options -->
