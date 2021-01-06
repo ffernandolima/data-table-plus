@@ -597,11 +597,9 @@ namespace DataTablePlus.DataAccess.Services
                 case DataRowState.Added:
                     dataRow.SetAdded();
                     break;
-
                 case DataRowState.Modified:
                     dataRow.SetModified();
                     break;
-
                 default:
                     break;
             }
