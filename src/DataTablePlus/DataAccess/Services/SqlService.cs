@@ -167,18 +167,15 @@ namespace DataTablePlus.DataAccess.Services
             {
                 OpenConnection();
 
-                if (primaryKeyNames != null)
+                primaryKeyNames = primaryKeyNames?.Where(primaryKeyName => !string.IsNullOrWhiteSpace(primaryKeyName))?.ToList();
+
+                if (primaryKeyNames?.Any() ?? false)
                 {
-                    primaryKeyNames = primaryKeyNames.Where(primaryKeyName => !string.IsNullOrWhiteSpace(primaryKeyName)).ToList();
+                    trackerColumnName = CreateTrackerColumn(dataTable);
 
-                    if (primaryKeyNames.Any())
-                    {
-                        trackerColumnName = CreateTrackerColumn(dataTable);
+                    DropIndex(dataTable.TableName);
 
-                        DropIndex(dataTable.TableName);
-
-                        CreateIndex(dataTable.TableName, trackerColumnName);
-                    }
+                    CreateIndex(dataTable.TableName, trackerColumnName);
                 }
 
                 SetState(dataTable, DataRowState.Added);
@@ -211,7 +208,7 @@ namespace DataTablePlus.DataAccess.Services
                     }
                 }
 
-                if (primaryKeyNames != null && primaryKeyNames.Any())
+                if (primaryKeyNames?.Any() ?? false)
                 {
                     SetReadOnlyFalse(dataTable, primaryKeyNames);
 
@@ -220,11 +217,14 @@ namespace DataTablePlus.DataAccess.Services
             }
             finally
             {
-                DropIndex(dataTable.TableName);
+                if (primaryKeyNames?.Any() ?? false)
+                {
+                    DropIndex(dataTable.TableName);
 
-                DropDbTrackerColumn(dataTable.TableName, trackerColumnName);
+                    DropDbTrackerColumn(dataTable.TableName, trackerColumnName);
 
-                RemoveTrackerColumn(dataTable, trackerColumnName);
+                    RemoveTrackerColumn(dataTable, trackerColumnName);
+                }
 
                 CloseConnection();
             }
@@ -249,13 +249,15 @@ namespace DataTablePlus.DataAccess.Services
                 var parameters = BuildUpdateParameters(commandText);
 
                 var updateCommand = CreateCommand(commandText: commandText, parameters: parameters, useInternalTransaction: true);
-
-                updateCommand.UpdatedRowSource = UpdateRowSource.None;
+                {
+                    updateCommand.UpdatedRowSource = UpdateRowSource.None;
+                }
 
                 var dataAdapter = CreateDbDataAdapter(updateCommand);
-#if NETFULL
-                dataAdapter.UpdateBatchSize = batchSize;
-#endif
+                {
+                    dataAdapter.UpdateBatchSize = batchSize;
+                }
+
                 SetState(dataTable, DataRowState.Modified);
 
                 using (updateCommand)
