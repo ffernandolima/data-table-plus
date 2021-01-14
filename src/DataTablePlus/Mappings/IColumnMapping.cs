@@ -99,14 +99,14 @@ namespace DataTablePlus.Mappings
         /// <summary>
         /// Sets the flag indicating whether it's the primary key.
         /// </summary>
-        /// <param name="primaryKey">if set to <c>true</c> it's primary key.</param>
+        /// <param name="primaryKey">If set to <c>true</c> it's primary key.</param>
         /// <returns>IColumnMapping.</returns>
         IColumnMapping PrimaryKey(bool primaryKey);
 
         /// <summary>
         /// Sets the flag indicating whether it accepts null.
         /// </summary>
-        /// <param name="acceptNull">if set to <c>true</c> it accepts null.</param>
+        /// <param name="acceptNull">If set to <c>true</c> it accepts null.</param>
         /// <returns>IColumnMapping.</returns>
         IColumnMapping AcceptNull(bool acceptNull);
 

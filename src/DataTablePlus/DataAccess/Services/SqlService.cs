@@ -91,7 +91,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <param name="dataTable">The data table.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
-        /// <param name="createColumnMappings">if set to <c>true</c> [create column mappings].</param>
+        /// <param name="createColumnMappings">If set to <c>true</c> [create column mappings].</param>
         /// <returns>dynamic.</returns>
         protected abstract dynamic CreateBulkCopy(DataTable dataTable, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? createColumnMappings = true);
 
@@ -150,7 +150,7 @@ namespace DataTablePlus.DataAccess.Services
         }
 
         /// <summary>
-        /// Executes the bulks insert internally.
+        /// Executes the bulk insert internally.
         /// </summary>
         /// <param name="dataTable">The data table.</param>
         /// <param name="batchSize">Size of the batch.</param>

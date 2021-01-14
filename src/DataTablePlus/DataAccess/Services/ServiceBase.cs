@@ -194,7 +194,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <param name="commandText">The command text.</param>
         /// <param name="commandType">Type of the command.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="useInternalTransaction">if set to <c>true</c> it uses an internal transaction.</param>
+        /// <param name="useInternalTransaction">If set to <c>true</c> it uses an internal transaction.</param>
         /// <returns>DbCommand.</returns>
         protected DbCommand CreateCommand(string commandText = null, CommandType? commandType = null, DbParameter[] parameters = null, bool? useInternalTransaction = null)
         {

@@ -116,7 +116,7 @@ namespace DataTablePlus.Extensions
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="objects">The objects.</param>
         /// <param name="dbProvider">The database provider.</param>
-        /// <param name="useDbContextMappings">if set to <c>true</c> it uses the database context mappings.</param>
+        /// <param name="useDbContextMappings">If set to <c>true</c> it uses the database context mappings.</param>
         /// <returns>DataTable.</returns>
         public static DataTable AsStronglyTypedDataTable<T>(this IEnumerable<T> objects, DbProvider? dbProvider = null, bool? useDbContextMappings = true) where T : class
         {
@@ -130,7 +130,7 @@ namespace DataTablePlus.Extensions
         /// <param name="objects">The objects.</param>
         /// <param name="derivedObjectType">Type of the derived object.</param>
         /// <param name="dbProvider">The database provider.</param>
-        /// <param name="useDbContextMappings">if set to <c>true</c> it uses the database context mappings.</param>
+        /// <param name="useDbContextMappings">If set to <c>true</c> it uses the database context mappings.</param>
         /// <returns>DataTable.</returns>
         /// <exception cref="ArgumentNullException">
         /// objects
@@ -353,7 +353,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dataTable">The data table.</param>
         /// <param name="objects">The objects.</param>
         /// <param name="mappings">The mappings.</param>
-        /// <param name="enforceConstraints">if set to <c>true</c>, it enforces constraints.</param>
+        /// <param name="enforceConstraints">If set to <c>true</c>, it enforces constraints.</param>
         private static void Populate<T>(this DataTable dataTable, IEnumerable<T> objects, IDictionary<PropertyInfo, string> mappings, bool enforceConstraints = false) where T : class
         {
             if (!enforceConstraints)
@@ -422,7 +422,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dataTable">The data table.</param>
         /// <param name="objects">The objects.</param>
         /// <param name="tableMapping">The table mapping.</param>
-        /// <param name="enforceConstraints">if set to <c>true</c>, it enforces constraints.</param>
+        /// <param name="enforceConstraints">If set to <c>true</c>, it enforces constraints.</param>
         private static void Populate(this DataTable dataTable, IEnumerable<object[]> objects, ITableMapping tableMapping, bool enforceConstraints = false)
         {
             if (!enforceConstraints)

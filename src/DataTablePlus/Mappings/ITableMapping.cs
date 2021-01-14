@@ -78,8 +78,8 @@ namespace DataTablePlus.Mappings
         /// <param name="columnName">Name of the column.</param>
         /// <param name="columnType">Type of the column.</param>
         /// <param name="ordinal">The ordinal.</param>
-        /// <param name="isPrimaryKey">if set to <c>true</c> it's primary key.</param>
-        /// <param name="allowNull">if set to <c>true</c> it allows null.</param>
+        /// <param name="isPrimaryKey">If set to <c>true</c> it's primary key.</param>
+        /// <param name="allowNull">If set to <c>true</c> it allows null.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>ITableMapping.</returns>
         ITableMapping AddColumnMapping(string columnName, Type columnType, int? ordinal = null, bool? isPrimaryKey = null, bool? allowNull = null, object defaultValue = null);

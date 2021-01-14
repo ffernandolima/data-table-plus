@@ -354,7 +354,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
-        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <param name="retrievePrimaryKeyValues">If set to <c>true</c>, it retrieves the primary key values.</param>
         /// <returns>IList&lt;T&gt;.</returns>
         public static IList<T> BulkInsert<T>(this DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null) where T : class
         {
@@ -362,7 +362,7 @@ namespace DataTablePlus.Extensions
         }
 
         /// <summary>
-        /// Executes the bulks insert asynchronous.
+        /// Executes the bulk insert asynchronous.
         /// </summary>
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="dbContext">The database context.</param>
@@ -370,7 +370,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
-        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <param name="retrievePrimaryKeyValues">If set to <c>true</c>, it retrieves the primary key values.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;IList&lt;T&gt;&gt;.</returns>
         public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
@@ -379,7 +379,7 @@ namespace DataTablePlus.Extensions
         }
 
         /// <summary>
-        /// Executes the batche update.
+        /// Executes the batch update.
         /// </summary>
         /// <typeparam name="T">The type of the T parameter.</typeparam>
         /// <param name="dbContext">The database context.</param>
@@ -417,7 +417,7 @@ namespace DataTablePlus.Extensions
         /// <param name="dbProvider">The database provider.</param>
         /// <param name="batchSize">Size of the batch.</param>
         /// <param name="options">The options.</param>
-        /// <param name="retrievePrimaryKeyValues">if set to <c>true</c>, it retrieves the primary key values.</param>
+        /// <param name="retrievePrimaryKeyValues">If set to <c>true</c>, it retrieves the primary key values.</param>
         /// <returns>IList&lt;T&gt;.</returns>
         /// <exception cref="ArgumentNullException">
         /// dbContext
