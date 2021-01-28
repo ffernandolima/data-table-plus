@@ -37,7 +37,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 

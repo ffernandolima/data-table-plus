@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 

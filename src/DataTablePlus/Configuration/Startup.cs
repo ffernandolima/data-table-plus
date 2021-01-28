@@ -27,7 +27,7 @@
 using DataTablePlus.DataAccess.Enums;
 using System;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 
@@ -70,7 +70,7 @@ namespace DataTablePlus.Configuration
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-#if NETSTANDARD20
+#if NETSTANDARD
             var connection = DbContext.Database.GetDbConnection();
             AddConnectionString(connection.ConnectionString);
 #endif

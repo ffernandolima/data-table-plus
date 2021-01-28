@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 

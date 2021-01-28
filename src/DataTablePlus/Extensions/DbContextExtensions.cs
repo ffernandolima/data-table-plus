@@ -34,7 +34,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 
@@ -277,7 +277,7 @@ namespace DataTablePlus.Extensions
             return keyNames;
 #endif
 
-#if NETSTANDARD20
+#if NETSTANDARD
             var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)

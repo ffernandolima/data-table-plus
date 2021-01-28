@@ -26,7 +26,6 @@
 
 using DataTablePlus.DataAccess.Enums;
 using DataTablePlus.Factories;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,9 +35,16 @@ using System.Linq;
 
 #if NETSTANDARD20
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
+#endif
+
+#if NETSTANDARD21
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 #endif
 
 #if NETFULL
+using MySql.Data.MySqlClient;
 using System.Data.Entity;
 #endif
 

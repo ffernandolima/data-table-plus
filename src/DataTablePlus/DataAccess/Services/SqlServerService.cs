@@ -34,7 +34,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-#if NETSTANDARD20
+#if NETSTANDARD
 using Microsoft.EntityFrameworkCore;
 #endif
 

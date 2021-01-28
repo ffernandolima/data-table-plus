@@ -27,7 +27,6 @@
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Enums;
 using DataTablePlus.DataAccess.Services.Contracts;
-using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -36,9 +35,16 @@ using System.Linq;
 
 #if NETSTANDARD20
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
+#endif
+
+#if NETSTANDARD21
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 #endif
 
 #if NETFULL
+using MySql.Data.MySqlClient;
 using System.Data.Entity;
 #endif
 
@@ -248,7 +254,7 @@ namespace DataTablePlus.DataAccess.Services
 
             if (dbContext != null)
             {
-#if NETSTANDARD20
+#if NETSTANDARD
                 var dbConnection = dbContext.Database.GetDbConnection();
 
                 if (validateConnection)
