@@ -96,7 +96,7 @@ namespace DataTablePlus.Extensions
                 throw new ArgumentNullException(nameof(dbContext));
             }
 
-            var dataTable = GetTableSchemaFromDatabase(derivedObjectType, out IDictionary<PropertyInfo, string> mappings, dbProvider, dbContext);
+            var dataTable = GetTableSchemaFromDatabase(derivedObjectType, out var mappings, dbProvider, dbContext);
 
             if (dataTable.Columns == null || dataTable.Columns.Count <= 0)
             {
@@ -438,7 +438,7 @@ namespace DataTablePlus.Extensions
 
                 var columnMappings = tableMapping.ColumnMappings;
 
-                for (int idx = 0; idx < columnMappings.Count; idx++)
+                for (var idx = 0; idx < columnMappings.Count; idx++)
                 {
                     var columnMapping = columnMappings[idx];
 

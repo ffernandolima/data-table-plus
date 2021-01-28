@@ -39,7 +39,7 @@ namespace DataTablePlus.Extensions
         /// <summary>
         /// The default value types
         /// </summary>
-        private static Dictionary<Type, object> DefaultValueTypes = new Dictionary<Type, object>();
+        private static Dictionary<Type, object> _defaultValueTypes = new();
 
         /// <summary>
         /// Gets the properties from binding flags.
@@ -64,7 +64,7 @@ namespace DataTablePlus.Extensions
                 return null;
             }
 
-            if (DefaultValueTypes.TryGetValue(type, out var defaultValue))
+            if (_defaultValueTypes.TryGetValue(type, out var defaultValue))
             {
                 return defaultValue;
             }
@@ -75,10 +75,10 @@ namespace DataTablePlus.Extensions
 
             do
             {
-                snapshot = DefaultValueTypes;
-                newCache = new Dictionary<Type, object>(DefaultValueTypes) { [type] = defaultValue };
+                snapshot = _defaultValueTypes;
+                newCache = new Dictionary<Type, object>(_defaultValueTypes) { [type] = defaultValue };
 
-            } while (!ReferenceEquals(Interlocked.CompareExchange(ref DefaultValueTypes, newCache, snapshot), snapshot));
+            } while (!ReferenceEquals(Interlocked.CompareExchange(ref _defaultValueTypes, newCache, snapshot), snapshot));
 
             return defaultValue;
         }

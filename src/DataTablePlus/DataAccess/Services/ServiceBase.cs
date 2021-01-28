@@ -173,10 +173,7 @@ namespace DataTablePlus.DataAccess.Services
         {
             try
             {
-                if (DbTransaction != null)
-                {
-                    DbTransaction.Rollback();
-                }
+                DbTransaction?.Rollback();
             }
             catch
             {
@@ -242,8 +239,9 @@ namespace DataTablePlus.DataAccess.Services
         /// <param name="dbProvider">The database provider.</param>
         /// <param name="dbContext">The database context.</param>
         /// <param name="connectionString">The connection string.</param>
+        /// <param name="validateConnection"><c>true</c> if it should validate the connection; otherwise, <c>false</c>.</param>
         /// <exception cref="ArgumentNullException">Please configure this application through DataTablePlus.Configuration.Startup class.</exception>
-        private void Construct(DbProvider dbProvider, DbContext dbContext = null, string connectionString = null)
+        private void Construct(DbProvider dbProvider, DbContext dbContext = null, string connectionString = null, bool validateConnection = false)
         {
             dbContext ??= Startup.DbContext;
             connectionString ??= Startup.ConnectionString;
@@ -253,7 +251,10 @@ namespace DataTablePlus.DataAccess.Services
 #if NETSTANDARD20
                 var dbConnection = dbContext.Database.GetDbConnection();
 
-                ValidateConnection(dbConnection);
+                if (validateConnection)
+                {
+                    ValidateConnection(dbConnection);
+                }
 
                 DbContext = dbContext;
                 DbConnection = dbConnection;
@@ -262,7 +263,10 @@ namespace DataTablePlus.DataAccess.Services
 #if NETFULL
                 var dbConnection = dbContext.Database.Connection;
 
-                ValidateConnection(dbConnection);
+                if (validateConnection)
+                {
+                    ValidateConnection(dbConnection);
+                }
 
                 DbContext = dbContext;
                 DbConnection = dbConnection;
@@ -271,8 +275,14 @@ namespace DataTablePlus.DataAccess.Services
 
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
-                ValidateConnection(connectionString, dbProvider);
-                DbConnection = GetConnection(connectionString, dbProvider);
+                var dbConnection = GetConnection(connectionString, dbProvider);
+
+                if (validateConnection)
+                {
+                    ValidateConnection(dbConnection);
+                }
+
+                DbConnection = dbConnection;
             }
 
             if (DbContext == null && DbConnection == null)
@@ -286,7 +296,7 @@ namespace DataTablePlus.DataAccess.Services
         /// </summary>
         /// <param name="dbConnection">The database connection.</param>
         /// <exception cref="Exception">Invalid database connection.</exception>
-        private static void ValidateConnection(DbConnection dbConnection)
+        private static void ValidateConnection(IDbConnection dbConnection)
         {
             try
             {
@@ -303,27 +313,6 @@ namespace DataTablePlus.DataAccess.Services
             catch (Exception ex)
             {
                 throw new Exception("Invalid database connection.", ex);
-            }
-        }
-
-        /// <summary>
-        /// Validates the connection string.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="dbProvider">The database provider.</param>
-        /// <exception cref="Exception">Invalid database connection string.</exception>
-        private static void ValidateConnection(string connectionString, DbProvider dbProvider)
-        {
-            try
-            {
-                using (var dbConnection = GetConnection(connectionString, dbProvider))
-                {
-                    dbConnection.Open();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Invalid database connection string.", ex);
             }
         }
 

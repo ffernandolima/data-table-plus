@@ -48,7 +48,7 @@ namespace DataTablePlus.Factories
         /// <summary>
         /// The factory
         /// </summary>
-        private static readonly Lazy<MetadataServiceFactory> Factory = new Lazy<MetadataServiceFactory>(() => new MetadataServiceFactory(), isThreadSafe: true);
+        private static readonly Lazy<MetadataServiceFactory> Factory = new(() => new MetadataServiceFactory(), isThreadSafe: true);
 
         /// <summary>
         /// Gets the instance.

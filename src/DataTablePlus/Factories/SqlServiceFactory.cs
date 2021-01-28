@@ -48,7 +48,7 @@ namespace DataTablePlus.Factories
         /// <summary>
         /// The factory
         /// </summary>
-        private static readonly Lazy<SqlServiceFactory> Factory = new Lazy<SqlServiceFactory>(() => new SqlServiceFactory(), isThreadSafe: true);
+        private static readonly Lazy<SqlServiceFactory> Factory = new(() => new SqlServiceFactory(), isThreadSafe: true);
 
         /// <summary>
         /// Gets the instance.

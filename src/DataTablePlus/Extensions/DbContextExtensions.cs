@@ -124,7 +124,7 @@ namespace DataTablePlus.Extensions
 #endif
 
 #if NETSTANDARD20
-            var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+            var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
             {
@@ -222,7 +222,7 @@ namespace DataTablePlus.Extensions
 #endif
 
 #if NETSTANDARD20
-            var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+            var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
             {
@@ -278,7 +278,7 @@ namespace DataTablePlus.Extensions
 #endif
 
 #if NETSTANDARD20
-            var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+            var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
             {
@@ -331,7 +331,7 @@ namespace DataTablePlus.Extensions
 #endif
 
 #if NETSTANDARD20
-            var entityTypeObject = dbContext?.Model?.FindEntityType(entityType);
+            var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
             {

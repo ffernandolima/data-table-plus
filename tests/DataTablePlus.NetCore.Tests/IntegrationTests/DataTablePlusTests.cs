@@ -111,7 +111,7 @@ namespace DataTablePlus.NetCore.Tests.IntegrationTests
             // Creates a list of Users
             IList<User> entities = new List<User>();
 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var entity = new User
                 {

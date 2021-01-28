@@ -59,7 +59,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <summary>
         /// The parameters regex
         /// </summary>
-        private static readonly Regex ParametersRegex = new Regex(@"\@\w+", RegexOptions.Compiled);
+        private static readonly Regex ParametersRegex = new(@"\@\w+", RegexOptions.Compiled);
 
         /// <summary>
         /// Gets the commands.
