@@ -123,7 +123,7 @@ namespace DataTablePlus.Extensions
             }
 #endif
 
-#if NETSTANDARD20
+#if NETSTANDARD
             var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
@@ -221,7 +221,7 @@ namespace DataTablePlus.Extensions
             }
 #endif
 
-#if NETSTANDARD20
+#if NETSTANDARD
             var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
@@ -330,7 +330,7 @@ namespace DataTablePlus.Extensions
             }
 #endif
 
-#if NETSTANDARD20
+#if NETSTANDARD
             var entityTypeObject = dbContext.Model?.FindEntityType(entityType);
 
             if (entityTypeObject == null)
