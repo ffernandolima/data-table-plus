@@ -6,12 +6,20 @@ This application is focused on solving performance issues while ingesting or upd
 # Dependencies between .NET 4.5 and .NET 4.8
 
 - EntityFramework >= 6.4.4
+- MySqlConnector >= 1.3.11
 
 # Dependencies .NETSTANDARD2.0
 
 - Microsoft.CSharp >= 4.7.0
-- Microsoft.EntityFrameworkCore.Relational >= 3.1.10
-- MySqlConnector >= 0.69.10
+- Microsoft.EntityFrameworkCore.Relational >= 3.1.18
+- MySqlConnector >= 1.3.11
+- System.Data.SqlClient >= 4.8.2
+
+# Dependencies .NETSTANDARD2.1
+
+- Microsoft.CSharp >= 4.7.0
+- Microsoft.EntityFrameworkCore.Relational >= 5.0.9
+- MySqlConnector >= 1.3.11
 - System.Data.SqlClient >= 4.8.2
 
 # Status
