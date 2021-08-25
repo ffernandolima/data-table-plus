@@ -1,0 +1,24 @@
+name: build-and-publish
+
+env:
+  PROJECT: DataTablePlus
+  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  NUGET_SOURCE: ${{ secrets.NUGET_SOURCE }}
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Restore
+        run: dotnet restore
+      - name: Build projects
+        run: dotnet build -c Release
+      - name: Push packages
+        run: dotnet nuget push "**/$PROJECT*.nupkg" -k $NUGET_API_KEY -s $NUGET_SOURCE --skip-duplicate
