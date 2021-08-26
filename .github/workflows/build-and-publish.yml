@@ -23,9 +23,10 @@ jobs:
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
       - name: Restore Packages
-        run: nuget restore $PROJECT.sln
+        run: nuget.exe restore $PROJECT.sln
       - name: Build Solution
         run: |
           msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: nuget push "**/$PROJECT*.nupkg" $NUGET_API_KEY -Source $NUGET_SOURCE -SkipDuplicate
+        run: nuget.exe push $PROJECT*.nupkg -ApiKey $NUGET_API_KEY -src $NUGET_SOURCE -SkipDuplicate
+        
