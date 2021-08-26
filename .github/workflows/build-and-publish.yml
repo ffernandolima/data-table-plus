@@ -31,5 +31,5 @@ jobs:
         run: |
           msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: nuget.exe push $PROJECT*.nupkg -src $NUGET_SOURCE
+        run: nuget.exe push $PROJECT*.nupkg
         
