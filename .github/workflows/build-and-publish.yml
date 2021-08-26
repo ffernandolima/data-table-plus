@@ -20,6 +20,9 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.3
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
+        with:
+          nuget-api-key: $NUGET_API_KEY
+          nuget-version: 'latest'
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
       - name: Restore Packages
@@ -28,5 +31,5 @@ jobs:
         run: |
           msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: nuget.exe push $PROJECT*.nupkg -ApiKey $NUGET_API_KEY -src $NUGET_SOURCE -SkipDuplicate
+        run: nuget.exe push "**/$PROJECT*.nupkg" -Source $NUGET_SOURCE -SkipDuplicate
         
