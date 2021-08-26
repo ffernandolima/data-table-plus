@@ -1,11 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75C27982-A1FE-4D00-80AA-72A11A8E9DF8}"
 	ProjectSection(SolutionItems) = preProject
-		appveyor.yml = appveyor.yml
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
@@ -20,6 +19,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTablePlus.NetFull.Tests", "tests\DataTablePlus.NetFull.Tests\DataTablePlus.NetFull.Tests.csproj", "{69F4C27E-A118-4AD2-8183-A5B933A503CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTablePlus.NetCore.Tests", "tests\DataTablePlus.NetCore.Tests\DataTablePlus.NetCore.Tests.csproj", "{13B5BCF6-808B-4695-9EF9-807CBC2E376D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5688225C-7008-44D0-92CB-8382A4708B09}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9124A9B1-0677-4FAB-AF29-12F0968E4FC3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-publish.yml = .github\workflows\build-and-publish.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +53,7 @@ Global
 		{14921376-C203-4C96-9F7A-FBD6357B7AD4} = {5751D8CE-0070-4E95-8AB2-4F809140ABAC}
 		{69F4C27E-A118-4AD2-8183-A5B933A503CE} = {356AE05B-A326-4C2C-A5A1-A686A8164AC8}
 		{13B5BCF6-808B-4695-9EF9-807CBC2E376D} = {356AE05B-A326-4C2C-A5A1-A686A8164AC8}
+		{9124A9B1-0677-4FAB-AF29-12F0968E4FC3} = {5688225C-7008-44D0-92CB-8382A4708B09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FD3157C0-C58D-4514-92FE-E69BBFDB990D}
