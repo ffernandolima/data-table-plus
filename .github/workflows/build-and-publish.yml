@@ -31,4 +31,4 @@ jobs:
         run: |
           msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: nuget.exe push "D:\a\data-table-plus\data-table-plus\src\DataTablePlus\bin\Release\DataTablePlus*.nupkg" -Source "https://api.nuget.org/v3/index.json"
+        run: nuget.exe push "D:\a\data-table-plus\data-table-plus\src\DataTablePlus\bin\Release\DataTablePlus*.nupkg" -Source "https://api.nuget.org/v3/index.json" -SkipDuplicate
