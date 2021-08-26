@@ -1,10 +1,5 @@
 name: build-and-publish
 
-env:
-  PROJECT: DataTablePlus
-  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-  NUGET_SOURCE: ${{ secrets.NUGET_SOURCE }}
-
 on:
   push:
     branches: [ master ]
@@ -21,14 +16,14 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
         with:
-          nuget-api-key: $NUGET_API_KEY
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
           nuget-version: 'latest'
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
       - name: Restore Packages
-        run: nuget.exe restore $PROJECT.sln
+        run: nuget.exe restore DataTablePlus.sln
       - name: Build Solution
         run: |
-          msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
+          msbuild.exe DataTablePlus.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: nuget.exe push "**\$PROJECT*.nupkg" -Source "$NUGET_SOURCE" -ApiKey "$NUGET_API_KEY" -SkipDuplicate
+        run: nuget.exe push "D:\a\data-table-plus\data-table-plus\src\DataTablePlus\bin\Release\DataTablePlus*.nupkg" -Source "https://api.nuget.org/v3/index.json" -ApiKey "${{ secrets.NUGET_API_KEY }}" -SkipDuplicate
