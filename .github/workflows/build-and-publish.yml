@@ -31,4 +31,4 @@ jobs:
         run: |
           msbuild.exe $PROJECT.sln /p:platform="Any CPU" /p:configuration="Release"
       - name: Push packages
-        run: dotnet nuget push "**/$PROJECT*.nupkg" -k $NUGET_API_KEY -s $NUGET_SOURCE --skip-duplicate
+        run: nuget.exe push "**\$PROJECT*.nupkg" -Source $NUGET_SOURCE -SkipDuplicate
