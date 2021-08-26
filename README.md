@@ -26,7 +26,7 @@ This application is focused on solving performance issues while ingesting or upd
 
 [![NuGet Version](https://img.shields.io/nuget/v/DataTablePlus.svg)](https://www.nuget.org/packages/DataTablePlus/ "NuGet Version")
 [![NuGet Downloads](https://img.shields.io/nuget/dt/DataTablePlus.svg)](https://www.nuget.org/packages/DataTablePlus/ "NuGet Downloads")
-[![Build status](https://ci.appveyor.com/api/projects/status/g05m96ggikajburr?svg=true)](https://ci.appveyor.com/project/ffernandolima/data-table-plus)
+[![build-and-publish Workflow Status](https://github.com/ffernandolima/data-table-plus/actions/workflows/build-and-publish.yml/badge.svg?branch=master)](https://github.com/ffernandolima/data-table-plus/actions/workflows/build-and-publish.yml?branch=master)
 
 # Providers
 
