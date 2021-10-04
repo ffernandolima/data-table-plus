@@ -375,7 +375,7 @@ namespace DataTablePlus.Extensions
         /// <returns>Task&lt;IList&lt;T&gt;&gt;.</returns>
         public static Task<IList<T>> BulkInsertAsync<T>(this DbContext dbContext, IList<T> entities, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, bool? retrievePrimaryKeyValues = null, CancellationToken cancellationToken = default) where T : class
         {
-            return Task.Factory.StartNew(() => BulkInsert(dbContext, entities, dbProvider, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
+            return Task.Run(() => BulkInsert(dbContext, entities, dbProvider, batchSize, options, retrievePrimaryKeyValues), cancellationToken);
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace DataTablePlus.Extensions
         /// <returns>Task.</returns>
         public static Task BatchUpdateAsync<T>(this DbContext dbContext, IList<T> entities, string commandText, DbProvider? dbProvider = null, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default) where T : class
         {
-            return Task.Factory.StartNew(() => BatchUpdate(dbContext, entities, commandText, dbProvider, batchSize), cancellationToken);
+            return Task.Run(() => BatchUpdate(dbContext, entities, commandText, dbProvider, batchSize), cancellationToken);
         }
 
         /// <summary>

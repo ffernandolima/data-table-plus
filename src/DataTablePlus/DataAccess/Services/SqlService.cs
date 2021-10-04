@@ -134,7 +134,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <inheritdoc />
         public Task<DataTable> BulkInsertAsync(DataTable dataTable, int batchSize = DataConstants.BatchSize, BulkCopyOptions? options = null, IList<string> primaryKeyNames = null, CancellationToken cancellationToken = default)
         {
-            return Task.Factory.StartNew(() => BulkInsert(dataTable, batchSize, options, primaryKeyNames), cancellationToken);
+            return Task.Run(() => BulkInsert(dataTable, batchSize, options, primaryKeyNames), cancellationToken);
         }
 
         /// <inheritdoc />
@@ -146,7 +146,7 @@ namespace DataTablePlus.DataAccess.Services
         /// <inheritdoc />
         public Task BatchUpdateAsync(DataTable dataTable, string commandText, int batchSize = DataConstants.BatchSize, CancellationToken cancellationToken = default)
         {
-            return Task.Factory.StartNew(() => BatchUpdate(dataTable, commandText, batchSize), cancellationToken);
+            return Task.Run(() => BatchUpdate(dataTable, commandText, batchSize), cancellationToken);
         }
 
         /// <summary>
