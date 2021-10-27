@@ -3,6 +3,10 @@
 DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before.
 This application is focused on solving performance issues while ingesting or updating a lot of data.
 
+## Give a Star! :star:
+
+If you like or are using this project to learn or start your solution, please give it a star. Thanks!
+
 # Dependencies between .NET 4.5 and .NET 4.8
 
 - EntityFramework >= 6.4.4
