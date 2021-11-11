@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-#if NETSTANDARD
+#if NETSTANDARD || NET60
 using Microsoft.EntityFrameworkCore;
 #endif
 

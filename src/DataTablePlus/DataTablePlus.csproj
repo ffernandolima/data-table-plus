@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48;net60</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
-        <Version>4.1.1</Version>
+        <Version>4.2.0</Version>
         <Authors>Lima Technology Services</Authors>
         <Description>DataTablePlus provides some helpful extensions in order to transform list of objects into data tables (it's able to use the object definitions and/or EntityFramework/EntityFrameworkCore mappings for creating the data table schema as well as its data) and also some SQL helpers capable of performing some batch operations using those data tables which were cited before. This application is focused on solving performance issues while ingesting or updating a lot of data.</Description>
         <Copyright>Copyright © Lima Technology Services</Copyright>
         <PackageProjectUrl>https://github.com/ffernandolima/data-table-plus</PackageProjectUrl>
         <PackageTags>DataTable DataTablePlus EF EFCore EntityFramework EntityFrameworkCore EFExtensions EFCoreExtensions EntityFrameworkExtensions EntityFrameworkCoreExtensions Extensions Bulk Batch BulkInsert BatchUpdate BatchOperations BulkCopy SQLServer MySQL ADO.NET</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>4.1.1.0</AssemblyVersion>
-        <FileVersion>4.1.1.0</FileVersion>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <FileVersion>4.2.0.0</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -32,9 +32,9 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.19" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.21" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET Standard 2.1 references, compilation flags and build options -->
@@ -53,9 +53,9 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1'">
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.10" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.12" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.5 references, compilation flags and build options -->
@@ -86,7 +86,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net45'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.5.1 references, compilation flags and build options -->
@@ -117,7 +117,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net451'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.5.2 references, compilation flags and build options -->
@@ -148,7 +148,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net452'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.6 references, compilation flags and build options -->
@@ -179,7 +179,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net46'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.6.1 references, compilation flags and build options -->
@@ -210,7 +210,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.6.2 references, compilation flags and build options -->
@@ -241,7 +241,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net462'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.7 references, compilation flags and build options -->
@@ -272,7 +272,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net47'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.7.1 references, compilation flags and build options -->
@@ -303,7 +303,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net471'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.7.2 references, compilation flags and build options -->
@@ -334,7 +334,7 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net472'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
     <!-- .NET 4.8 references, compilation flags and build options -->
@@ -365,7 +365,28 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
         <PackageReference Include="EntityFramework" Version="6.4.4" />
-        <PackageReference Include="MySqlConnector" Version="1.3.13" />
+        <PackageReference Include="MySqlConnector" Version="2.0.0" />
+    </ItemGroup>
+
+    <!-- .NET 6.0 references, compilation flags and build options -->
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net60'">
+      <DefineConstants>DEBUG;NET60</DefineConstants>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net60|AnyCPU'">
+      <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net60|AnyCPU'">
+      <NoWarn>1701;1702;1591</NoWarn>
+      <DocumentationFile>bin\Release\net60\DataTablePlus.xml</DocumentationFile>
+    </PropertyGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net60'">
+      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+      <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+      <PackageReference Include="MySqlConnector" Version="2.0.0" />
     </ItemGroup>
 
 </Project>

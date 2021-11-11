@@ -34,11 +34,7 @@ using System.Data.Common;
 using System.Linq;
 using MySqlConnector;
 
-#if NETSTANDARD20
-using Microsoft.EntityFrameworkCore;
-#endif
-
-#if NETSTANDARD21
+#if NETSTANDARD || NET60
 using Microsoft.EntityFrameworkCore;
 #endif
 

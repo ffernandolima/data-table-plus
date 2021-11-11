@@ -32,7 +32,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 
-#if NETSTANDARD
+#if NETSTANDARD || NET60
 using Microsoft.EntityFrameworkCore;
 #endif
 

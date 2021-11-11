@@ -30,7 +30,7 @@ using DataTablePlus.DataAccess.Services;
 using DataTablePlus.DataAccess.Services.Contracts;
 using System;
 
-#if NETSTANDARD
+#if NETSTANDARD || NET60
 using Microsoft.EntityFrameworkCore;
 #endif
 

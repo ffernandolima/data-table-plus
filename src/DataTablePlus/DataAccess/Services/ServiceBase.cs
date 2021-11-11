@@ -34,11 +34,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using MySqlConnector;
 
-#if NETSTANDARD20
-using Microsoft.EntityFrameworkCore;
-#endif
-
-#if NETSTANDARD21
+#if NETSTANDARD || NET60
 using Microsoft.EntityFrameworkCore;
 #endif
 
@@ -252,7 +248,7 @@ namespace DataTablePlus.DataAccess.Services
 
             if (dbContext != null)
             {
-#if NETSTANDARD
+#if NETSTANDARD || NET60
                 var dbConnection = dbContext.Database.GetDbConnection();
 
                 if (validateConnection)

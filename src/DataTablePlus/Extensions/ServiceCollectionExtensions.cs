@@ -24,7 +24,7 @@
  * 
  ****************************************************************************************************************/
 
-#if NETSTANDARD
+#if NETSTANDARD || NET60
 using DataTablePlus.Configuration;
 using DataTablePlus.DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
